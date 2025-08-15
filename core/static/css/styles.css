@@ -1,0 +1,255 @@
+/* 🔄 Reset general */ 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #F2F2F2;
+  color: #000000;
+  line-height: 1.6;
+}
+
+/* HEADER */
+header {
+  background-color: #000000;
+  color: #F2F2F2;
+  padding: 15px 20px;
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr; /* ⬅ esto permite centrar el contenido del medio */
+  align-items: center;
+  gap: 20px;
+}
+
+/* Secciones del header */
+.zona-izquierda,
+.zona-centro,
+.zona-derecha {
+  display: flex;
+  align-items: center;
+}
+
+.zona-izquierda {
+  justify-content: flex-start;
+}
+
+.zona-centro {
+  justify-content: center;
+}
+
+.zona-derecha {
+  justify-content: flex-end;
+}
+
+/* El resto puede quedarse igual */
+
+
+.nombre-sitio {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.logo-link {
+  color: #F2F2F2;
+  text-decoration: none;
+}
+
+.logo-link:hover {
+  text-decoration: underline;
+}
+
+/* BUSCADOR CENTRADO */
+.buscador {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.buscador input {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 4px 0 0 4px;
+  font-size: 1rem;
+}
+
+.buscador button {
+  padding: 10px 15px;
+  border: none;
+  background-color: #B6B09F;
+  color: #000000;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+}
+
+/* ACCIONES A LA DERECHA */
+.navbar-actions {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+}
+
+.navbar-actions a,
+.navbar-actions a:visited,
+.navbar-actions a:active {
+  color: #F2F2F2;
+  text-decoration: none;
+}
+
+.navbar-actions a:hover {
+  text-decoration: underline;
+}
+
+/* NAVBAR CATEGORÍAS */
+.categorias {
+  background-color: #EAE4D5;
+  padding: 10px 0;
+}
+
+.categorias ul {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  list-style: none;
+}
+
+.categorias a {
+  text-decoration: none;
+  color: #000000;
+  font-weight: bold;
+}
+
+/* BANNER */
+.banner {
+  background-color: #EAE4D5;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.banner-texto h2 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+.banner-texto p {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+
+.btn-principal {
+  background-color: #B6B09F;
+  color: #000000;
+  padding: 12px 24px;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+/* SECCIONES DE PRODUCTOS */
+.seccion-productos {
+  padding: 40px 20px;
+}
+
+.seccion-productos h2 {
+  font-size: 1.6rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.grid-productos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.producto {
+  background-color: #FFFFFF;
+  border: 1px solid #DDD;
+  border-radius: 8px;
+  padding: 15px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.producto:hover {
+  transform: translateY(-5px);
+}
+
+.producto h3 {
+  font-size: 1.1rem;
+  margin: 10px 0;
+}
+
+.producto p {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #000000;
+}
+
+/* FOOTER */
+footer {
+  background-color: #000000;
+  color: #F2F2F2;
+  text-align: center;
+  padding: 20px;
+}
+
+.footer-links {
+  margin-top: 10px;
+}
+
+.footer-links a {
+  color: #F2F2F2;
+  text-decoration: none;
+  margin: 0 10px;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+}
+
+/* Página de privacidad */   
+.contenido-pagina {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.politica-privacidad h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.politica-privacidad h3 {
+  font-size: 1.3rem;
+  margin-top: 30px;
+  margin-bottom: 10px;
+  color: #000000;
+}
+
+.politica-privacidad p, .politica-privacidad ul {
+  font-size: 1rem;
+  margin-bottom: 15px;
+}
+
+.politica-privacidad ul {
+  padding-left: 20px;
+  list-style-type: disc;
+}
+
+.buscador input::placeholder {
+  font-family: 'Poppins', sans-serif;
+  color: #777; /* Puedes ajustar el color si lo ves muy tenue */
+}

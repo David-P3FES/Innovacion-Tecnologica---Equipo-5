@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}ViviendaYA{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+  <!-- HEADER -->
+<header>
+  <div class="header-content">
+    <div class="zona-izquierda">
+      <h1 class="nombre-sitio">
+        <a href="{% url 'inicio' %}" class="logo-link">ViviendaYa</a>
+      </h1>
+    </div>
+
+    <div class="zona-centro">
+      <div class="buscador">
+        <input type="text" placeholder="Buscar tu nueva casa o renta una!">
+        <button><i class="fas fa-search"></i></button>
+      </div>
+    </div>
+
+    <div class="zona-derecha">
+      <nav class="navbar-actions">
+        <a href="#"><i class="fas fa-user"></i> Iniciar sesión</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+
+
+  <!-- BARRA DE CATEGORÍAS (solo si se incluye en una página específica) -->
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="contenido-pagina">
+    {% block content %}
+    {% endblock %}
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-contenido">
+      <p>&copy; 2025 ViviendaYA | Todos los derechos reservados</p>
+      <div class="footer-links">
+        <a href="#">Contacto</a>
+        <a >Términos</a>
+        <a >Privacidad</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
