@@ -1,4 +1,4 @@
-# 🏠 "NOMBRE" - Encontrar el lugar ideal para vivir o invertir
+# 🏠 "VIVIENDAYA" - Encontrar el lugar ideal para vivir o invertir
 Universidad Autónoma de Ciudad Juárez
 
 ---
