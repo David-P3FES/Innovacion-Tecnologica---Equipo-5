@@ -11,9 +11,9 @@ Universidad Autónoma de Ciudad Juárez
 
 ---
 
-### 🏡 **Nombre del Proyecto: "NOMBRE"**
+### 🏡 **Nombre del Proyecto: ViviendaYa**
 
-"NOMBRE" es una plataforma innovadora que se especializa en la compra, venta y renta de propiedades residenciales y comerciales, ofreciendo atención personalizada y un alto compromiso con la satisfacción del cliente.
+ViviendaYa es una plataforma innovadora que se especializa en la compra, venta y renta de propiedades residenciales y comerciales, ofreciendo atención personalizada y un alto compromiso con la satisfacción del cliente.
 
 ---
 
