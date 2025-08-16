@@ -12,3 +12,6 @@ db.sqlite3
 # Archivos de entorno
 .env
 .env.*
+__pycache__/
+*.py[cod]
+*$py.class
