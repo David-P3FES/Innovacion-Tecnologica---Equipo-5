@@ -1,11 +1,15 @@
 from django.shortcuts import render
+from .models import Propiedad
 
-# 1. Páginas públicas
 def home(request):
-    return render(request, 'core/public/home.html')
+    # Últimas 6 propiedades disponibles
+    propiedades = Propiedad.objects.filter(estado='disponible').order_by('-fecha_publicacion')[:6]
+    return render(request, 'core/public/home.html', {'propiedades': propiedades})
 
 def resultados_busqueda(request):
-    return render(request, 'core/public/resultados_busqueda.html')
+    query = request.GET.get('q')
+    propiedades = Propiedad.objects.filter(titulo__icontains=query, estado='disponible') if query else []
+    return render(request, 'core/public/resultados_busqueda.html', {'propiedades': propiedades, 'query': query})
 
 def detalle_propiedad(request, id):
     return render(request, 'core/public/detalle_propiedad.html')

@@ -1,41 +1,41 @@
 {% extends 'core/base.html' %}
-
 {% block title %}Inicio | ViviendaYA{% endblock %}
 
-{% block categorias %}
-<nav class="categorias">
-  <p>Encuentra tu nuevo hogar</p>
-  </ul>
-</nav>
-{% endblock %}
-
 {% block content %}
+
+<!-- Banner -->
 <section class="banner">
   <div class="banner-texto">
     <h2>¡Encuentra tu nueva casa o renta una Ya!</h2>
-    <p>Conecta con los mejores vendedores o inmobiliarias de Mexico.</p>
-    <a href="#" class="btn-principal">Explorar ahora</a>
+    <p>Conecta con los mejores vendedores o inmobiliarias de México.</p>
+    <form method="GET" action="{% url 'resultados_busqueda' %}">
+      <div class="buscador" style="margin:20px auto; max-width:600px;">
+        <input type="text" name="q" placeholder="Buscar por ubicación o tipo de propiedad">
+        <button type="submit"><i class="fas fa-search"></i></button>
+      </div>
+    </form>
   </div>
 </section>
 
+
+<!-- Propiedades destacadas -->
 <section class="seccion-productos">
-  <h2>📦 Nuestro catálogo estará disponible pronto</h2>
+  <h2>🏡 Propiedades destacadas</h2>
   <div class="grid-productos">
-    <div class="producto coming-soon">
-      <i class="fas fa-cogs fa-3x"></i>
-      <h3>Estamos trabajando para darte la mejor experiencia!</h3>
-      <p>Pronto podrás explorar y comprar casas directamente aquí.</p>
-    </div>
-    <div class="producto coming-soon">
-      <i class="fas fa-tools fa-3x"></i>
-      <h3>Categorías en preparación</h3>
-      <p>Casas ajustadas a tu presupuesto, ¡todo estará disponible en breve!</p>
-    </div>
-    <div class="producto coming-soon">
-      <i class="fas fa-truck-loading fa-3x"></i>
-      <h3>Conectando con los mejores vendedores o inmobiliarias</h3>
-      <p>Estableciendo alianzas para ofrecerte el mejor precio.</p>
-    </div>
+    {% for propiedad in propiedades %}
+      <div class="producto">
+        <h3>{{ propiedad.titulo }}</h3>
+        <p>{{ propiedad.descripcion|truncatechars:100 }}</p>
+        <p><strong>${{ propiedad.precio }}</strong></p>
+        <p>{{ propiedad.direccion }}</p>
+        <a href="{% url 'detalle_propiedad' propiedad.id %}" class="btn-principal">Ver detalles</a>
+      </div>
+    {% empty %}
+      <div class="producto coming-soon">
+        <h3>No hay propiedades disponibles todavía</h3>
+        <p>Pronto podrás explorar opciones aquí.</p>
+      </div>
+    {% endfor %}
   </div>
 </section>
 {% endblock %}
