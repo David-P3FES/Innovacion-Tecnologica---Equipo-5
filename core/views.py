@@ -2,9 +2,20 @@ from django.shortcuts import render
 from .models import Propiedad
 
 def home(request):
-    # Últimas 6 propiedades disponibles
-    propiedades = Propiedad.objects.filter(estado='disponible').order_by('-fecha_publicacion')[:6]
-    return render(request, 'core/public/home.html', {'propiedades': propiedades})
+    # Filtros desde GET
+    direccion = request.GET.get('direccion')
+    tipo_operacion = request.GET.get('tipo_operacion')
+
+    propiedades = Propiedad.objects.all()
+
+    if direccion:
+        propiedades = propiedades.filter(direccion__icontains=direccion)
+    if tipo_operacion:
+        propiedades = propiedades.filter(tipo_operacion=tipo_operacion)
+
+    return render(request, 'core/public/home.html', {
+        'propiedades': propiedades
+    })
 
 def resultados_busqueda(request):
     query = request.GET.get('q')
