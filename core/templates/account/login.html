@@ -27,10 +27,9 @@
   </form>
 
   <hr style="margin: 25px 0;">
-
-  <a class="btn-principal" style="background-color: #db4437; width: 100%; text-align: center;">
+  <a href="{% provider_login_url 'google' %}" class="btn-google">
     <i class="fab fa-google"></i> Iniciar sesión con Google
-  </a>
+</a>
   <a href="{% url 'account_signup' %}" class="btn-principal" style="width: 100%; text-align: center;">Registrarse</a>
 </section>
 <br>
