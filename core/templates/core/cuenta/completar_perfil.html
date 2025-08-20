@@ -1,14 +1,13 @@
-{% extends "core/base.html" %}
-{% block title %}Completar perfil | ViviendaYA{% endblock %}
-{% block content %}
-<section class="contenido-pagina">
-  <h2>Completa tu perfil</h2>
-  <p>Necesitamos tu RFC y tu rol para continuar.</p>
+{% extends "base.html" %}
+{% load static %}
 
-  <form method="post">
+{% block content %}
+<div class="form-container">
+  <h2>Completa tu perfil</h2>
+  <form method="POST">
     {% csrf_token %}
     {{ form.as_p }}
-    <button class="btn-principal" type="submit">Guardar</button>
+    <button type="submit">Guardar perfil</button>
   </form>
-</section>
+</div>
 {% endblock %}

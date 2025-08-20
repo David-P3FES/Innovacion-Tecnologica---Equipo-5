@@ -228,3 +228,24 @@ footer {
     border-radius: 0 0 12px 12px;
   }
 }
+
+.form-container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 30px;
+  background-color: #f7f7f7;
+  border-radius: 8px;
+}
+
+.login-container {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 30px;
+  border-radius: 10px;
+  background: #f1f1f1;
+}
+
+.login-container button {
+  width: 100%;
+  margin-top: 10px;
+}

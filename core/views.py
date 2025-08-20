@@ -3,6 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages 
 from .models import Propiedad, perfil_incompleto  
 from .forms import PerfilForm
+from django.shortcuts import redirect
+from django.urls import reverse
 
 
 def home(request):
@@ -79,11 +81,12 @@ def completar_perfil(request):
     return render(request, 'core/cuenta/completar_perfil.html', {'form': form})
 
 
-# Si quieres forzar perfil completo antes de entrar a secciones privadas:
-# (Opcional: úsalo cuando gustes, no afecta lo que ya tienes)
 @login_required
 def perfil_usuario_guardado(request):
     if perfil_incompleto(request.user):
         return redirect('completar_perfil')
     return render(request, 'core/comprador/perfil_usuario.html')
 
+def cuenta_redirect(request):
+    # Redirige a la URL del login real de allauth (/accounts/login/)
+    return redirect(reverse('account_login'))
