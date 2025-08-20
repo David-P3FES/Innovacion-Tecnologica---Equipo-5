@@ -1,0 +1,46 @@
+{% extends 'core/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<br>
+<div class="login-container">
+    <h2>Registro</h2>
+
+    <form method="post" action="{% url 'account_signup' %}">
+        {% csrf_token %}
+
+        <!-- Campo email -->
+        <div class="form-group">
+            {{ form.email.label_tag }}
+            {{ form.email }}
+        </div>
+
+        <!-- Campo usuario -->
+        <div class="form-group">
+            {{ form.username.label_tag }}
+            {{ form.username }}
+        </div>
+
+        <!-- Campo contraseña -->
+        <div class="form-group">
+            {{ form.password1.label_tag }}
+            {{ form.password1 }}
+        </div>
+
+        <!-- Confirmar contraseña -->
+        <div class="form-group">
+            {{ form.password2.label_tag }}
+            {{ form.password2 }}
+        </div>
+
+        <!-- Botón registro -->
+        <button type="submit" class="btn-full btn-secundario">Registrarse</button>
+    </form>
+
+    <p style="margin-top:15px; text-align:center;">
+        ¿Ya tienes cuenta? <a href="{% url 'account_login' %}">Inicia sesión aquí</a>
+    </p>
+</div>
+{% endblock %}
+Enviado
+Escribe en

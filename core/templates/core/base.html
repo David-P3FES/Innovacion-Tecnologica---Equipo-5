@@ -22,12 +22,16 @@
       </div>
 
       <!-- Botón login -->
-        <div class="zona-derecha">
+        <!-- Botón login -->
+<div class="zona-derecha">
   <nav class="navbar-actions">
-    {% if request.path == '/accounts/login/' %}
+    {% if user.is_authenticated %}
       <span class="btn-login">
-        <i class="fas fa-user"></i> ¡Bienvenido!
+        <i class="fas fa-user"></i> ¡Bienvenido, {{ user.username }}!
       </span>
+      <a href="{% url 'account_logout' %}" class="btn-login">
+        <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+      </a>
     {% else %}
       <a href="{% url 'account_login' %}" class="btn-login">
         <i class="fas fa-user"></i> Iniciar sesión
@@ -35,6 +39,7 @@
     {% endif %}
   </nav>
 </div>
+
   </header>
 
   <!-- CONTENIDO PRINCIPAL -->

@@ -304,4 +304,13 @@ footer {
   color: #27548A;
 }
 
+/* Estilo para inputs del formulario de registro igual que login */
+form input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
 

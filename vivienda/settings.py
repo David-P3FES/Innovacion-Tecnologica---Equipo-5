@@ -69,7 +69,7 @@ MIDDLEWARE = [
 ]
 
 # 🔗 Archivo principal de rutas del proyecto
-ROOT_URLCONF = 'core.urls'
+ROOT_URLCONF = 'vivienda.urls'
 
 # 📄 Configuración de plantillas HTML
 TEMPLATES = [
