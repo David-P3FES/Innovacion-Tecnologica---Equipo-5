@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 urlpatterns = [
@@ -11,6 +11,7 @@ urlpatterns = [
 
     # Privadas - Comprador/Rentador
     path('perfil/', views.perfil_usuario, name='perfil_usuario'),
+    path('perfil/completar/', views.completar_perfil, name='completar_perfil'),
     path('lista-deseos/', views.lista_deseos, name='lista_deseos'),
 
     # Privadas - Vendedor
@@ -21,4 +22,7 @@ urlpatterns = [
 
     # Privadas - Administrador
     path('admin-panel/', views.panel_administracion, name='panel_administracion'),
+
+    # Allauth
+    path('accounts/', include('allauth.urls')),
 ]
