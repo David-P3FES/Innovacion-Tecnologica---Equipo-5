@@ -1,0 +1,37 @@
+{% extends 'core/base.html' %}
+{% load socialaccount form_filters %}
+{% load socialaccount %}
+
+{% block content %}
+<br>
+<section class="login-container">
+  <h2 style="text-align: center; margin-bottom: 20px;">Iniciar sesión</h2>
+
+  <form method="POST" action="{% url 'account_login' %}">
+    {% csrf_token %}
+
+    <div class="form-group">
+      {{ form.login.label_tag }}
+      {{ form.login|add_class:"input-field" }}
+    </div>
+
+        <div class="form-group">
+    {{ form.password.label_tag }}
+    {{ form.password|add_class:"input-field" }}
+        <a href="{% url 'account_reset_password' %}" class="btn-secundario btn-full">
+          ¿Ha olvidado tu contraseña?
+        </a>
+    </div>
+
+    <button type="submit" class="btn-principal btn-full">Entrar</button>
+  </form>
+
+  <hr style="margin: 25px 0;">
+
+  <a class="btn-principal" style="background-color: #db4437; width: 100%; text-align: center;">
+    <i class="fab fa-google"></i> Iniciar sesión con Google
+  </a>
+  <a href="{% url 'account_signup' %}" class="btn-principal" style="width: 100%; text-align: center;">Registrarse</a>
+</section>
+<br>
+{% endblock %}

@@ -22,14 +22,19 @@
       </div>
 
       <!-- Botón login -->
-      <div class="zona-derecha">
-        <nav class="navbar-actions">
-          <a href="{% url 'account_login' %}" class="btn-login">
-            <i class="fas fa-user"></i> Iniciar sesión
-          </a>
-        </nav>
-      </div>
-    </div>
+        <div class="zona-derecha">
+  <nav class="navbar-actions">
+    {% if request.path == '/accounts/login/' %}
+      <span class="btn-login">
+        <i class="fas fa-user"></i> ¡Bienvenido!
+      </span>
+    {% else %}
+      <a href="{% url 'account_login' %}" class="btn-login">
+        <i class="fas fa-user"></i> Iniciar sesión
+      </a>
+    {% endif %}
+  </nav>
+</div>
   </header>
 
   <!-- CONTENIDO PRINCIPAL -->

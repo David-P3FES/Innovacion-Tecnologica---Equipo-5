@@ -238,14 +238,70 @@ footer {
 }
 
 .login-container {
-  max-width: 400px;
-  margin: 50px auto;
+  background-color: white;
   padding: 30px;
-  border-radius: 10px;
-  background: #f1f1f1;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  max-width: 380px;  /* ← Más compacto */
+  margin: 0 auto;
 }
 
 .login-container button {
   width: 100%;
   margin-top: 10px;
 }
+
+/* ==== Campos del formulario de login/registro ==== */
+.input-field {
+  width: 100%;
+  padding: 12px 14px;
+  margin-top: 5px;
+  margin-bottom: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+  background: #fff;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #27548A;
+  box-shadow: 0 0 3px rgba(39, 84, 138, 0.3);
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+/* 🔘 Asegura que los botones tengan el mismo ancho */
+.btn-full {
+  width: 100%;
+  text-align: center;
+  padding: 12px;
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* 🔘 Botón secundario para acciones como "¿Olvidaste tu contraseña?" */
+.btn-secundario {
+  display: inline-block;
+  background-color: #27548A;
+  border: 2px solid #27548A;
+  color: #fff;
+  padding: 10px 10px;
+  border-radius: 6px;
+  text-decoration: none;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  margin-top: 1px;
+}
+
+.btn-secundario:hover {
+  background-color: #fff  ;
+  color: #27548A;
+}
+
+
