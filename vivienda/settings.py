@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',       # Mensajes flash (notificaciones)
     'django.contrib.staticfiles',    # Archivos estáticos (CSS, JS)
     'core',                          # Tu app principal personalizada
+    "widget_tweaks",
 
     # Allauth
     'django.contrib.sites',
@@ -40,6 +41,9 @@ AUTHENTICATION_BACKENDS = [
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
+SOCIALACCOUNT_LOGIN_ON_GET = True
+ACCOUNT_LOGOUT_ON_GET = True
+
 
 
 # Allauth básico

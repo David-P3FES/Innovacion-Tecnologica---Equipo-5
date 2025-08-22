@@ -1,14 +1,16 @@
-/* ===== RESET GENERAL ===== */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/**
+ * @file styles.css
+ * @brief Estilos globales del proyecto ViviendaYA!.
+ * @details Define layout general (header, footer, main), componentes reutilizables
+ *          (botones, buscador, formularios), además de reglas responsive.
+ * @author Brandon Hernandez
+ * @date 2025-08-21
+ */
 
-html, body {
-  height: 100%;
-}
+/** @section reset Reset y configuración base */
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
+html, body { height: 100%; overflow-x: hidden; }
 body {
   font-family: 'Poppins', sans-serif;
   background: #f2f2f2;
@@ -17,115 +19,99 @@ body {
   display: flex;
   flex-direction: column;
 }
+img { max-width: 100%; display: block; }
 
-/* ===== HEADER ===== */
+/** @section header Header y navegación principal */
 header {
   background: #000;
   color: #fff;
-  padding: 15px 30px;
+  width: 100%;
 }
-
 .header-content {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 15px 30px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-
 .nombre-sitio a {
   color: #fff;
   text-decoration: none;
   font-size: 1.8rem;
   font-weight: 700;
 }
-
-.navbar-actions a {
+.navbar-actions a,
+.btn-login {
   color: #fff;
   text-decoration: none;
   font-weight: 500;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
+  padding: 8px 10px;
 }
+.navbar-actions a:hover,
+.btn-login:hover { color: #ccc; }
 
-.navbar-actions a:hover {
-  color: #ccc;
-}
+/** @section wrapper Contenedor principal */
+.contenido-pagina { padding: 0; }
 
-/* ===== HERO (BÚSQUEDA) ===== */
+/** @section hero Hero + buscador principal */
 .hero {
   background: #f5f5f0;
   padding: 50px 20px;
   text-align: center;
 }
+.hero h2 { font-size: 2rem; font-weight: 700; margin-bottom: 10px; }
+.hero p  { margin-bottom: 20px; color: #555; }
 
-.hero h2 {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 10px;
-}
-
-.hero p {
-  margin-bottom: 20px;
-  color: #555;
-}
-
-/* 🎯 ESTILO MEJORADO DEL BUSCADOR */
 .search-bar {
   display: flex;
-  justify-content: center;
   align-items: center;
-  max-width: 700px;
+  max-width: 820px;
   margin: 0 auto;
   background: #fff;
-  border-radius: 50px; /* 🔥 redondeado estilo moderno */
+  border-radius: 50px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.12);
   overflow: hidden;
-  box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+  isolation: isolate;
 }
-
+/** @note La barra de búsqueda incluye select, input y botón */
 .search-bar select,
-.search-bar input {
-  padding: 14px 16px;
+.search-bar input,
+.search-bar button {
+  all: unset;
+  font-family: 'Poppins', sans-serif;
   font-size: 1rem;
-  border: none;
-  outline: none;
 }
-
 .search-bar select {
   background: #f9f9f9;
+  padding: 16px 16px;
+  border-right: 1px solid #e3e3e3;
   cursor: pointer;
-  border-right: 1px solid #ddd;
 }
-
 .search-bar input {
   flex: 1;
+  min-width: 0;
+  padding: 16px 18px;
+  color: #333;
 }
-
 .search-bar button {
   background: #333;
   color: #fff;
-  padding: 14px 20px;
-  border: none;
+  padding: 16px 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background .25s ease;
 }
+.search-bar button:hover { background: #555; }
 
-.search-bar button:hover {
-  background: #555;
-}
-
-/* ===== SECCIÓN PROPIEDADES ===== */
-.seccion-productos {
-  margin: 40px 0;
-  text-align: center;
-}
-
-.seccion-productos h2 {
-  font-size: 1.7rem;
-  font-weight: 700;
-  margin-bottom: 20px;
-}
+/** @section productos Sección de propiedades destacadas */
+.seccion-productos { margin: 40px 0; text-align: center; }
+.seccion-productos h2 { font-size: 1.7rem; font-weight: 700; margin-bottom: 20px; }
 
 .grid-productos {
   display: grid;
@@ -135,74 +121,154 @@ header {
   margin: 0 auto;
   padding: 0 20px;
 }
-
 .producto {
   background: #fff;
   padding: 20px;
   border-radius: 10px;
-  box-shadow: 0px 3px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
   text-align: center;
 }
+.producto h3 { font-size: 1.2rem; margin-bottom: 10px; }
+.producto p  { font-size: .95rem; margin-bottom: 8px; }
 
-.producto h3 {
-  font-size: 1.2rem;
-  margin-bottom: 10px;
-}
-
-.producto p {
-  font-size: 0.95rem;
-  margin-bottom: 8px;
-}
-
+/** @section botones Botones generales */
 .btn-principal {
   display: inline-block;
-  margin-top: 10px;
   padding: 10px 15px;
   background: #333;
   color: #fff;
   border-radius: 6px;
   text-decoration: none;
+  transition: background .25s ease, color .25s ease;
+}
+.btn-principal:hover { background: #555; }
+
+.btn-secundario {
+  display: inline-block;
+  background-color: #27548A;
+  border: 2px solid #27548A;
+  color: #fff;
+  padding: 10px 10px;
+  border-radius: 6px;
+  text-decoration: none;
+  text-align: center;
+  font-size: 1rem;
+  transition: all .3s ease;
+}
+.btn-secundario:hover { background-color: #fff; color: #27548A; }
+
+.btn-full { width: 100%; text-align: center; padding: 12px; font-size: 1rem; }
+
+/** @subsection btn-google Botón de Google */
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  margin: 14px 0;
+  background-color: #DB4437;   /**< rojo-naranja oficial Google */
+  border: 1px solid #DB4437;
+  color: #fff;                 /**< texto blanco */
+  font-weight: 500;
+  font-size: 1rem;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background .3s ease, border .3s ease;
+}
+.btn-google i,
+.btn-google svg { font-size: 1.2rem; }
+.btn-google:hover {
+  background-color: #c33d31;   /**< tono más oscuro en hover */
+  border-color: #c33d31;
+  color: #fff;
 }
 
-.btn-principal:hover {
-  background: #555;
+/** @section forms Formularios (login y signup) */
+.login-container, .form-container {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  max-width: 420px;
+  margin: 0 auto;
+}
+.login-container h2,
+.form-container h2 { text-align: center; margin-bottom: 20px; }
+
+.form-group { margin-bottom: 16px; }
+
+.input-field {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+  background: #fff;
+}
+.input-field:focus {
+  outline: none;
+  border-color: #27548A;
+  box-shadow: 0 0 3px rgba(39, 84, 138, 0.3);
+}
+/** @note Se reutilizan estilos de .input-field en login y signup */
+.login-container form input,
+.login-container form select,
+.login-container form textarea,
+.form-container form input,
+.form-container form select,
+.form-container form textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+  background: #fff;
+}
+.login-container form input:focus,
+.login-container form select:focus,
+.login-container form textarea:focus,
+.form-container form input:focus,
+.form-container form select:focus,
+.form-container form textarea:focus {
+  outline: none;
+  border-color: #27548A;
+  box-shadow: 0 0 3px rgba(39, 84, 138, 0.3);
 }
 
-/* ===== FOOTER ===== */
+/** @todo Evaluar espaciado extra entre botones si se añaden nuevos enlaces */
+.login-container a.btn-secundario.btn-full { margin-top: 12px; }
+
+/** @section footer Pie de página */
 footer {
   background: #000;
   color: #fff;
-  padding: 20px;
+  width: 100%;
   margin-top: auto;
 }
-
 .footer-contenido {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 20px 30px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
   text-align: center;
 }
-
 .footer-links {
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
   justify-content: center;
 }
+.footer-links a { color: #fff; text-decoration: none; }
+.footer-links a:hover { color: #ccc; }
 
-.footer-links a {
-  color: #fff;
-  text-decoration: none;
-}
-
-.footer-links a:hover {
-  color: #ccc;
-}
-
-/* ===== RESPONSIVE ===== */
+/** @section responsive Reglas responsive */
 @media (max-width: 768px) {
   .header-content {
     flex-direction: column;
@@ -213,104 +279,29 @@ footer {
   .search-bar {
     flex-direction: column;
     max-width: 100%;
-    border-radius: 12px; /* 🔥 menos redondeado en móvil */
+    border-radius: 16px;
   }
-
   .search-bar select,
   .search-bar input,
   .search-bar button {
+    all: revert;
     width: 100%;
-    border-radius: 0;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    padding: 14px 14px;
     border: none;
+    outline: none;
   }
+  .search-bar select { background: #f9f9f9; border-bottom: 1px solid #eee; }
+  .search-bar button { background: #333; color: #fff; border-radius: 0 0 16px 16px; }
 
-  .search-bar button {
-    border-radius: 0 0 12px 12px;
-  }
+  .login-container, .form-container { max-width: 92%; padding: 22px; }
 }
 
-.form-container {
-  max-width: 500px;
-  margin: 0 auto;
-  padding: 30px;
-  background-color: #f7f7f7;
-  border-radius: 8px;
+/* Centrar vertical y horizontalmente el contenido principal */
+.contenido-pagina {
+  flex: 1; /* ocupa todo el espacio disponible */
+  display: flex;
+  justify-content: center;  /* al centro horizontal */
+  align-items: center;      /* al centro vertical */
 }
-
-.login-container {
-  background-color: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  max-width: 380px;  /* ← Más compacto */
-  margin: 0 auto;
-}
-
-.login-container button {
-  width: 100%;
-  margin-top: 10px;
-}
-
-/* ==== Campos del formulario de login/registro ==== */
-.input-field {
-  width: 100%;
-  padding: 12px 14px;
-  margin-top: 5px;
-  margin-bottom: 16px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-family: 'Poppins', sans-serif;
-  background: #fff;
-}
-
-.input-field:focus {
-  outline: none;
-  border-color: #27548A;
-  box-shadow: 0 0 3px rgba(39, 84, 138, 0.3);
-}
-
-.form-group {
-  margin-bottom: 16px;
-}
-
-/* 🔘 Asegura que los botones tengan el mismo ancho */
-.btn-full {
-  width: 100%;
-  text-align: center;
-  padding: 12px;
-  font-size: 1rem;
-  font-family: 'Poppins', sans-serif;
-}
-
-/* 🔘 Botón secundario para acciones como "¿Olvidaste tu contraseña?" */
-.btn-secundario {
-  display: inline-block;
-  background-color: #27548A;
-  border: 2px solid #27548A;
-  color: #fff;
-  padding: 10px 10px;
-  border-radius: 6px;
-  text-decoration: none;
-  text-align: center;
-  font-family: 'Poppins', sans-serif;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  margin-top: 1px;
-}
-
-.btn-secundario:hover {
-  background-color: #fff  ;
-  color: #27548A;
-}
-
-/* Estilo para inputs del formulario de registro igual que login */
-form input {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 14px;
-}
-

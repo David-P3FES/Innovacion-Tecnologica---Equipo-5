@@ -21,25 +21,30 @@
         </h1>
       </div>
 
-      <!-- Botón login -->
-        <!-- Botón login -->
-<div class="zona-derecha">
-  <nav class="navbar-actions">
-    {% if user.is_authenticated %}
-      <span class="btn-login">
-        <i class="fas fa-user"></i> ¡Bienvenido, {{ user.username }}!
-      </span>
-      <a href="{% url 'account_logout' %}" class="btn-login">
-        <i class="fas fa-sign-out-alt"></i> Cerrar sesión
-      </a>
-    {% else %}
-      <a href="{% url 'account_login' %}" class="btn-login">
-        <i class="fas fa-user"></i> Iniciar sesión
-      </a>
-    {% endif %}
-  </nav>
-</div>
-
+      <!-- Zona derecha -->
+      <div class="zona-derecha">
+        <nav class="navbar-actions">
+          {% if user.is_authenticated %}
+            <span class="btn-login">
+              <i class="fas fa-user"></i> ¡Bienvenido, {{ user.username }}!
+            </span>
+            <a href="{% url 'account_logout' %}" class="btn-login">
+              <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+            </a>
+          {% else %}
+            {% if request.resolver_match.url_name == 'account_login' or request.resolver_match.url_name == 'account_signup' %}
+              <a href="{% url 'home' %}" class="btn-login">
+                <i class="fas fa-home"></i> Regresar a Home
+              </a>
+            {% else %}
+              <a href="{% url 'account_login' %}" class="btn-login">
+                <i class="fas fa-user"></i> Iniciar sesión
+              </a>
+            {% endif %}
+          {% endif %}
+        </nav>
+      </div>
+    </div>
   </header>
 
   <!-- CONTENIDO PRINCIPAL -->
