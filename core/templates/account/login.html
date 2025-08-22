@@ -1,37 +1,59 @@
 {% extends 'core/base.html' %}
-{% load socialaccount form_filters %}
-{% load socialaccount %}
+{% load static i18n socialaccount %}
 
 {% block content %}
-
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
 <br>
-<section class="login-container">
-  <h2 style="text-align: center; margin-bottom: 20px;">Iniciar sesión</h2>
 
-  <form method="POST" action="{% url 'account_login' %}">
+<div class="login-container">
+  <h2 class="login-title">{% trans "Iniciar sesión" %}</h2>
+  <p class="login-subtitle">{% trans "Bienvenido de vuelta" %}</p>
+
+  {# Errores generales #}
+  {% if form.non_field_errors %}
+    <ul class="errorlist">
+      {% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}
+    </ul>
+  {% endif %}
+
+  <form method="post" action="{% url 'account_login' %}" class="login-form" id="loginForm">
     {% csrf_token %}
 
     <div class="form-group">
-      {{ form.login.label_tag }}
-      {{ form.login|add_class:"input-field" }}
-    </div>
-    
-        <div class="form-group">
-    {{ form.password.label_tag }}
-    {{ form.password|add_class:"input-field" }}
-        <a href="{% url 'account_reset_password' %}" class="btn-secundario btn-full">
-          ¿Ha olvidado tu contraseña?
-        </a>
+      <input type="email" id="id_login" name="login" required placeholder=" " value="{{ form.login.value|default_if_none:'' }}">
+      <label for="id_login">{% trans "Correo electrónico" %}</label>
+      {% if form.login.errors %}
+        <ul class="errorlist">{% for e in form.login.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+      {% endif %}
     </div>
 
-    <button type="submit" class="btn-principal btn-full">Entrar</button>
+    <div class="form-group">
+      <input type="password" id="id_password" name="password" required placeholder=" ">
+      <label for="id_password">{% trans "Contraseña" %}</label>
+      {% if form.password.errors %}
+        <ul class="errorlist">{% for e in form.password.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+      {% endif %}
+      <small class="helptext">
+        <a href="{% url 'account_reset_password' %}">{% trans "¿Olvidaste tu contraseña?" %}</a>
+      </small>
+    </div>
+
+    <button type="submit" class="btn-principal btn-full" data-loading-text="{% trans 'Entrando…' %}">
+      {% trans "Entrar" %}
+    </button>
   </form>
 
-  <hr style="margin: 25px 0;">
+  <div class="hr-text">{% trans "o continúa con" %}</div>
+
   <a href="{% provider_login_url 'google' %}" class="btn-google">
-    <i class="fab fa-google"></i> Iniciar sesión con Google
-</a>
-  <a href="{% url 'account_signup' %}" class="btn-principal" style="width: 100%; text-align: center;">Registrarse</a>
-</section>
+    <i class="fab fa-google"></i> Google
+  </a>
+
+  <p class="login-alt">
+    {% trans "¿No tienes cuenta?" %} <a href="{% url 'account_signup' %}">{% trans "Regístrate" %}</a>
+  </p>
+</div>
+
+<script src="{% static 'js/login.js' %}"></script>
 <br>
 {% endblock %}

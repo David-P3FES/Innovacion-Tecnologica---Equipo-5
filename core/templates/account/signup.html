@@ -1,44 +1,60 @@
 {% extends 'core/base.html' %}
-{% load i18n %}
+{% load static i18n %}
 
 {% block content %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
 <br>
+
 <div class="login-container">
-    <h2>Registro</h2>
+  <h2 class="login-title">{% trans "Crear cuenta" %}</h2>
+  <p class="login-subtitle">{% trans "Únete para empezar a publicar y guardar propiedades." %}</p>
 
-    <form method="post" action="{% url 'account_signup' %}">
-        {% csrf_token %}
+  {# Errores generales del formulario #}
+  {% if form.non_field_errors %}
+    <ul class="errorlist">
+      {% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}
+    </ul>
+  {% endif %}
 
-        <!-- Campo email -->
-        <div class="form-group">
-            {{ form.email.label_tag }}
-            {{ form.email }}
-        </div>
+  <form method="post" action="{% url 'account_signup' %}" class="login-form" id="signupForm">
+    {% csrf_token %}
 
-        <!-- Campo usuario -->
-        <div class="form-group">
-            {{ form.username.label_tag }}
-            {{ form.username }}
-        </div>
+    <div class="form-group">
+      <input type="email" id="email" name="email" required placeholder=" " value="{{ form.email.value|default_if_none:'' }}">
+      <label for="email">{% trans "Correo electrónico" %}</label>
+      {% if form.email.errors %}
+        <ul class="errorlist">{% for e in form.email.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+      {% endif %}
+    </div>
 
-        <!-- Campo contraseña -->
-        <div class="form-group">
-            {{ form.password1.label_tag }}
-            {{ form.password1 }}
-        </div>
+    <div class="form-group">
+      <input type="password" id="password1" name="password1" required minlength="6" placeholder=" ">
+      <label for="password1">{% trans "Contraseña" %}</label>
+      {% if form.password1.errors %}
+        <ul class="errorlist">{% for e in form.password1.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+      {% endif %}
+    </div>
 
-        <!-- Confirmar contraseña -->
-        <div class="form-group">
-            {{ form.password2.label_tag }}
-            {{ form.password2 }}
-        </div>
+    <div class="form-group">
+      <input type="password" id="password2" name="password2" required minlength="6" placeholder=" ">
+      <label for="password2">{% trans "Confirmar contraseña" %}</label>
+      {% if form.password2.errors %}
+        <ul class="errorlist">{% for e in form.password2.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+      {% endif %}
+    </div>
 
-        <!-- Botón registro -->
-        <button type="submit" class="btn-full btn-secundario">Registrarse</button>
-    </form>
+    <button type="submit" class="btn-principal btn-full" data-loading-text="{% trans 'Creando…' %}">
+      {% trans "Registrarse" %}
+    </button>
+  </form>
 
-    <p style="margin-top:15px; text-align:center;">
-        ¿Ya tienes cuenta? <a href="{% url 'account_login' %}">Inicia sesión aquí</a>
-    </p>
-</div><br>  
+  <div class="hr-text">{% trans "o" %}</div>
+
+  <a href="{% url 'account_login' %}" class="btn-secundario btn-full">
+    {% trans "¿Ya tienes cuenta? Inicia sesión" %}
+  </a>
+</div>
+
+<script src="{% static 'js/login.js' %}"></script>
+<br>
 {% endblock %}
