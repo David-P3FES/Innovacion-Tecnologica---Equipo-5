@@ -1,0 +1,250 @@
+/*!
+ * @file home.css
+ * @brief Estilos del hero, barra de búsqueda y grilla de propiedades.
+ * @details Unifica el color de la zona hero con la página y separa
+ *          visualmente los controles del formulario (sin tarjeta unificada).
+ */
+
+/** @name Paleta y tokens @{ */
+:root{
+  --page-bg: #f6f7f3;
+  --text:     #0f172a;
+  --muted:    #6b7280;
+  --card:     #ffffff;
+  --stroke:   #e5e7eb;
+  --accent:   #7a967f;
+  --accent-press: #6a846f;
+  --input-bg: #ffffff;
+}
+html, body{ background: var(--page-bg); }
+/** @} */
+
+/** @name Hero @{ */
+.hero{
+  background: var(--page-bg);
+  padding: 64px 16px 48px;
+}
+.hero-inner{
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: center;
+}
+.hero h2{
+  color: var(--text);
+  font-size: clamp(28px, 4vw, 44px);
+  line-height: 1.15;
+  margin: 0 0 10px;
+  font-weight: 800;
+}
+.hero p{
+  color: var(--muted);
+  font-size: clamp(14px, 1.5vw, 18px);
+  margin: 0 auto 22px;
+  max-width: 820px;
+}
+.hero .container,
+.hero .content,
+.hero .main,
+.hero .main-container,
+.hero .page-content,
+.hero #content,
+.hero .wrapper{
+  background: transparent !important;
+}
+/** @} */
+
+/** @name Buscador @{ */
+.search-bar{
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 220px 1fr auto;
+  gap: 16px;
+  align-items: center;
+}
+
+/* Campos base (input y select nativo) */
+.search-bar select,
+.search-bar input{
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: var(--input-bg);
+  border: 1px solid var(--stroke);
+  border-radius: 12px;
+  height: 48px;
+  padding: 0 14px;
+  font-size: 15px;
+  color: var(--text);
+  outline: none;
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease, transform .06s ease;
+  box-shadow: 0 8px 18px rgba(0,0,0,.06);
+}
+.search-bar select:hover,
+.search-bar input:hover{ background: #fff; }
+.search-bar select:focus,
+.search-bar input:focus{
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(122,150,127,.22),
+              0 10px 22px rgba(0,0,0,.08);
+}
+
+/* Botón buscar */
+.search-bar .btn-buscar{
+  height: 48px;
+  border: none;
+  border-radius: 12px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  padding: 0 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: transform .06s ease, background .2s ease, box-shadow .2s ease;
+  box-shadow: 0 10px 24px rgba(122,150,127,.28);
+}
+.search-bar .btn-buscar:hover{ background: var(--accent-press); }
+.search-bar .btn-buscar:active{ transform: translateY(1px); }
+.search-bar .btn-buscar i{ font-size: 14px; line-height: 0; }
+/** @} */
+
+/** @name Select personalizado (reemplazo visual del nativo) @{ */
+/* Contenedor del select custom; deja el <select> para formularios */
+.c-select{ position:relative; width:100%; }
+
+/* Oculta visualmente el <select> pero mantiene su valor y envío */
+.c-select .js-custom-select{
+  position:absolute; inset:0; opacity:0; pointer-events:none;
+}
+
+/* Botón cerrado */
+.c-select__button{
+  width:100%; height:48px;
+  border:1px solid var(--stroke);
+  border-radius:12px;
+  background: var(--input-bg);
+  color: var(--text);
+  font-size:15px; font-weight:600;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 14px;
+  box-shadow:0 8px 18px rgba(0,0,0,.06);
+  transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease, transform .06s ease;
+  cursor:pointer;
+}
+.c-select__button:hover{ background:#fff; }
+.c-select__button:focus-visible{
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(122,150,127,.22), 0 10px 22px rgba(0,0,0,.08);
+}
+
+/* Chevron */
+.c-select__chevron{
+  margin-left:10px; flex:0 0 auto;
+  width:18px; height:18px; display:inline-block;
+  transform: rotate(0deg); transition: transform .18s ease;
+  mask: conic-gradient(from 135deg at 50% 55%, #000 0 25%, transparent 0 100%) center/100% 100% no-repeat;
+  background: var(--muted);
+}
+.c-select[aria-expanded="true"] .c-select__chevron{ transform: rotate(180deg); }
+
+/* Panel desplegable */
+.c-select__panel{
+  position:absolute; z-index:20; left:0; right:0; top:100%;
+  background:#fff;
+  border:1px solid var(--stroke);
+  border-radius:14px;
+  box-shadow:0 14px 32px rgba(0,0,0,.12);
+  padding:6px; max-height:260px; overflow:auto; display:none;
+}
+.c-select[aria-expanded="true"] .c-select__panel{ display:block; }
+
+/* Opción */
+.c-select__option{
+  border-radius:10px;
+  padding:10px 12px;
+  font-size:15px; color: var(--text);
+  cursor:pointer; user-select:none;
+  display:flex; align-items:center; justify-content:space-between;
+  transition: background .15s ease, color .15s ease, transform .06s ease;
+}
+.c-select__option:hover{ background: #f2f5f1; }
+.c-select__option[aria-selected="true"]{
+  background: linear-gradient(90deg, var(--accent), var(--accent-press));
+  color:#fff;
+  box-shadow: 0 6px 18px rgba(122,150,127,.28) inset;
+}
+
+/* Estado focus con teclado */
+.c-select__option.is-active{
+  outline: 3px solid rgba(122,150,127,.22);
+  outline-offset: 2px;
+}
+
+/* Scrollbar sutil */
+.c-select__panel::-webkit-scrollbar{ width:10px; }
+.c-select__panel::-webkit-scrollbar-thumb{
+  background: #e4e7ea; border-radius:10px; border: 2px solid #fff;
+}
+/** @} */
+
+/** @name Responsive @{ */
+@media (max-width: 900px){
+  .search-bar{ grid-template-columns: 1fr; }
+  .search-bar .btn-buscar{ width: 100%; }
+}
+/** @} */
+
+/** @name Sección de propiedades @{ */
+.seccion-productos{
+  max-width: 1100px;
+  margin: 36px auto 64px;
+  padding: 0 16px;
+}
+.seccion-productos > h2{
+  font-size: clamp(22px, 3vw, 28px);
+  margin: 0 0 14px;
+  color: var(--text);
+}
+.grid-productos{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+.producto{
+  background: var(--card);
+  border: 1px solid rgba(17,24,39,.06);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 8px 26px rgba(0,0,0,.06);
+}
+.producto h3{ margin: 0 0 6px; font-size: 18px; color: var(--text); }
+.producto p{ margin: 6px 0; color: #424851; font-size: 14px; }
+.btn-principal{
+  display: inline-block;
+  margin-top: 8px;
+  padding: 10px 14px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 700;
+  transition: background .2s ease, transform .06s ease, box-shadow .2s ease;
+  box-shadow: 0 6px 18px rgba(122,150,127,.28);
+}
+.btn-principal:hover{ background: var(--accent-press); }
+.btn-principal:active{ transform: translateY(1px); }
+/** @} */
+
+/** @name Utilidades @{ */
+*,
+*::before,
+*::after{ box-sizing: border-box; }
+/** @} */

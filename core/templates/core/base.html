@@ -1,67 +1,99 @@
 {% load static %}
+<!--!
+\file base.html
+\brief Plantilla base simplificada con header y footer.
+\author Brandon y Neida
+\date 2025
+-->
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}ViviendaYA!{% endblock %}</title>
-  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-
-  <!-- HEADER -->
+  <!--!
+  \section header Encabezado
+  -->
   <header class="header">
     <div class="header-content">
-      <!-- Logo -->
       <div class="zona-izquierda">
         <h1 class="nombre-sitio">
           <a href="{% url 'home' %}" class="logo-link">ViviendaYa!</a>
         </h1>
       </div>
-
-      <!-- Zona derecha -->
       <div class="zona-derecha">
         <nav class="navbar-actions">
+          <a href="#" class="nav-link">Comprar</a>
+          <a href="#" class="nav-link">Rentar</a>
+          <a href="#" class="nav-link">Vender</a>
           {% if user.is_authenticated %}
-            <span class="btn-login">
-              <i class="fas fa-user"></i> ¡Bienvenido, {{ user.username }}!
-            </span>
-            <a href="{% url 'account_logout' %}" class="btn-login">
-              <i class="fas fa-sign-out-alt"></i> Cerrar sesión
-            </a>
+            <span class="btn-login"><i class="fas fa-user"></i> {{ user.username }}</span>
+            <a href="{% url 'account_logout' %}" class="btn-login"><i class="fas fa-sign-out-alt"></i> Salir</a>
           {% else %}
-            {% if request.resolver_match.url_name == 'account_login' or request.resolver_match.url_name == 'account_signup' %}
-              <a href="{% url 'home' %}" class="btn-login">
-                <i class="fas fa-home"></i> Regresar a Home
-              </a>
-            {% else %}
-              <a href="{% url 'account_login' %}" class="btn-login">
-                <i class="fas fa-user"></i> Iniciar sesión
-              </a>
-            {% endif %}
+            <a href="{% url 'account_login' %}" class="btn-login"><i class="fas fa-user"></i> Iniciar sesión</a>
           {% endif %}
         </nav>
       </div>
     </div>
   </header>
 
-  <!-- CONTENIDO PRINCIPAL -->
   <main class="contenido-pagina">
-    {% block content %}
-    {% endblock %}
+    {% block content %}{% endblock %}
   </main>
 
-  <!-- FOOTER -->
+
+  <!--!
+  \section footer
+  -->
   <footer class="footer">
-    <div class="footer-contenido">
-      <p>&copy; 2025 ViviendaYA! | Todos los derechos reservados</p>
-      <div class="footer-links">
-        <a href="#">Contacto</a>
-        <a href="#">Términos</a>
-        <a href="#">Privacidad</a>
+    <div class="footer-wrap">
+      <div class="footer-col brand">
+        <div class="brand-row">
+          <span class="brand-mark">V</span>
+          <span class="brand-name">ViviendaYa!</b></span>
+        </div>
+        <p>
+          Tu socio confiable en el mercado inmobiliario.<br>
+          Conectamos personas con sus hogares ideales.
+        </p>
       </div>
+
+      <div class="footer-col">
+        <h4>Servicios</h4>
+        <ul>
+          <li><a href="#">Comprar propiedades</a></li>
+          <li><a href="#">Rentar propiedades</a></li>
+          <li><a href="#">Vender tu propiedad</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Soporte</h4>
+        <ul>
+          <li><a href="#">Centro de ayuda</a></li>
+          <li><a href="#">Términos de uso</a></li>
+          <li><a href="#">Política de privacidad</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col contact">
+        <h4>Contacto</h4>
+        <ul>
+          <li><i class="fas fa-phone"></i> +1800 0000</li>
+          <li><i class="fas fa-envelope"></i> viviendayamx@gmail.com</li>
+          <li><i class="fas fa-location-dot"></i> ViviendaYa!</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bar">
+      <p>© 2025 ViviendaYA! | Todos los derechos reservados</p>
+      <p>Desarrollado con <span class="heart">❤</span> para encontrar tu hogar ideal</p>
     </div>
   </footer>
 
