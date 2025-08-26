@@ -20,7 +20,8 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',   # Tipos de contenido
     'django.contrib.sessions',       # Manejo de sesiones
     'django.contrib.messages',       # Mensajes flash (notificaciones)
-    'django.contrib.staticfiles',    # Archivos estáticos (CSS, JS)                        # Tu app principal personalizada
+    'django.contrib.staticfiles',    # Archivos estáticos (CSS, JS)
+    'core',                          # Tu app principal personalizada
     "widget_tweaks",
 
     # Allauth
@@ -29,12 +30,6 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-
-    #Apps
-    'core',
-    'pagos',
-    'cuentas',
-    'vendedores',
 ]
 
 SITE_ID = 1
@@ -84,7 +79,7 @@ ROOT_URLCONF = 'vivienda.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ BASE_DIR / 'templates' ],
+        'DIRS': [ BASE_DIR / 'core/templates' ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
