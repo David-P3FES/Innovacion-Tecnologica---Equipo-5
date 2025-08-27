@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% load static %}
+
+<!--!
+  @file home.html
+  @brief Plantilla de inicio con hero y buscador.
+  @details Extiende core/base.html y carga el CSS en core/static/css/home.css.
+
+-->
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+
+  <!--! @section hero Sección principal (hero) -->
+  <section class="hero">
+    <div class="hero-inner">
+      <h2>¡Encuentra tu nueva casa o renta una Ya!</h2>
+      <p>Conecta con los mejores vendedores o inmobiliarias de México.</p>
+
+      <!--! @section search_bar Barra de búsqueda -->
+      <form method="GET" action="{% url 'resultados_busqueda' %}" class="search-bar">
+        <div class="c-select" data-select>
+          <select name="tipo_operacion" class="js-custom-select" aria-label="Tipo de operación">
+            <option value="">Tipo</option>
+            <option value="venta">Venta</option>
+            <option value="renta">Renta</option>
+          </select>
+        </div>
+        <input 
+          type="text" 
+          name="direccion" 
+          placeholder="Buscar por dirección, ciudad o colonia"
+        >
+
+        <button type="submit" class="btn-buscar">
+          <i class="fas fa-search"></i>
+          <span>Buscar</span>
+        </button>
+      </form>
+      <!--! @endsection search_bar -->
+    </div>
+  </section>
+  <!--! @endsection hero -->
+
+  <!--! @section destacados Propiedades destacadas -->
+  <section class="seccion-productos">
+    <h2>Propiedades destacadas</h2>
+    <div class="grid-productos">
+      {% for propiedad in propiedades %}
+        <div class="producto">
+          <h3>{{ propiedad.titulo }}</h3>
+          <p>{{ propiedad.descripcion|truncatechars:100 }}</p>
+          <p><strong>${{ propiedad.precio }}</strong></p>
+          <p>{{ propiedad.direccion }}</p>
+          <a href="{% url 'detalle_propiedad' propiedad.id %}" class="btn-principal">Ver detalles</a>
+        </div>
+      {% empty %}
+        <div class="producto coming-soon">
+          <h3>No hay propiedades disponibles todavía</h3>
+          <p>Pronto podrás explorar opciones aquí.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  <!--! @endsection destacados -->
+  <script>
+  (function(){
+    const PALETTE = {
+      emptyText: 'Tipo'
+    };
+
+    document.querySelectorAll('.c-select').forEach(initCustomSelect);
+
+    function initCustomSelect(wrapper){
+      const native = wrapper.querySelector('.js-custom-select');
+      wrapper.setAttribute('aria-expanded','false');
+
+      // Construir botón
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'c-select__button';
+      btn.setAttribute('aria-haspopup','listbox');
+      btn.setAttribute('aria-expanded','false');
+      const valueSpan = document.createElement('span');
+      valueSpan.className = 'c-select__value';
+      valueSpan.textContent = native.selectedOptions[0]?.text || PALETTE.emptyText;
+      const chev = document.createElement('i');
+      chev.className = 'c-select__chevron';
+      btn.appendChild(valueSpan); btn.appendChild(chev);
+
+      // Panel y opciones
+      const panel = document.createElement('ul');
+      panel.className = 'c-select__panel';
+      panel.setAttribute('role','listbox');
+      panel.tabIndex = -1;
+
+      Array.from(native.options).forEach((opt, idx)=>{
+        const li = document.createElement('li');
+        li.className = 'c-select__option';
+        li.setAttribute('role','option');
+        li.dataset.value = opt.value;
+        li.textContent = opt.text;
+        if(opt.selected) li.setAttribute('aria-selected','true');
+        if(opt.value === '') li.dataset.placeholder = '1';
+        li.addEventListener('click', ()=> selectValue(opt.value, opt.text));
+        panel.appendChild(li);
+      });
+
+      wrapper.appendChild(btn);
+      wrapper.appendChild(panel);
+
+      // Apertura/cierre
+      btn.addEventListener('click', toggle);
+      document.addEventListener('click', (e)=>{
+        if(!wrapper.contains(e.target)) close();
+      });
+
+      // Teclado en botón
+      btn.addEventListener('keydown', (e)=>{
+        const openKeys = ['ArrowDown','ArrowUp','Enter',' '];
+        if(openKeys.includes(e.key)){ e.preventDefault(); open(); focusFirst(); }
+      });
+
+      // Teclado en panel
+      panel.addEventListener('keydown', (e)=>{
+        const active = panel.querySelector('.is-active');
+        const items = Array.from(panel.querySelectorAll('.c-select__option'));
+        let idx = active ? items.indexOf(active) : -1;
+
+        if(e.key === 'Escape'){ e.preventDefault(); close(); btn.focus(); return; }
+        if(e.key === 'Enter'){ e.preventDefault(); (active||items[0]).click(); return; }
+        if(e.key === 'ArrowDown'){ e.preventDefault(); idx = Math.min(idx+1, items.length-1); setActive(items[idx]); }
+        if(e.key === 'ArrowUp'){ e.preventDefault(); idx = Math.max(idx-1, 0); setActive(items[idx]); }
+        if(e.key.length === 1 && /\S/.test(e.key)){ // búsqueda por letra
+          const i = items.findIndex(el => el.textContent.trim().toLowerCase().startsWith(e.key.toLowerCase()));
+          if(i>=0) setActive(items[i]);
+        }
+      });
+
+      function toggle(){ (wrapper.getAttribute('aria-expanded') === 'true') ? close() : open(); }
+      function open(){ wrapper.setAttribute('aria-expanded','true'); btn.setAttribute('aria-expanded','true'); panel.focus(); }
+      function close(){ wrapper.setAttribute('aria-expanded','false'); btn.setAttribute('aria-expanded','false'); clearActive(); }
+
+      function selectValue(val, label){
+        native.value = val;                 // sincroniza con <select>
+        valueSpan.textContent = label || PALETTE.emptyText;
+        panel.querySelectorAll('.c-select__option').forEach(o=>{
+          o.removeAttribute('aria-selected');
+          if(o.dataset.value === val) o.setAttribute('aria-selected','true');
+        });
+        native.dispatchEvent(new Event('change', { bubbles:true })); // por si escuchas cambios
+        close(); btn.focus();
+      }
+
+      function setActive(el){
+        clearActive(); el.classList.add('is-active'); el.scrollIntoView({block:'nearest'});
+      }
+      function clearActive(){ panel.querySelectorAll('.is-active').forEach(e=>e.classList.remove('is-active')); }
+      function focusFirst(){
+        const first = panel.querySelector('.c-select__option[aria-selected="true"]') || panel.querySelector('.c-select__option');
+        setActive(first);
+      }
+    }
+  })();
+  </script>
+
+{% endblock %}

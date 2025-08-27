@@ -21,7 +21,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',       # Manejo de sesiones
     'django.contrib.messages',       # Mensajes flash (notificaciones)
     'django.contrib.staticfiles',    # Archivos estáticos (CSS, JS)
-    'core',                          # Tu app principal personalizada
+    'cuentas',                          # Tu app principal personalizada
+    'principal',
     "widget_tweaks",
 
     # Allauth
@@ -32,7 +33,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
 ]
 
-SITE_ID = 1
+SITE_ID = 2
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -79,7 +80,7 @@ ROOT_URLCONF = 'vivienda.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ BASE_DIR / 'core/templates' ],
+        'DIRS': [ BASE_DIR / 'templates' ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -121,7 +122,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    BASE_DIR / "core" / "static",
+    BASE_DIR / "cuentas" / "static",
 ]
 
 # 🧾 Archivos subidos por los usuarios (como imágenes)
