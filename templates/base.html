@@ -43,12 +43,22 @@
         <nav class="navbar-actions" role="navigation" aria-label="Principal">
 
           {% if user.is_authenticated %}
-            <!-- Botones visibles solo si el usuario está autenticado -->
-            <a href="#" class="btn-login"><i class="fas fa-heart"></i> Me encantas</a>
-            <a href="#" class="btn-login"><i class="fas fa-home"></i> Vender/Rentar</a>
-            <a href="{% url 'cuentas:ver_perfil' %}" class="btn-login">
-              <i class="fas fa-id-card"></i> Ver perfil
-            </a>
+            
+            {% if request.resolver_match.url_name == 'ver_perfil' %}
+              <!-- Si estamos en perfil, Home va primero -->
+              <a href="{% url 'principal:home' %}" class="btn-login">
+                <i class="fas fa-home"></i> Home
+              </a>
+              <a href="#" class="btn-login"><i class="fas fa-heart"></i> Me encantas</a>
+              <a href="#" class="btn-login"><i class="fas fa-home"></i> Vender/Rentar</a>
+            {% else %}
+              <!-- En cualquier otra vista, orden normal -->
+              <a href="#" class="btn-login"><i class="fas fa-heart"></i> Me encantas</a>
+              <a href="#" class="btn-login"><i class="fas fa-home"></i> Vender/Rentar</a>
+              <a href="{% url 'cuentas:ver_perfil' %}" class="btn-login">
+                <i class="fas fa-id-card"></i> Ver perfil
+              </a>
+            {% endif %}
 
             <!-- Usuario actual -->
             <span class="btn-login" aria-label="Usuario actual">
@@ -72,17 +82,7 @@
   <!--! @section top_banner Banner superior opcional -->
   {% block top_banner %}{% endblock %}
 
-  <!--! @section flash Mensajes flash (Django messages) -->
-  {% if messages %}
-    <section class="flash-messages" role="status" aria-live="polite">
-      <ul class="flash-list">
-        {% for message in messages %}
-          <li class="flash flash--{{ message.tags|default:'info' }}">{{ message }}</li>
-        {% endfor %}
-      </ul>
-    </section>
-  {% endif %}
-  <!--! @endsection flash -->
+  <!--! 🔴 Eliminado bloque de mensajes flash -->
 
   <!--! @section main Contenido principal -->
   <main class="contenido-pagina">
