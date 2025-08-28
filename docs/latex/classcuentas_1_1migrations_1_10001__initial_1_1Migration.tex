@@ -1,0 +1,85 @@
+\doxysection{Referencia de la clase cuentas.\+migrations.0001\+\_\+initial.\+Migration}
+\hypertarget{classcuentas_1_1migrations_1_10001__initial_1_1Migration}{}\label{classcuentas_1_1migrations_1_10001__initial_1_1Migration}\index{cuentas.migrations.0001\_initial.Migration@{cuentas.migrations.0001\_initial.Migration}}
+
+
+Diagrama de herencia de cuentas.\+migrations.0001\+\_\+initial.\+Migration
+% FIG 0
+
+
+Diagrama de colaboración de cuentas.\+migrations.0001\+\_\+initial.\+Migration\+:
+% FIG 1
+\doxysubsubsection*{Atributos públicos estáticos}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{classcuentas_1_1migrations_1_10001__initial_1_1Migration_a90322f39e49e13537d2280d8f9144a0a}{initial}} = True
+\item 
+list \mbox{\hyperlink{classcuentas_1_1migrations_1_10001__initial_1_1Migration_a12c9d1682d298db4eb0064d87c94d735}{dependencies}}
+\item 
+list \mbox{\hyperlink{classcuentas_1_1migrations_1_10001__initial_1_1Migration_a3150ad685be740ba2bcbad2e59436950}{operations}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-variable-members}
+\Hypertarget{classcuentas_1_1migrations_1_10001__initial_1_1Migration_doc-variable-members}
+\doxysubsection{Documentación de datos miembro}
+\Hypertarget{classcuentas_1_1migrations_1_10001__initial_1_1Migration_a12c9d1682d298db4eb0064d87c94d735}\index{cuentas.migrations.0001\_initial.Migration@{cuentas.migrations.0001\_initial.Migration}!dependencies@{dependencies}}
+\index{dependencies@{dependencies}!cuentas.migrations.0001\_initial.Migration@{cuentas.migrations.0001\_initial.Migration}}
+\doxysubsubsection{\texorpdfstring{dependencies}{dependencies}}
+{\footnotesize\ttfamily \label{classcuentas_1_1migrations_1_10001__initial_1_1Migration_a12c9d1682d298db4eb0064d87c94d735} 
+list cuentas.\+migrations.\+0001\+\_\+initial.\+Migration.\+dependencies\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Valor inicial\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{=\ \ [}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ migrations.swappable\_dependency(settings.AUTH\_USER\_MODEL),}
+\DoxyCodeLine{\ \ \ \ ]}
+
+\end{DoxyCode}
+\Hypertarget{classcuentas_1_1migrations_1_10001__initial_1_1Migration_a90322f39e49e13537d2280d8f9144a0a}\index{cuentas.migrations.0001\_initial.Migration@{cuentas.migrations.0001\_initial.Migration}!initial@{initial}}
+\index{initial@{initial}!cuentas.migrations.0001\_initial.Migration@{cuentas.migrations.0001\_initial.Migration}}
+\doxysubsubsection{\texorpdfstring{initial}{initial}}
+{\footnotesize\ttfamily \label{classcuentas_1_1migrations_1_10001__initial_1_1Migration_a90322f39e49e13537d2280d8f9144a0a} 
+bool cuentas.\+migrations.\+0001\+\_\+initial.\+Migration.\+initial = True\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{classcuentas_1_1migrations_1_10001__initial_1_1Migration_a3150ad685be740ba2bcbad2e59436950}\index{cuentas.migrations.0001\_initial.Migration@{cuentas.migrations.0001\_initial.Migration}!operations@{operations}}
+\index{operations@{operations}!cuentas.migrations.0001\_initial.Migration@{cuentas.migrations.0001\_initial.Migration}}
+\doxysubsubsection{\texorpdfstring{operations}{operations}}
+{\footnotesize\ttfamily \label{classcuentas_1_1migrations_1_10001__initial_1_1Migration_a3150ad685be740ba2bcbad2e59436950} 
+list cuentas.\+migrations.\+0001\+\_\+initial.\+Migration.\+operations\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Valor inicial\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{=\ \ [}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ migrations.CreateModel(}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ name=\textcolor{stringliteral}{'Perfil'},}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ fields=[}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{stringliteral}{'id'},\ models.BigAutoField(auto\_created=\textcolor{keyword}{True},\ primary\_key=\textcolor{keyword}{True},\ serialize=\textcolor{keyword}{False},\ verbose\_name=\textcolor{stringliteral}{'ID'})),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{stringliteral}{'rfc'},\ models.CharField(blank=\textcolor{keyword}{True},\ max\_length=13)),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{stringliteral}{'rol'},\ models.CharField(blank=\textcolor{keyword}{True},\ choices=[(\textcolor{stringliteral}{'comprador'},\ \textcolor{stringliteral}{'Comprador/Rentador'}),\ (\textcolor{stringliteral}{'vendedor'},\ \textcolor{stringliteral}{'Vendedor/Inmobiliaria'})],\ max\_length=20)),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{stringliteral}{'telefono'},\ models.CharField(blank=\textcolor{keyword}{True},\ max\_length=20)),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{stringliteral}{'ciudad'},\ models.CharField(blank=\textcolor{keyword}{True},\ max\_length=100)),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{stringliteral}{'estado'},\ models.CharField(blank=\textcolor{keyword}{True},\ max\_length=100)),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{stringliteral}{'user'},\ models.OneToOneField(on\_delete=django.db.models.deletion.CASCADE,\ related\_name=\textcolor{stringliteral}{'perfil'},\ to=settings.AUTH\_USER\_MODEL)),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ ],}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ ),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ migrations.CreateModel(}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ name=\textcolor{stringliteral}{'Propiedad'},}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ fields=[}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{stringliteral}{'id'},\ models.BigAutoField(auto\_created=\textcolor{keyword}{True},\ primary\_key=\textcolor{keyword}{True},\ serialize=\textcolor{keyword}{False},\ verbose\_name=\textcolor{stringliteral}{'ID'})),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{stringliteral}{'titulo'},\ models.CharField(max\_length=200)),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{stringliteral}{'descripcion'},\ models.TextField()),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{stringliteral}{'precio'},\ models.DecimalField(decimal\_places=2,\ max\_digits=12)),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{stringliteral}{'direccion'},\ models.CharField(max\_length=255)),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{stringliteral}{'tipo\_operacion'},\ models.CharField(choices=[(\textcolor{stringliteral}{'venta'},\ \textcolor{stringliteral}{'Venta'}),\ (\textcolor{stringliteral}{'renta'},\ \textcolor{stringliteral}{'Renta'})],\ default=\textcolor{stringliteral}{'venta'},\ max\_length=10)),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{stringliteral}{'fecha\_creacion'},\ models.DateTimeField(auto\_now\_add=\textcolor{keyword}{True})),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{stringliteral}{'vendedor'},\ models.ForeignKey(on\_delete=django.db.models.deletion.CASCADE,\ to=settings.AUTH\_USER\_MODEL)),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ ],}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ ),}
+\DoxyCodeLine{\ \ \ \ ]}
+
+\end{DoxyCode}
+
+
+La documentación de esta clase está generada del siguiente archivo\+:\begin{DoxyCompactItemize}
+\item 
+cuentas/migrations/\mbox{\hyperlink{cuentas_2migrations_20001__initial_8py}{0001\+\_\+initial.\+py}}\end{DoxyCompactItemize}

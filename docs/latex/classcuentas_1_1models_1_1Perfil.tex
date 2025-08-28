@@ -1,0 +1,119 @@
+\doxysection{Referencia de la clase cuentas.\+models.\+Perfil}
+\hypertarget{classcuentas_1_1models_1_1Perfil}{}\label{classcuentas_1_1models_1_1Perfil}\index{cuentas.models.Perfil@{cuentas.models.Perfil}}
+
+
+Diagrama de herencia de cuentas.\+models.\+Perfil
+% FIG 0
+
+
+Diagrama de colaboración de cuentas.\+models.\+Perfil\+:
+% FIG 1
+\doxysubsubsection*{Métodos públicos}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classcuentas_1_1models_1_1Perfil_af5852a215e005c80b76b7e39840af63c}{\+\_\+\+\_\+str\+\_\+\+\_\+}} (self)
+\item 
+bool \mbox{\hyperlink{classcuentas_1_1models_1_1Perfil_a2b068f72f7d45cd89a3915305465ed89}{is\+\_\+complete}} (self)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Atributos públicos estáticos}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classcuentas_1_1models_1_1Perfil_a998722e548295cd768b18749e54a3397}{user}}
+\item 
+\mbox{\hyperlink{classcuentas_1_1models_1_1Perfil_a32aaa1e450b809b2482ccfa96974074c}{rfc}}
+\item 
+\mbox{\hyperlink{classcuentas_1_1models_1_1Perfil_ae359633b0f0fcc5038941c4f320aa38f}{whatsapp}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Descripción detallada}
+\begin{DoxyVerb}@class Perfil
+@brief Modelo que extiende la información del usuario con datos adicionales.
+@details
+ Requisitos para considerar el perfil como completo:
+  - `user.username`, `first_name`, `last_name`, `email`
+  - RFC válido y único
+  - Número de WhatsApp válido
+\end{DoxyVerb}
+ 
+
+\label{doc-func-members}
+\Hypertarget{classcuentas_1_1models_1_1Perfil_doc-func-members}
+\doxysubsection{Documentación de funciones miembro}
+\Hypertarget{classcuentas_1_1models_1_1Perfil_af5852a215e005c80b76b7e39840af63c}\index{cuentas.models.Perfil@{cuentas.models.Perfil}!\_\_str\_\_@{\_\_str\_\_}}
+\index{\_\_str\_\_@{\_\_str\_\_}!cuentas.models.Perfil@{cuentas.models.Perfil}}
+\doxysubsubsection{\texorpdfstring{\_\_str\_\_()}{\_\_str\_\_()}}
+{\footnotesize\ttfamily \label{classcuentas_1_1models_1_1Perfil_af5852a215e005c80b76b7e39840af63c} 
+cuentas.\+models.\+Perfil.\+\_\+\+\_\+str\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Representación en texto del perfil.
+@return Cadena con el username del usuario.
+\end{DoxyVerb}
+ \Hypertarget{classcuentas_1_1models_1_1Perfil_a2b068f72f7d45cd89a3915305465ed89}\index{cuentas.models.Perfil@{cuentas.models.Perfil}!is\_complete@{is\_complete}}
+\index{is\_complete@{is\_complete}!cuentas.models.Perfil@{cuentas.models.Perfil}}
+\doxysubsubsection{\texorpdfstring{is\_complete()}{is\_complete()}}
+{\footnotesize\ttfamily \label{classcuentas_1_1models_1_1Perfil_a2b068f72f7d45cd89a3915305465ed89} 
+ bool cuentas.\+models.\+Perfil.\+is\+\_\+complete (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Verifica si el perfil está completo.
+@details Comprueba que los campos requeridos de `User` y `Perfil` estén presentes.
+@return True si el perfil contiene todos los datos obligatorios, False en caso contrario.
+\end{DoxyVerb}
+ 
+
+\label{doc-variable-members}
+\Hypertarget{classcuentas_1_1models_1_1Perfil_doc-variable-members}
+\doxysubsection{Documentación de datos miembro}
+\Hypertarget{classcuentas_1_1models_1_1Perfil_a32aaa1e450b809b2482ccfa96974074c}\index{cuentas.models.Perfil@{cuentas.models.Perfil}!rfc@{rfc}}
+\index{rfc@{rfc}!cuentas.models.Perfil@{cuentas.models.Perfil}}
+\doxysubsubsection{\texorpdfstring{rfc}{rfc}}
+{\footnotesize\ttfamily \label{classcuentas_1_1models_1_1Perfil_a32aaa1e450b809b2482ccfa96974074c} 
+cuentas.\+models.\+Perfil.\+rfc\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Valor inicial\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{=\ \ models.CharField(}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ max\_length=13,}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ unique=\textcolor{keyword}{True},}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ null=\textcolor{keyword}{True},}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ blank=\textcolor{keyword}{True},}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ validators=[rfc\_validator]}
+\DoxyCodeLine{\ \ \ \ )}
+
+\end{DoxyCode}
+\Hypertarget{classcuentas_1_1models_1_1Perfil_a998722e548295cd768b18749e54a3397}\index{cuentas.models.Perfil@{cuentas.models.Perfil}!user@{user}}
+\index{user@{user}!cuentas.models.Perfil@{cuentas.models.Perfil}}
+\doxysubsubsection{\texorpdfstring{user}{user}}
+{\footnotesize\ttfamily \label{classcuentas_1_1models_1_1Perfil_a998722e548295cd768b18749e54a3397} 
+cuentas.\+models.\+Perfil.\+user\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Valor inicial\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{=\ \ models.OneToOneField(}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ settings.AUTH\_USER\_MODEL,}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ on\_delete=models.CASCADE,}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ related\_name=\textcolor{stringliteral}{'perfil'}}
+\DoxyCodeLine{\ \ \ \ )}
+
+\end{DoxyCode}
+\Hypertarget{classcuentas_1_1models_1_1Perfil_ae359633b0f0fcc5038941c4f320aa38f}\index{cuentas.models.Perfil@{cuentas.models.Perfil}!whatsapp@{whatsapp}}
+\index{whatsapp@{whatsapp}!cuentas.models.Perfil@{cuentas.models.Perfil}}
+\doxysubsubsection{\texorpdfstring{whatsapp}{whatsapp}}
+{\footnotesize\ttfamily \label{classcuentas_1_1models_1_1Perfil_ae359633b0f0fcc5038941c4f320aa38f} 
+cuentas.\+models.\+Perfil.\+whatsapp\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Valor inicial\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{=\ \ models.CharField(}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ max\_length=20,}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ null=\textcolor{keyword}{True},}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ blank=\textcolor{keyword}{True},}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ validators=[phone\_validator]}
+\DoxyCodeLine{\ \ \ \ )}
+
+\end{DoxyCode}
+
+
+La documentación de esta clase está generada del siguiente archivo\+:\begin{DoxyCompactItemize}
+\item 
+cuentas/\mbox{\hyperlink{cuentas_2models_8py}{models.\+py}}\end{DoxyCompactItemize}

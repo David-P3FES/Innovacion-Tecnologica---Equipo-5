@@ -1,20 +1,24 @@
-/*!
+  /*!
  * @file home.css
  * @brief Estilos del hero, barra de búsqueda y grilla de propiedades.
- * @details Unifica el color de la zona hero con la página y separa
- *          visualmente los controles del formulario (sin tarjeta unificada).
+ * @details
+ *  - Hero con título, subtítulo y texto central.
+ *  - Barra de búsqueda con inputs, select y botón.
+ *  - Select personalizado (c-select).
+ *  - Grilla de productos con tarjetas.
+ *  - Responsive para pantallas medianas y pequeñas.
  */
 
 /** @name Paleta y tokens @{ */
 :root{
-  --page-bg: #f6f7f3;
-  --text:     #0f172a;
-  --muted:    #6b7280;
-  --card:     #ffffff;
-  --stroke:   #e5e7eb;
-  --accent:   #7a967f;
-  --accent-press: #6a846f;
-  --input-bg: #ffffff;
+  --page-bg: #f6f7f3;       /*! Fondo de la página */
+  --text: #0f172a;          /*! Color de texto principal */
+  --muted: #6b7280;         /*! Texto atenuado */
+  --card: #ffffff;          /*! Fondo de tarjetas */
+  --stroke: #e5e7eb;        /*! Bordes */
+  --accent: #7a967f;        /*! Color de acento */
+  --accent-press: #6a846f;  /*! Color de acento en hover */
+  --input-bg: #ffffff;      /*! Fondo de inputs */
 }
 html, body{ background: var(--page-bg); }
 /** @} */
@@ -55,6 +59,7 @@ html, body{ background: var(--page-bg); }
 
 /** @name Buscador @{ */
 .search-bar{
+  /*! Barra de búsqueda principal */
   background: transparent;
   border: none;
   box-shadow: none;
@@ -115,17 +120,11 @@ html, body{ background: var(--page-bg); }
 .search-bar .btn-buscar i{ font-size: 14px; line-height: 0; }
 /** @} */
 
-/** @name Select personalizado (reemplazo visual del nativo) @{ */
-/* Contenedor del select custom; deja el <select> para formularios */
-.c-select{ position:relative; width:100%; }
-
-/* Oculta visualmente el <select> pero mantiene su valor y envío */
-.c-select .js-custom-select{
-  position:absolute; inset:0; opacity:0; pointer-events:none;
-}
-
-/* Botón cerrado */
+/** @name Select personalizado @{ */
+.c-select{ position:relative; width:100%; } /*! Contenedor del select custom */
+.c-select .js-custom-select{ position:absolute; inset:0; opacity:0; pointer-events:none; }
 .c-select__button{
+  /*! Botón visual del select */
   width:100%; height:48px;
   border:1px solid var(--stroke);
   border-radius:12px;
@@ -144,19 +143,15 @@ html, body{ background: var(--page-bg); }
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(122,150,127,.22), 0 10px 22px rgba(0,0,0,.08);
 }
-
-/* Chevron */
-.c-select__chevron{
+.c-select__chevron{ /*! Chevron del select */
   margin-left:10px; flex:0 0 auto;
-  width:18px; height:18px; display:inline-block;
+  width:18px; height:18px;
   transform: rotate(0deg); transition: transform .18s ease;
-  mask: conic-gradient(from 135deg at 50% 55%, #000 0 25%, transparent 0 100%) center/100% 100% no-repeat;
   background: var(--muted);
 }
 .c-select[aria-expanded="true"] .c-select__chevron{ transform: rotate(180deg); }
-
-/* Panel desplegable */
 .c-select__panel{
+  /*! Panel desplegable del select */
   position:absolute; z-index:20; left:0; right:0; top:100%;
   background:#fff;
   border:1px solid var(--stroke);
@@ -165,9 +160,8 @@ html, body{ background: var(--page-bg); }
   padding:6px; max-height:260px; overflow:auto; display:none;
 }
 .c-select[aria-expanded="true"] .c-select__panel{ display:block; }
-
-/* Opción */
 .c-select__option{
+  /*! Opción dentro del panel */
   border-radius:10px;
   padding:10px 12px;
   font-size:15px; color: var(--text);
@@ -181,18 +175,7 @@ html, body{ background: var(--page-bg); }
   color:#fff;
   box-shadow: 0 6px 18px rgba(122,150,127,.28) inset;
 }
-
-/* Estado focus con teclado */
-.c-select__option.is-active{
-  outline: 3px solid rgba(122,150,127,.22);
-  outline-offset: 2px;
-}
-
-/* Scrollbar sutil */
-.c-select__panel::-webkit-scrollbar{ width:10px; }
-.c-select__panel::-webkit-scrollbar-thumb{
-  background: #e4e7ea; border-radius:10px; border: 2px solid #fff;
-}
+.c-select__option.is-active{ outline: 3px solid rgba(122,150,127,.22); outline-offset: 2px; }
 /** @} */
 
 /** @name Responsive @{ */
@@ -204,6 +187,7 @@ html, body{ background: var(--page-bg); }
 
 /** @name Sección de propiedades @{ */
 .seccion-productos{
+  /*! Contenedor de grilla de productos */
   max-width: 1100px;
   margin: 36px auto 64px;
   padding: 0 16px;
@@ -219,6 +203,7 @@ html, body{ background: var(--page-bg); }
   gap: 16px;
 }
 .producto{
+  /*! Tarjeta de producto */
   background: var(--card);
   border: 1px solid rgba(17,24,39,.06);
   border-radius: 14px;
@@ -228,6 +213,7 @@ html, body{ background: var(--page-bg); }
 .producto h3{ margin: 0 0 6px; font-size: 18px; color: var(--text); }
 .producto p{ margin: 6px 0; color: #424851; font-size: 14px; }
 .btn-principal{
+  /*! Botón dentro de producto */
   display: inline-block;
   margin-top: 8px;
   padding: 10px 14px;

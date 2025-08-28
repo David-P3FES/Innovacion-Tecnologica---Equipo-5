@@ -1,11 +1,28 @@
+"""
+@file manage.py
+@brief Utilidad de línea de comandos para tareas administrativas de Django.
+@details
+ Este archivo permite ejecutar comandos de administración de Django como:
+ - `runserver` para iniciar el servidor de desarrollo.
+ - `migrate` para aplicar migraciones a la base de datos.
+ - `createsuperuser` para crear usuarios administradores.
+ - Otros comandos disponibles a través de `django.core.management`.
+
+ Generalmente no se modifica, ya que lo genera Django automáticamente al crear el proyecto.
+"""
+
 #!/usr/bin/env python
-"""Django's command-line utility for administrative tasks."""
 import os
 import sys
 
 
 def main():
-    """Run administrative tasks."""
+    """
+    @brief Ejecuta las tareas administrativas de Django.
+    @details
+     - Configura la variable de entorno `DJANGO_SETTINGS_MODULE` con `vivienda.settings`.
+     - Ejecuta el comando recibido en la terminal (ej. runserver, makemigrations).
+    """
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'vivienda.settings')
     try:
         from django.core.management import execute_from_command_line

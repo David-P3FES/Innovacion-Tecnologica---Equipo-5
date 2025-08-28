@@ -1,12 +1,36 @@
+"""
+@file settings.py
+@brief Configuración principal del proyecto Django "vivienda".
+@details
+ Contiene las configuraciones globales del proyecto:
+ - Seguridad (SECRET_KEY, DEBUG, ALLOWED_HOSTS).
+ - Aplicaciones instaladas (INSTALLED_APPS).
+ - Autenticación (Allauth con Google).
+ - Middleware.
+ - Templates.
+ - Base de datos.
+ - Archivos estáticos y media.
+ - Idioma y zona horaria.
+"""
+
 from pathlib import Path
 import os
 
+# ==============================
+# Rutas base
+# ==============================
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-=#+e_+@am2c6-+&44b1cauo1ux@d0u*s&39@q-*xqa1c@6+w^7'
-DEBUG = True
-ALLOWED_HOSTS = []
+# ==============================
+# Seguridad
+# ==============================
+SECRET_KEY = 'django-insecure-=#+e_+@am2c6-+&44b1cauo1ux@d0u*s&39@q-*xqa1c@6+w^7'  #: Clave secreta del proyecto
+DEBUG = True  #: Modo debug (True en desarrollo, False en producción)
+ALLOWED_HOSTS = []  #: Hosts permitidos
 
+# ==============================
+# Aplicaciones instaladas
+# ==============================
 INSTALLED_APPS = [
     # Django
     'django.contrib.admin',
@@ -16,14 +40,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Apps tuyas
+    # Apps personalizadas
     'principal',
     'cuentas.apps.CuentasConfig',   # registra señales
 
     # Utilidades
     'widget_tweaks',
 
-    # Allauth
+    # Autenticación (Allauth)
     'django.contrib.sites',
     'allauth',
     'allauth.account',
@@ -31,31 +55,35 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
 ]
 
-# ID del sitio (ajústalo según el que tengas en la base de datos de django_site)
-SITE_ID = 3
+SITE_ID = 3  #: ID del sitio para django.contrib.sites
 
+# ==============================
+# Autenticación
+# ==============================
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-# >>> Redirecciones
-LOGIN_REDIRECT_URL = 'cuentas:post_login'
-LOGOUT_REDIRECT_URL = 'principal:home'
+LOGIN_REDIRECT_URL = 'cuentas:post_login'  #: Redirección tras login
+LOGOUT_REDIRECT_URL = 'principal:home'     #: Redirección tras logout
 
-# >>> Configuración de Allauth (solo email + contraseña, más Google)
-ACCOUNT_AUTHENTICATION_METHOD = "email"   # login solo con email
-ACCOUNT_USERNAME_REQUIRED = False         # no pedir username
-ACCOUNT_EMAIL_REQUIRED = True             # email obligatorio
-ACCOUNT_UNIQUE_EMAIL = True               # emails únicos
-ACCOUNT_EMAIL_VERIFICATION = "none"       # sin verificación en dev
+# Configuración de Allauth
+ACCOUNT_AUTHENTICATION_METHOD = "email"   #: Login solo con email
+ACCOUNT_USERNAME_REQUIRED = False         #: Username no requerido
+ACCOUNT_EMAIL_REQUIRED = True             #: Email obligatorio
+ACCOUNT_UNIQUE_EMAIL = True               #: Emails únicos
+ACCOUNT_EMAIL_VERIFICATION = "none"       #: Sin verificación en desarrollo
 ACCOUNT_USERNAME_GENERATOR = 'allauth.account.utils.generate_unique_username'
 
 # Flujo social
 SOCIALACCOUNT_LOGIN_ON_GET = True
 ACCOUNT_LOGOUT_ON_GET = True
-SOCIALACCOUNT_AUTO_SIGNUP = True   # crea usuario local sin pedir datos extra
+SOCIALACCOUNT_AUTO_SIGNUP = True   #: Crea usuario local sin pedir datos extra
 
+# ==============================
+# Middleware
+# ==============================
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -67,8 +95,15 @@ MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware',
 ]
 
+# ==============================
+# URLs y WSGI
+# ==============================
 ROOT_URLCONF = 'vivienda.urls'
+WSGI_APPLICATION = 'vivienda.wsgi.application'
 
+# ==============================
+# Templates
+# ==============================
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -85,8 +120,9 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'vivienda.wsgi.application'
-
+# ==============================
+# Base de datos
+# ==============================
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -94,6 +130,9 @@ DATABASES = {
     }
 }
 
+# ==============================
+# Validación de contraseñas
+# ==============================
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -101,11 +140,17 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-LANGUAGE_CODE = 'es-mx'
-TIME_ZONE = 'America/Chihuahua'
+# ==============================
+# Internacionalización
+# ==============================
+LANGUAGE_CODE = 'es-mx'         #: Idioma principal
+TIME_ZONE = 'America/Chihuahua' #: Zona horaria local
 USE_I18N = True
 USE_TZ = True
 
+# ==============================
+# Archivos estáticos y media
+# ==============================
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / "cuentas" / "static",
@@ -114,4 +159,7 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# ==============================
+# Configuración por defecto de campos
+# ==============================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

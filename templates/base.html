@@ -1,9 +1,13 @@
 {% load static %}
-<!--
-  file: base.html
-  brief: Plantilla base con header, footer y bloques extendibles.
-  author: Brandon y Neida
-  date: 2025
+<!--!
+  @file base.html
+  @brief Plantilla base con header, footer y bloques extendibles.
+  @details
+   - Define la estructura principal de la web (header, contenido, footer).
+   - Incluye bloques `block` de Django para sobreescribir contenido en otras plantillas.
+   - Usa estilos globales, íconos FontAwesome y fuente Poppins.
+  @author Brandon y Neida
+  @date 2025
 -->
 <!DOCTYPE html>
 <html lang="es">
@@ -13,7 +17,7 @@
 
   <title>{% block title %}ViviendaYA!{% endblock %}</title>
 
-  <!-- CSS global -->
+  <!--! @section css_global CSS global -->
   <link rel="stylesheet" href="{% static 'css/base.css' %}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -26,7 +30,7 @@
   {% block extra_css %}{% endblock %}
 </head>
 <body>
-  <!-- Header -->
+  <!--! @section header Encabezado principal -->
   <header class="header" role="banner">
     <div class="header-content">
       <div class="zona-izquierda">
@@ -39,7 +43,7 @@
         <nav class="navbar-actions" role="navigation" aria-label="Principal">
 
           {% if user.is_authenticated %}
-            <!-- Botones extra (mismos estilos que Iniciar sesión) -->
+            <!-- Botones visibles solo si el usuario está autenticado -->
             <a href="#" class="btn-login"><i class="fas fa-heart"></i> Me encantas</a>
             <a href="#" class="btn-login"><i class="fas fa-home"></i> Vender/Rentar</a>
             <a href="{% url 'cuentas:ver_perfil' %}" class="btn-login">
@@ -63,11 +67,12 @@
       </div>
     </div>
   </header>
+  <!--! @endsection header -->
 
-  <!-- Banner superior opcional -->
+  <!--! @section top_banner Banner superior opcional -->
   {% block top_banner %}{% endblock %}
 
-  <!-- Mensajes (Django messages) -->
+  <!--! @section flash Mensajes flash (Django messages) -->
   {% if messages %}
     <section class="flash-messages" role="status" aria-live="polite">
       <ul class="flash-list">
@@ -77,13 +82,15 @@
       </ul>
     </section>
   {% endif %}
+  <!--! @endsection flash -->
 
-  <!-- Contenido principal -->
+  <!--! @section main Contenido principal -->
   <main class="contenido-pagina">
     {% block content %}{% endblock %}
   </main>
+  <!--! @endsection main -->
 
-  <!-- Footer -->
+  <!--! @section footer Pie de página -->
   <footer class="footer" role="contentinfo">
     <div class="footer-wrap">
       <div class="footer-col brand">
@@ -130,8 +137,10 @@
       <p>Desarrollado con <span class="heart">❤</span> para encontrar tu hogar ideal</p>
     </div>
   </footer>
+  <!--! @endsection footer -->
 
-  <!-- Bloque para scripts específicos por página -->
+  <!--! @section extra_js Scripts adicionales -->
   {% block extra_js %}{% endblock %}
+  <!--! @endsection extra_js -->
 </body>
 </html>

@@ -1,0 +1,133 @@
+\doxysection{Referencia de la clase principal.\+models.\+Propiedad}
+\hypertarget{classprincipal_1_1models_1_1Propiedad}{}\label{classprincipal_1_1models_1_1Propiedad}\index{principal.models.Propiedad@{principal.models.Propiedad}}
+
+
+Diagrama de herencia de principal.\+models.\+Propiedad
+% FIG 0
+
+
+Diagrama de colaboración de principal.\+models.\+Propiedad\+:
+% FIG 1
+\doxysubsubsection*{Métodos públicos}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classprincipal_1_1models_1_1Propiedad_a2c7bd7bc11d2149c46e53b7ac493053a}{\+\_\+\+\_\+str\+\_\+\+\_\+}} (self)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Atributos públicos estáticos}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classprincipal_1_1models_1_1Propiedad_a49dc27cc579a5fec0c61f093e2014184}{vendedor}}
+\item 
+\mbox{\hyperlink{classprincipal_1_1models_1_1Propiedad_a2fed2aff918dd10d6cbec3c28e9b81c2}{titulo}}
+\item 
+\mbox{\hyperlink{classprincipal_1_1models_1_1Propiedad_aade12a6be0ba47aa822cc32aff1c05a7}{direccion}}
+\item 
+\mbox{\hyperlink{classprincipal_1_1models_1_1Propiedad_adf910e0751c336ee1cfe69c868f94d9d}{tipo\+\_\+operacion}}
+\item 
+\mbox{\hyperlink{classprincipal_1_1models_1_1Propiedad_aef83c70827f73a8fa49cd75cdbe4265a}{estado}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Descripción detallada}
+\begin{DoxyVerb}@class Propiedad
+@brief Modelo que representa una propiedad publicada.
+@details
+ - Relacionada a un `User` (vendedor).
+ - Incluye título, dirección, tipo de operación (renta/venta) y estado.
+\end{DoxyVerb}
+ 
+
+\label{doc-func-members}
+\Hypertarget{classprincipal_1_1models_1_1Propiedad_doc-func-members}
+\doxysubsection{Documentación de funciones miembro}
+\Hypertarget{classprincipal_1_1models_1_1Propiedad_a2c7bd7bc11d2149c46e53b7ac493053a}\index{principal.models.Propiedad@{principal.models.Propiedad}!\_\_str\_\_@{\_\_str\_\_}}
+\index{\_\_str\_\_@{\_\_str\_\_}!principal.models.Propiedad@{principal.models.Propiedad}}
+\doxysubsubsection{\texorpdfstring{\_\_str\_\_()}{\_\_str\_\_()}}
+{\footnotesize\ttfamily \label{classprincipal_1_1models_1_1Propiedad_a2c7bd7bc11d2149c46e53b7ac493053a} 
+principal.\+models.\+Propiedad.\+\_\+\+\_\+str\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Devuelve representación en texto de la propiedad.
+@return Título de la propiedad.
+\end{DoxyVerb}
+ 
+
+\label{doc-variable-members}
+\Hypertarget{classprincipal_1_1models_1_1Propiedad_doc-variable-members}
+\doxysubsection{Documentación de datos miembro}
+\Hypertarget{classprincipal_1_1models_1_1Propiedad_aade12a6be0ba47aa822cc32aff1c05a7}\index{principal.models.Propiedad@{principal.models.Propiedad}!direccion@{direccion}}
+\index{direccion@{direccion}!principal.models.Propiedad@{principal.models.Propiedad}}
+\doxysubsubsection{\texorpdfstring{direccion}{direccion}}
+{\footnotesize\ttfamily \label{classprincipal_1_1models_1_1Propiedad_aade12a6be0ba47aa822cc32aff1c05a7} 
+principal.\+models.\+Propiedad.\+direccion\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Valor inicial\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{=\ \ models.CharField(}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ max\_length=255,}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ help\_text=\textcolor{stringliteral}{"{}Dirección\ de\ la\ propiedad."{}}}
+\DoxyCodeLine{\ \ \ \ )}
+
+\end{DoxyCode}
+\Hypertarget{classprincipal_1_1models_1_1Propiedad_aef83c70827f73a8fa49cd75cdbe4265a}\index{principal.models.Propiedad@{principal.models.Propiedad}!estado@{estado}}
+\index{estado@{estado}!principal.models.Propiedad@{principal.models.Propiedad}}
+\doxysubsubsection{\texorpdfstring{estado}{estado}}
+{\footnotesize\ttfamily \label{classprincipal_1_1models_1_1Propiedad_aef83c70827f73a8fa49cd75cdbe4265a} 
+principal.\+models.\+Propiedad.\+estado\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Valor inicial\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{=\ \ models.CharField(}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ max\_length=50,}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ default=\textcolor{stringliteral}{'disponible'},}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ help\_text=\textcolor{stringliteral}{"{}Estado\ de\ la\ propiedad\ (ej.\ disponible,\ en\ trato,\ vendida)."{}}}
+\DoxyCodeLine{\ \ \ \ )}
+
+\end{DoxyCode}
+\Hypertarget{classprincipal_1_1models_1_1Propiedad_adf910e0751c336ee1cfe69c868f94d9d}\index{principal.models.Propiedad@{principal.models.Propiedad}!tipo\_operacion@{tipo\_operacion}}
+\index{tipo\_operacion@{tipo\_operacion}!principal.models.Propiedad@{principal.models.Propiedad}}
+\doxysubsubsection{\texorpdfstring{tipo\_operacion}{tipo\_operacion}}
+{\footnotesize\ttfamily \label{classprincipal_1_1models_1_1Propiedad_adf910e0751c336ee1cfe69c868f94d9d} 
+principal.\+models.\+Propiedad.\+tipo\+\_\+operacion\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Valor inicial\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{=\ \ models.CharField(}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ max\_length=50,}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ help\_text=\textcolor{stringliteral}{"{}Tipo\ de\ operación:\ renta\ o\ venta."{}}}
+\DoxyCodeLine{\ \ \ \ )}
+
+\end{DoxyCode}
+\Hypertarget{classprincipal_1_1models_1_1Propiedad_a2fed2aff918dd10d6cbec3c28e9b81c2}\index{principal.models.Propiedad@{principal.models.Propiedad}!titulo@{titulo}}
+\index{titulo@{titulo}!principal.models.Propiedad@{principal.models.Propiedad}}
+\doxysubsubsection{\texorpdfstring{titulo}{titulo}}
+{\footnotesize\ttfamily \label{classprincipal_1_1models_1_1Propiedad_a2fed2aff918dd10d6cbec3c28e9b81c2} 
+principal.\+models.\+Propiedad.\+titulo\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Valor inicial\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{=\ \ models.CharField(}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ max\_length=255,}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ help\_text=\textcolor{stringliteral}{"{}Título\ descriptivo\ de\ la\ propiedad."{}}}
+\DoxyCodeLine{\ \ \ \ )}
+
+\end{DoxyCode}
+\Hypertarget{classprincipal_1_1models_1_1Propiedad_a49dc27cc579a5fec0c61f093e2014184}\index{principal.models.Propiedad@{principal.models.Propiedad}!vendedor@{vendedor}}
+\index{vendedor@{vendedor}!principal.models.Propiedad@{principal.models.Propiedad}}
+\doxysubsubsection{\texorpdfstring{vendedor}{vendedor}}
+{\footnotesize\ttfamily \label{classprincipal_1_1models_1_1Propiedad_a49dc27cc579a5fec0c61f093e2014184} 
+principal.\+models.\+Propiedad.\+vendedor\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Valor inicial\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{=\ \ models.ForeignKey(}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ User,}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ on\_delete=models.CASCADE,}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ help\_text=\textcolor{stringliteral}{"{}Usuario\ vendedor\ al\ que\ pertenece\ la\ propiedad."{}}}
+\DoxyCodeLine{\ \ \ \ )}
+
+\end{DoxyCode}
+
+
+La documentación de esta clase está generada del siguiente archivo\+:\begin{DoxyCompactItemize}
+\item 
+principal/\mbox{\hyperlink{principal_2models_8py}{models.\+py}}\end{DoxyCompactItemize}

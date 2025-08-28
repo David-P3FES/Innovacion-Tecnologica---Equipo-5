@@ -1,0 +1,83 @@
+\doxysection{Referencia del espacio de nombres cuentas.\+views}
+\hypertarget{namespacecuentas_1_1views}{}\label{namespacecuentas_1_1views}\index{cuentas.views@{cuentas.views}}
+\doxysubsubsection*{Funciones}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacecuentas_1_1views_a377d67b768706f11016cf1744b338430}{complete\+\_\+profile}} (request)
+\item 
+\mbox{\hyperlink{namespacecuentas_1_1views_aeb9b1852705a65ba72c3e7055faf3218}{post\+\_\+login}} (request)
+\item 
+\mbox{\hyperlink{namespacecuentas_1_1views_a7b541a8d6af6b7b8e369cbea405b77ce}{ver\+\_\+perfil}} (request)
+\item 
+\mbox{\hyperlink{namespacecuentas_1_1views_a08328d199ee6d7a3820b5918804aa288}{editar\+\_\+perfil}} (request)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Descripción detallada}
+\begin{DoxyVerb}@file views.py
+@brief Vistas de la aplicación `cuentas`.
+@details
+ Contiene las vistas relacionadas con la gestión de perfiles de usuario:
+  - Completar perfil
+  - Redirección post-login
+  - Visualización de perfil
+  - Edición de perfil
+\end{DoxyVerb}
+ 
+
+\label{doc-func-members}
+\Hypertarget{namespacecuentas_1_1views_doc-func-members}
+\doxysubsection{Documentación de funciones}
+\Hypertarget{namespacecuentas_1_1views_a377d67b768706f11016cf1744b338430}\index{cuentas.views@{cuentas.views}!complete\_profile@{complete\_profile}}
+\index{complete\_profile@{complete\_profile}!cuentas.views@{cuentas.views}}
+\doxysubsubsection{\texorpdfstring{complete\_profile()}{complete\_profile()}}
+{\footnotesize\ttfamily \label{namespacecuentas_1_1views_a377d67b768706f11016cf1744b338430} 
+cuentas.\+views.\+complete\+\_\+profile (\begin{DoxyParamCaption}\item[{}]{request}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Muestra y procesa el formulario de completar perfil.
+@details
+ - Si el método es POST: valida y guarda los datos en el perfil del usuario.
+ - Tras guardar correctamente, redirige a `principal:home`.
+ - Si hay errores, vuelve a mostrar el formulario con mensajes de error.
+ - Si el método es GET: muestra el formulario con los datos actuales del perfil.
+@param request Objeto HttpRequest del usuario autenticado.
+@return HttpResponse con la plantilla `cuentas/completar_perfil.html`.
+\end{DoxyVerb}
+ \Hypertarget{namespacecuentas_1_1views_a08328d199ee6d7a3820b5918804aa288}\index{cuentas.views@{cuentas.views}!editar\_perfil@{editar\_perfil}}
+\index{editar\_perfil@{editar\_perfil}!cuentas.views@{cuentas.views}}
+\doxysubsubsection{\texorpdfstring{editar\_perfil()}{editar\_perfil()}}
+{\footnotesize\ttfamily \label{namespacecuentas_1_1views_a08328d199ee6d7a3820b5918804aa288} 
+cuentas.\+views.\+editar\+\_\+perfil (\begin{DoxyParamCaption}\item[{}]{request}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Permite editar el perfil del usuario autenticado.
+@details
+ - Si el método es POST: procesa el formulario y guarda cambios en el perfil.
+ - Si es válido, redirige a `cuentas:ver_perfil`.
+ - Si es GET o el formulario tiene errores: muestra el formulario prellenado.
+@param request Objeto HttpRequest del usuario autenticado.
+@return HttpResponse con la plantilla `cuentas/editar_perfil.html`.
+\end{DoxyVerb}
+ \Hypertarget{namespacecuentas_1_1views_aeb9b1852705a65ba72c3e7055faf3218}\index{cuentas.views@{cuentas.views}!post\_login@{post\_login}}
+\index{post\_login@{post\_login}!cuentas.views@{cuentas.views}}
+\doxysubsubsection{\texorpdfstring{post\_login()}{post\_login()}}
+{\footnotesize\ttfamily \label{namespacecuentas_1_1views_aeb9b1852705a65ba72c3e7055faf3218} 
+cuentas.\+views.\+post\+\_\+login (\begin{DoxyParamCaption}\item[{}]{request}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Decide a dónde redirigir tras iniciar sesión.
+@details
+ - Si el perfil del usuario no está completo → redirige a `cuentas:complete_profile`.
+ - Si el perfil está completo → redirige a `principal:home`.
+@param request Objeto HttpRequest del usuario autenticado.
+@return HttpResponseRedirect a la ruta correspondiente.
+\end{DoxyVerb}
+ \Hypertarget{namespacecuentas_1_1views_a7b541a8d6af6b7b8e369cbea405b77ce}\index{cuentas.views@{cuentas.views}!ver\_perfil@{ver\_perfil}}
+\index{ver\_perfil@{ver\_perfil}!cuentas.views@{cuentas.views}}
+\doxysubsubsection{\texorpdfstring{ver\_perfil()}{ver\_perfil()}}
+{\footnotesize\ttfamily \label{namespacecuentas_1_1views_a7b541a8d6af6b7b8e369cbea405b77ce} 
+cuentas.\+views.\+ver\+\_\+perfil (\begin{DoxyParamCaption}\item[{}]{request}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Muestra los datos del perfil del usuario.
+@param request Objeto HttpRequest del usuario autenticado.
+@return HttpResponse con la plantilla `cuentas/ver_perfil.html`.
+\end{DoxyVerb}
+ 

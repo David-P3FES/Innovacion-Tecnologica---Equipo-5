@@ -1,4 +1,17 @@
+/*!
+ * @file profile.css
+ * @brief Estilos para la vista de perfil de usuario en la app cuentas.
+ *
+ * Este archivo define el diseño y formato de la página de perfil,
+ * incluyendo el contenedor principal, los encabezados, formularios
+ * y botones de acción.
+ */
+
 .profile-container {
+    /*! 
+     * @brief Contenedor principal del perfil.
+     * Define tamaño máximo, márgenes, fondo, sombra y tipografía.
+     */
     max-width: 500px;
     margin: 40px auto;
     background: #f8f9fa;
@@ -9,22 +22,26 @@
 }
 
 .profile-container h2 {
+    /*! @brief Estilo para el título principal del perfil. */
     text-align: center;
     margin-bottom: 15px;
     color: #213448;
 }
 
 .profile-container p {
+    /*! @brief Estilo para subtítulos o mensajes debajo del título. */
     text-align: center;
     color: #666;
     margin-bottom: 20px;
 }
 
 .profile-form .form-group {
+    /*! @brief Espaciado entre grupos de campos dentro del formulario. */
     margin-bottom: 15px;
 }
 
 .profile-form label {
+    /*! @brief Estilos de las etiquetas de los inputs. */
     display: block;
     margin-bottom: 5px;
     font-weight: 600;
@@ -32,6 +49,7 @@
 }
 
 .profile-form input {
+    /*! @brief Estilos para los campos de texto del formulario. */
     width: 100%;
     padding: 10px;
     border-radius: 8px;
@@ -40,6 +58,10 @@
 }
 
 .btn-guardar {
+    /*! 
+     * @brief Botón principal para guardar los cambios en el perfil.
+     * Tiene un diseño uniforme con fondo oscuro y hover más claro.
+     */
     width: 100%;
     background: #333333;
     color: #fff;
@@ -52,5 +74,6 @@
 }
 
 .btn-guardar:hover {
+    /*! @brief Estilo hover para el botón de guardar. */
     background: #555555;
 }

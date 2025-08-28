@@ -1,9 +1,20 @@
+<!--!
+  @file profile_view.html
+  @brief Plantilla para mostrar la información del perfil del usuario en la app cuentas.
+  @details
+   - Extiende de `base.html`.
+   - Muestra datos generales del usuario y campos adicionales del perfil.
+   - Incluye un enlace para actualizar la información.
+-->
+
 {% extends "base.html" %}
 
 {% block content %}
 <div class="profile-container">
+  <!--! @brief Encabezado de la sección de perfil -->
   <h2>Mi Perfil</h2>
 
+  <!--! @brief Bloque de información del perfil -->
   <div class="profile-info">
     <p><strong>Usuario:</strong> {{ user.username }}</p>
     <p><strong>Nombre:</strong> {{ user.first_name }}</p>
@@ -13,6 +24,7 @@
     <p><strong>WhatsApp:</strong> {{ perfil.whatsapp }}</p>
   </div>
 
+  <!--! @brief Enlace para redirigir a la edición de perfil -->
   <a href="{% url 'cuentas:editar_perfil' %}" class="btn-guardar">Actualizar datos</a>
 </div>
 {% endblock %}

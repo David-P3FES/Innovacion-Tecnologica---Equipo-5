@@ -1,3 +1,13 @@
+<!--!
+  @file login.html
+  @brief Plantilla de inicio de sesión (Login) de la app cuentas.
+  @details
+   - Extiende de `base.html`.
+   - Usa Django Allauth para autenticación.
+   - Incluye integración con Google.
+   - Aplica estilos modernos desde `login.css` y lógica de UX en `login.js`.
+-->
+
 {% extends 'base.html' %}
 {% load static i18n socialaccount %}
 
@@ -6,27 +16,32 @@
 <br>
 
 <div class="login-container">
+  <!--! @brief Título principal del formulario de login -->
   <h2 class="login-title">{% trans "Iniciar sesión" %}</h2>
   <p class="login-subtitle">{% trans "Bienvenido de vuelta" %}</p>
 
-  {# Errores generales #}
+  <!--! @brief Lista de errores generales no asociados a un campo -->
   {% if form.non_field_errors %}
     <ul class="errorlist">
       {% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}
     </ul>
   {% endif %}
 
+  <!--! @brief Formulario de login (Allauth: account_login) -->
   <form method="post" action="{% url 'account_login' %}" class="login-form" id="loginForm">
     {% csrf_token %}
 
+    <!--! @brief Campo de correo electrónico -->
     <div class="form-group">
-      <input type="email" id="id_login" name="login" required placeholder=" " value="{{ form.login.value|default_if_none:'' }}">
+      <input type="email" id="id_login" name="login" required placeholder=" " 
+             value="{{ form.login.value|default_if_none:'' }}">
       <label for="id_login">{% trans "Correo electrónico" %}</label>
       {% if form.login.errors %}
         <ul class="errorlist">{% for e in form.login.errors %}<li>{{ e }}</li>{% endfor %}</ul>
       {% endif %}
     </div>
 
+    <!--! @brief Campo de contraseña con enlace a recuperación -->
     <div class="form-group">
       <input type="password" id="id_password" name="password" required placeholder=" ">
       <label for="id_password">{% trans "Contraseña" %}</label>
@@ -38,22 +53,28 @@
       </small>
     </div>
 
+    <!--! @brief Botón de envío con texto dinámico (data-loading-text) -->
     <button type="submit" class="btn-principal btn-full" data-loading-text="{% trans 'Entrando…' %}">
       {% trans "Entrar" %}
     </button>
   </form>
 
+  <!--! @brief Separador entre login normal y login social -->
   <div class="hr-text">{% trans "o continúa con" %}</div>
 
+  <!--! @brief Botón de login con Google (Django Allauth Socialaccount) -->
   <a href="{% provider_login_url 'google' %}" class="btn-google">
     <i class="fab fa-google"></i> Google
   </a>
 
+  <!--! @brief Enlace a registro de cuenta -->
   <p class="login-alt">
-    {% trans "¿No tienes cuenta?" %} <a href="{% url 'account_signup' %}">{% trans "Regístrate" %}</a>
+    {% trans "¿No tienes cuenta?" %} 
+    <a href="{% url 'account_signup' %}">{% trans "Regístrate" %}</a>
   </p>
 </div>
 
+<!--! @brief Script JS para mejorar la experiencia de login -->
 <script src="{% static 'js/login.js' %}"></script>
 <br>
 {% endblock %}

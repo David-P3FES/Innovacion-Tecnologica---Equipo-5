@@ -1,14 +1,31 @@
+<!--!
+  @file profile_edit.html
+  @brief Plantilla para editar los datos del perfil del usuario en la app cuentas.
+  @details
+   - Extiende de `base.html`.
+   - Muestra un formulario con los campos actuales del usuario.
+   - Permite guardar los cambios o cancelar y volver a la vista de perfil.
+-->
+
 {% extends "base.html" %}
 
 {% block content %}
 <div class="profile-container">
+  <!--! @brief Encabezado principal de la vista de edición -->
   <h2>Editar Perfil</h2>
+
+  <!--! @brief Formulario de edición de perfil (se renderiza con {{ form.as_p }}) -->
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
+
+    <!--! @brief Botón para enviar y guardar cambios -->
     <button type="submit" class="btn-guardar">Guardar cambios</button>
   </form>
+
   <br>
+
+  <!--! @brief Enlace de cancelación que regresa a la vista de perfil -->
   <a href="{% url 'cuentas:ver_perfil' %}" class="btn-secundario">Cancelar</a>
 </div>
 {% endblock %}

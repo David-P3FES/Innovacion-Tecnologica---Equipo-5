@@ -1,0 +1,52 @@
+\doxysection{Referencia del espacio de nombres principal.\+urls}
+\hypertarget{namespaceprincipal_1_1urls}{}\label{namespaceprincipal_1_1urls}\index{principal.urls@{principal.urls}}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+str \mbox{\hyperlink{namespaceprincipal_1_1urls_a4f3cbf00b33ecf8715aec833792210bb}{app\+\_\+name}} = "{}principal"{}
+\item 
+list \mbox{\hyperlink{namespaceprincipal_1_1urls_ab56f487f87f627cff5ff817fe2163293}{urlpatterns}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Descripción detallada}
+\begin{DoxyVerb}@file urls.py
+@brief Rutas de la aplicación `principal`.
+@details Define las URLs que conectan las vistas principales del sitio:
+         - Página de inicio.
+         - Resultados de búsqueda de propiedades.
+\end{DoxyVerb}
+ 
+
+\label{doc-var-members}
+\Hypertarget{namespaceprincipal_1_1urls_doc-var-members}
+\doxysubsection{Documentación de variables}
+\Hypertarget{namespaceprincipal_1_1urls_a4f3cbf00b33ecf8715aec833792210bb}\index{principal.urls@{principal.urls}!app\_name@{app\_name}}
+\index{app\_name@{app\_name}!principal.urls@{principal.urls}}
+\doxysubsubsection{\texorpdfstring{app\_name}{app\_name}}
+{\footnotesize\ttfamily \label{namespaceprincipal_1_1urls_a4f3cbf00b33ecf8715aec833792210bb} 
+str principal.\+urls.\+app\+\_\+name = "{}principal"{}}
+
+\Hypertarget{namespaceprincipal_1_1urls_ab56f487f87f627cff5ff817fe2163293}\index{principal.urls@{principal.urls}!urlpatterns@{urlpatterns}}
+\index{urlpatterns@{urlpatterns}!principal.urls@{principal.urls}}
+\doxysubsubsection{\texorpdfstring{urlpatterns}{urlpatterns}}
+{\footnotesize\ttfamily \label{namespaceprincipal_1_1urls_ab56f487f87f627cff5ff817fe2163293} 
+list principal.\+urls.\+urlpatterns}
+
+{\bfseries Valor inicial\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ =\ \ [}
+\DoxyCodeLine{00002\ \ \ \ \ path(}
+\DoxyCodeLine{00003\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{''},\ }
+\DoxyCodeLine{00004\ \ \ \ \ \ \ \ \ views.home,\ }
+\DoxyCodeLine{00005\ \ \ \ \ \ \ \ \ name=\textcolor{stringliteral}{'home'}}
+\DoxyCodeLine{00006\ \ \ \ \ ),\ \ \textcolor{comment}{\#:\ Página\ principal\ (vista\ home)}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \ \ \ \ path(}
+\DoxyCodeLine{00009\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{'resultados/'},\ }
+\DoxyCodeLine{00010\ \ \ \ \ \ \ \ \ views.resultados\_busqueda,\ }
+\DoxyCodeLine{00011\ \ \ \ \ \ \ \ \ name=\textcolor{stringliteral}{'resultados\_busqueda'}}
+\DoxyCodeLine{00012\ \ \ \ \ ),\ \ \textcolor{comment}{\#:\ Página\ de\ resultados\ de\ búsqueda\ de\ propiedades}}
+\DoxyCodeLine{00013\ ]}
+
+\end{DoxyCode}
