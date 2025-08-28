@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="profile-container">
+  <h2>Editar Perfil</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn-guardar">Guardar cambios</button>
+  </form>
+  <br>
+  <a href="{% url 'cuentas:ver_perfil' %}" class="btn-secundario">Cancelar</a>
+</div>
+{% endblock %}

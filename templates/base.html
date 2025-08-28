@@ -42,7 +42,9 @@
             <!-- Botones extra (mismos estilos que Iniciar sesión) -->
             <a href="#" class="btn-login"><i class="fas fa-heart"></i> Me encantas</a>
             <a href="#" class="btn-login"><i class="fas fa-home"></i> Vender/Rentar</a>
-            <a href="#" class="btn-login"><i class="fas fa-id-card"></i> Ver perfil</a>
+            <a href="{% url 'cuentas:ver_perfil' %}" class="btn-login">
+              <i class="fas fa-id-card"></i> Ver perfil
+            </a>
 
             <!-- Usuario actual -->
             <span class="btn-login" aria-label="Usuario actual">

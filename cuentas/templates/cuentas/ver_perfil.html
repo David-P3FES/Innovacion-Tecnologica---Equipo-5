@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="profile-container">
+  <h2>Mi Perfil</h2>
+
+  <div class="profile-info">
+    <p><strong>Usuario:</strong> {{ user.username }}</p>
+    <p><strong>Nombre:</strong> {{ user.first_name }}</p>
+    <p><strong>Apellido:</strong> {{ user.last_name }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>RFC:</strong> {{ perfil.rfc }}</p>
+    <p><strong>WhatsApp:</strong> {{ perfil.whatsapp }}</p>
+  </div>
+
+  <a href="{% url 'cuentas:editar_perfil' %}" class="btn-guardar">Actualizar datos</a>
+</div>
+{% endblock %}

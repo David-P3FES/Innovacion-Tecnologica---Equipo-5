@@ -35,3 +35,25 @@ def post_login(request):
     if perfil and not perfil.is_complete():
         return redirect('cuentas:complete_profile')
     return redirect('principal:home')
+
+@login_required
+def ver_perfil(request):
+    """Muestra el perfil del usuario"""
+    perfil = request.user.perfil
+    return render(request, "cuentas/ver_perfil.html", {"perfil": perfil, "user": request.user})
+
+
+@login_required
+def editar_perfil(request):
+    """Permite editar el perfil del usuario"""
+    perfil = request.user.perfil
+
+    if request.method == "POST":
+        form = CompleteProfileForm(request.POST, user=request.user, instance=perfil)
+        if form.is_valid():
+            form.save()
+            return redirect("cuentas:ver_perfil")
+    else:
+        form = CompleteProfileForm(user=request.user, instance=perfil)
+
+    return render(request, "cuentas/editar_perfil.html", {"form": form})

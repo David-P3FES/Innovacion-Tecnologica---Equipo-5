@@ -218,3 +218,22 @@ body {
     justify-content: center;
   }
 }
+
+.profile-info p {
+    font-size: 15px;
+    margin: 8px 0;
+    color: #333;
+}
+
+.btn-secundario {
+    display: inline-block;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: #ccc;
+    color: #333;
+    text-decoration: none;
+    font-weight: 600;
+}
+.btn-secundario:hover {
+    background: #aaa;
+}
