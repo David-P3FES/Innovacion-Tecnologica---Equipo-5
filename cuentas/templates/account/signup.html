@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static i18n %}
+{% load static i18n widget_tweaks %}
 
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/login.css' %}">
@@ -20,24 +20,24 @@
     {% csrf_token %}
 
     <div class="form-group">
-      <input type="email" id="email" name="email" required placeholder=" " value="{{ form.email.value|default_if_none:'' }}">
-      <label for="email">{% trans "Correo electrónico" %}</label>
+      {{ form.email|add_class:"input-field" }}
+      <label for="{{ form.email.id_for_label }}">{% trans "Correo electrónico" %}</label>
       {% if form.email.errors %}
         <ul class="errorlist">{% for e in form.email.errors %}<li>{{ e }}</li>{% endfor %}</ul>
       {% endif %}
     </div>
 
     <div class="form-group">
-      <input type="password" id="password1" name="password1" required minlength="6" placeholder=" ">
-      <label for="password1">{% trans "Contraseña" %}</label>
+      {{ form.password1|add_class:"input-field" }}
+      <label for="{{ form.password1.id_for_label }}">{% trans "Contraseña" %}</label>
       {% if form.password1.errors %}
         <ul class="errorlist">{% for e in form.password1.errors %}<li>{{ e }}</li>{% endfor %}</ul>
       {% endif %}
     </div>
 
     <div class="form-group">
-      <input type="password" id="password2" name="password2" required minlength="6" placeholder=" ">
-      <label for="password2">{% trans "Confirmar contraseña" %}</label>
+      {{ form.password2|add_class:"input-field" }}
+      <label for="{{ form.password2.id_for_label }}">{% trans "Confirmar contraseña" %}</label>
       {% if form.password2.errors %}
         <ul class="errorlist">{% for e in form.password2.errors %}<li>{{ e }}</li>{% endfor %}</ul>
       {% endif %}

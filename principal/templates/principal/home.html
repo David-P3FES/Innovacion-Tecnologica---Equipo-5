@@ -1,15 +1,33 @@
 {% extends "base.html" %}
 {% load static %}
 
-<!--!
+{# 
   @file home.html
   @brief Plantilla de inicio con hero y buscador.
-  @details Extiende base.html y carga el CSS en core/static/css/home.css.
-
--->
+  @details Si el usuario está logueado y no ha completado su perfil, muestra un aviso con link.
+           Ajusta la ruta del CSS según dónde lo tengas:
+           - Si está en principal/static/principal/css/home.css  ->  {% static 'principal/css/home.css' %}
+           - Si está en core/static/core/css/home.css            ->  {% static 'core/css/home.css' %}
+           - Si usas una carpeta global static/css/home.css       ->  {% static 'css/home.css' %}
+#}
 
 {% block content %}
+
+{# CARGA DE CSS (ajusta la ruta a tu estructura) #}
 <link rel="stylesheet" href="{% static 'css/home.css' %}">
+
+{# AVISO: completar perfil (solo si está logueado y su perfil no está completo) #}
+{% if request.user.is_authenticated and request.user.profile and not request.user.profile.is_complete %}
+<section class="banner-incomplete" role="alert" aria-live="polite">
+  <div class="banner-incomplete__inner">
+    <strong>¡Falta completar tu perfil!</strong>
+    <span>Para publicar o rentar, completa tu RFC y WhatsApp.</span>
+    <a class="btn btn--small btn--primary" href="{% url 'cuentas:complete_profile' %}">
+      Completar perfil
+    </a>
+  </div>
+</section>
+{% endif %}
 
   <!--! @section hero Sección principal (hero) -->
   <section class="hero">
@@ -18,7 +36,7 @@
       <p>Conecta con los mejores vendedores o inmobiliarias de México.</p>
 
       <!--! @section search_bar Barra de búsqueda -->
-      <form method="GET" action="{% url 'resultados_busqueda' %}" class="search-bar">
+      <form method="GET" action="{% url 'principal:resultados_busqueda' %}" class="search-bar" role="search" aria-label="Buscar propiedades">
         <div class="c-select" data-select>
           <select name="tipo_operacion" class="js-custom-select" aria-label="Tipo de operación">
             <option value="">Tipo</option>
@@ -26,18 +44,26 @@
             <option value="renta">Renta</option>
           </select>
         </div>
+
         <input 
           type="text" 
           name="direccion" 
           placeholder="Buscar por dirección, ciudad o colonia"
+          aria-label="Buscar por dirección, ciudad o colonia"
         >
 
         <button type="submit" class="btn-buscar">
-          <i class="fas fa-search"></i>
+          <i class="fas fa-search" aria-hidden="true"></i>
           <span>Buscar</span>
         </button>
       </form>
       <!--! @endsection search_bar -->
+
+      <noscript>
+        <p class="noscript-msg">
+          Para una mejor experiencia habilita JavaScript. Aún puedes usar el selector “Tipo” nativo.
+        </p>
+      </noscript>
     </div>
   </section>
   <!--! @endsection hero -->
@@ -47,13 +73,15 @@
     <h2>Propiedades destacadas</h2>
     <div class="grid-productos">
       {% for propiedad in propiedades %}
-        <div class="producto">
+        <article class="producto">
           <h3>{{ propiedad.titulo }}</h3>
           <p>{{ propiedad.descripcion|truncatechars:100 }}</p>
           <p><strong>${{ propiedad.precio }}</strong></p>
           <p>{{ propiedad.direccion }}</p>
-          <a href="{% url 'detalle_propiedad' propiedad.id %}" class="btn-principal">Ver detalles</a>
-        </div>
+          <a href="{% url 'detalle_propiedad' propiedad.id %}" class="btn-principal" aria-label="Ver detalles de {{ propiedad.titulo }}">
+            Ver detalles
+          </a>
+        </article>
       {% empty %}
         <div class="producto coming-soon">
           <h3>No hay propiedades disponibles todavía</h3>
@@ -63,38 +91,40 @@
     </div>
   </section>
   <!--! @endsection destacados -->
+
   <script>
   (function(){
-    const PALETTE = {
-      emptyText: 'Tipo'
-    };
-
+    const PALETTE = { emptyText: 'Tipo' };
     document.querySelectorAll('.c-select').forEach(initCustomSelect);
 
     function initCustomSelect(wrapper){
       const native = wrapper.querySelector('.js-custom-select');
+      if(!native) return;
       wrapper.setAttribute('aria-expanded','false');
 
-      // Construir botón
+      // Botón visible
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'c-select__button';
       btn.setAttribute('aria-haspopup','listbox');
       btn.setAttribute('aria-expanded','false');
+
       const valueSpan = document.createElement('span');
       valueSpan.className = 'c-select__value';
       valueSpan.textContent = native.selectedOptions[0]?.text || PALETTE.emptyText;
+
       const chev = document.createElement('i');
       chev.className = 'c-select__chevron';
-      btn.appendChild(valueSpan); btn.appendChild(chev);
+      btn.appendChild(valueSpan);
+      btn.appendChild(chev);
 
-      // Panel y opciones
+      // Panel de opciones
       const panel = document.createElement('ul');
       panel.className = 'c-select__panel';
       panel.setAttribute('role','listbox');
       panel.tabIndex = -1;
 
-      Array.from(native.options).forEach((opt, idx)=>{
+      Array.from(native.options).forEach((opt)=>{
         const li = document.createElement('li');
         li.className = 'c-select__option';
         li.setAttribute('role','option');
@@ -109,11 +139,9 @@
       wrapper.appendChild(btn);
       wrapper.appendChild(panel);
 
-      // Apertura/cierre
+      // Abrir / cerrar
       btn.addEventListener('click', toggle);
-      document.addEventListener('click', (e)=>{
-        if(!wrapper.contains(e.target)) close();
-      });
+      document.addEventListener('click', (e)=>{ if(!wrapper.contains(e.target)) close(); });
 
       // Teclado en botón
       btn.addEventListener('keydown', (e)=>{
@@ -131,7 +159,7 @@
         if(e.key === 'Enter'){ e.preventDefault(); (active||items[0]).click(); return; }
         if(e.key === 'ArrowDown'){ e.preventDefault(); idx = Math.min(idx+1, items.length-1); setActive(items[idx]); }
         if(e.key === 'ArrowUp'){ e.preventDefault(); idx = Math.max(idx-1, 0); setActive(items[idx]); }
-        if(e.key.length === 1 && /\S/.test(e.key)){ // búsqueda por letra
+        if(e.key.length === 1 && /\S/.test(e.key)){
           const i = items.findIndex(el => el.textContent.trim().toLowerCase().startsWith(e.key.toLowerCase()));
           if(i>=0) setActive(items[i]);
         }
@@ -142,23 +170,27 @@
       function close(){ wrapper.setAttribute('aria-expanded','false'); btn.setAttribute('aria-expanded','false'); clearActive(); }
 
       function selectValue(val, label){
-        native.value = val;                 // sincroniza con <select>
+        native.value = val;
         valueSpan.textContent = label || PALETTE.emptyText;
         panel.querySelectorAll('.c-select__option').forEach(o=>{
           o.removeAttribute('aria-selected');
           if(o.dataset.value === val) o.setAttribute('aria-selected','true');
         });
-        native.dispatchEvent(new Event('change', { bubbles:true })); // por si escuchas cambios
+        native.dispatchEvent(new Event('change', { bubbles:true }));
         close(); btn.focus();
       }
 
       function setActive(el){
-        clearActive(); el.classList.add('is-active'); el.scrollIntoView({block:'nearest'});
+        clearActive();
+        el.classList.add('is-active');
+        el.scrollIntoView({block:'nearest'});
       }
-      function clearActive(){ panel.querySelectorAll('.is-active').forEach(e=>e.classList.remove('is-active')); }
+      function clearActive(){
+        panel.querySelectorAll('.is-active').forEach(e=>e.classList.remove('is-active'));
+      }
       function focusFirst(){
         const first = panel.querySelector('.c-select__option[aria-selected="true"]') || panel.querySelector('.c-select__option');
-        setActive(first);
+        if(first) setActive(first);
       }
     }
   })();

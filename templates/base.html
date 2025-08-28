@@ -1,61 +1,93 @@
 {% load static %}
-<!--!
-\file base.html
-\brief Plantilla base simplificada con header y footer.
-\author Brandon y Neida
-\date 2025
+<!--
+  file: base.html
+  brief: Plantilla base con header, footer y bloques extendibles.
+  author: Brandon y Neida
+  date: 2025
 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>{% block title %}ViviendaYA!{% endblock %}</title>
+
+  <!-- CSS global -->
   <link rel="stylesheet" href="{% static 'css/base.css' %}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- CSRF para JS si lo necesitas -->
+  <meta name="csrf-token" content="{{ csrf_token }}"/>
+
+  <!-- Bloques opcionales para metas/estilos extra -->
+  {% block extra_head %}{% endblock %}
+  {% block extra_css %}{% endblock %}
 </head>
 <body>
-  <!--!
-  \section header Encabezado
-  -->
-  <header class="header">
+  <!-- Header -->
+  <header class="header" role="banner">
     <div class="header-content">
       <div class="zona-izquierda">
         <h1 class="nombre-sitio">
-          <a href="{% url 'home' %}" class="logo-link">ViviendaYa!</a>
+          <a href="{% url 'principal:home' %}" class="logo-link" aria-label="Ir al inicio">ViviendaYa!</a>
         </h1>
       </div>
+
       <div class="zona-derecha">
-        <nav class="navbar-actions">
-          <a href="#" class="nav-link">Comprar</a>
-          <a href="#" class="nav-link">Rentar</a>
-          <a href="#" class="nav-link">Vender</a>
+        <nav class="navbar-actions" role="navigation" aria-label="Principal">
+
           {% if user.is_authenticated %}
-            <span class="btn-login"><i class="fas fa-user"></i> {{ user.username }}</span>
-            <a href="{% url 'account_logout' %}" class="btn-login"><i class="fas fa-sign-out-alt"></i> Salir</a>
+            <!-- Botones extra (mismos estilos que Iniciar sesión) -->
+            <a href="#" class="btn-login"><i class="fas fa-heart"></i> Me encantas</a>
+            <a href="#" class="btn-login"><i class="fas fa-home"></i> Vender/Rentar</a>
+            <a href="#" class="btn-login"><i class="fas fa-id-card"></i> Ver perfil</a>
+
+            <!-- Usuario actual -->
+            <span class="btn-login" aria-label="Usuario actual">
+              <i class="fas fa-user"></i> {{ user.username }}
+            </span>
+            <a href="{% url 'account_logout' %}" class="btn-login">
+              <i class="fas fa-sign-out-alt"></i> Salir
+            </a>
           {% else %}
-            <a href="{% url 'account_login' %}" class="btn-login"><i class="fas fa-user"></i> Iniciar sesión</a>
+            <!-- Solo iniciar sesión -->
+            <a href="{% url 'account_login' %}" class="btn-login">
+              <i class="fas fa-user"></i> Iniciar sesión
+            </a>
           {% endif %}
         </nav>
       </div>
     </div>
   </header>
 
+  <!-- Banner superior opcional -->
+  {% block top_banner %}{% endblock %}
+
+  <!-- Mensajes (Django messages) -->
+  {% if messages %}
+    <section class="flash-messages" role="status" aria-live="polite">
+      <ul class="flash-list">
+        {% for message in messages %}
+          <li class="flash flash--{{ message.tags|default:'info' }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+
+  <!-- Contenido principal -->
   <main class="contenido-pagina">
     {% block content %}{% endblock %}
   </main>
 
-
-  <!--!
-  \section footer
-  -->
-  <footer class="footer">
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
     <div class="footer-wrap">
       <div class="footer-col brand">
         <div class="brand-row">
           <span class="brand-mark">V</span>
-          <span class="brand-name">ViviendaYa!</b></span>
+          <span class="brand-name">ViviendaYa!</span>
         </div>
         <p>
           Tu socio confiable en el mercado inmobiliario.<br>
@@ -97,5 +129,7 @@
     </div>
   </footer>
 
+  <!-- Bloque para scripts específicos por página -->
+  {% block extra_js %}{% endblock %}
 </body>
 </html>

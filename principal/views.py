@@ -1,24 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Propiedad
 from django.http import HttpResponse
 
-
 def home(request):
-    # Filtros desde GET
-    direccion = request.GET.get('direccion')
-    tipo_operacion = request.GET.get('tipo_operacion')
-
-    propiedades = Propiedad.objects.all()
-
-    if direccion:
-        propiedades = propiedades.filter(direccion__icontains=direccion)
-    if tipo_operacion:
-        propiedades = propiedades.filter(tipo_operacion=tipo_operacion)
-
-    return render(request, 'principal/home.html', {
-        'propiedades': propiedades
-    })
-
+    if request.user.is_authenticated:
+        perfil = getattr(request.user, "perfil", None)  # ← OJO: 'perfil'
+        if perfil and not perfil.is_complete():
+            return redirect('cuentas:complete_profile')
+    return render(request, 'principal/home.html')
 
 def resultados_busqueda(request):
     query = request.GET.get('q')
@@ -33,3 +22,4 @@ def resultados_busqueda(request):
 
 def detalle_prioridad(request):
     return HttpResponse("Aquí se mostrarán los detalles de la prioridad")
+

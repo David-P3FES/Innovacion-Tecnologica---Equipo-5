@@ -1,13 +1,9 @@
 from django.urls import path
 from . import views
 
+app_name = 'cuentas'
+
 urlpatterns = [
-    # Privadas - Comprador/Rentador
-    path('perfil/completar/', views.completar_perfil, name='completar_perfil'),
-
-    # Privadas - Administrador
-    #path('admin-panel/', views.panel_administracion, name='panel_administracion'),
-
-    # Redirección de cuenta
-    path('redirect/', views.cuenta_redirect, name='cuenta_redirect'),
+    path('post-login/', views.post_login, name='post_login'),
+    path('completar-perfil/', views.complete_profile, name='complete_profile'),
 ]
