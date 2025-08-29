@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     # Apps personalizadas
     'principal',
     'cuentas.apps.CuentasConfig',   # registra señales
-
+    'publicaciones',
     # Utilidades
     'widget_tweaks',
 
@@ -156,8 +156,10 @@ STATICFILES_DIRS = [
     BASE_DIR / "cuentas" / "static",
 ]
 
+# Archivos de usuario (fotos)
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR / 'media'
+
 
 # ==============================
 # Configuración por defecto de campos

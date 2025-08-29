@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="form-wrap" style="max-width:1100px;margin:1.5rem auto;">
+  <h1 style="margin-bottom:1rem;">
+    {% if modo == "crear" %}Nueva publicación{% else %}Editar publicación{% endif %}
+  </h1>
+
+  {# Errores generales del form (coords obligatorias, etc.) #}
+  {% if form.non_field_errors %}
+    <div class="alert alert-error">{{ form.non_field_errors }}</div>
+  {% endif %}
+
+  <form method="post" enctype="multipart/form-data" id="pub-form">
+    {% csrf_token %}
+
+    <!-- Datos generales -->
+    <fieldset class="card">
+      <legend>Datos generales</legend>
+      <div class="grid-2">
+        <div>{{ form.titulo.label_tag }}{{ form.titulo }}</div>
+        <div>{{ form.precio.label_tag }}{{ form.precio }}</div>
+        <div>{{ form.tipo_operacion.label_tag }}{{ form.tipo_operacion }}</div>
+        <div>{{ form.tipo_financiamiento.label_tag }}{{ form.tipo_financiamiento }}</div>
+      </div>
+      <div style="margin-top:1rem;">
+        {{ form.descripcion.label_tag }}{{ form.descripcion }}
+      </div>
+    </fieldset>
+
+    <!-- Características -->
+    <fieldset class="card">
+      <legend>Características</legend>
+      <div class="grid-5">
+        <div>{{ form.recamaras.label_tag }}{{ form.recamaras }}</div>
+        <div>{{ form.banos.label_tag }}{{ form.banos }}</div>
+        <div>{{ form.estacionamientos.label_tag }}{{ form.estacionamientos }}</div>
+        <div>{{ form.metros_construccion.label_tag }}{{ form.metros_construccion }}</div>
+        <div>{{ form.metros_terreno.label_tag }}{{ form.metros_terreno }}</div>
+      </div>
+    </fieldset>
+
+    <!-- Dirección -->
+    <fieldset class="card">
+      <legend>Dirección</legend>
+      <div class="grid-3">
+        <div>{{ form.calle.label_tag }}{{ form.calle }}</div>
+        <div>{{ form.numero.label_tag }}{{ form.numero }}</div>
+        <div>{{ form.codigo_postal.label_tag }}{{ form.codigo_postal }}</div>
+      </div>
+      <div class="grid-3" style="margin-top:1rem;">
+        <div>{{ form.colonia.label_tag }}{{ form.colonia }}</div>
+        <div>{{ form.ciudad.label_tag }}{{ form.ciudad }}</div>
+        <div>{{ form.estado.label_tag }}{{ form.estado }}</div>
+      </div>
+
+      <div style="display:flex;gap:.5rem;margin-top:1rem;align-items:center;">
+        <button type="button" id="btn-geocode" class="btn">Buscar en mapa</button>
+        <small>Tip: escribe calle y colonia; agrega ciudad/estado/CP si es necesario.</small>
+      </div>
+    </fieldset>
+
+    <!-- Estatus -->
+    <fieldset class="card">
+      <legend>Estatus</legend>
+      {{ form.estatus.label_tag }}{{ form.estatus }}
+    </fieldset>
+
+    <!-- Mapa Leaflet + Geocoder -->
+    <fieldset class="card">
+      <legend>Ubicación en el mapa</legend>
+      <p>Usa el campo de búsqueda del mapa o haz clic para colocar el marcador. Arrástralo para ajustar.</p>
+      <div id="map" style="height: 420px; border-radius: 8px; overflow:hidden; margin-bottom: .75rem;"></div>
+      {{ form.latitud }} {{ form.longitud }}
+      <div class="coord-hint">
+        <span>Lat: <code id="lat-show">{{ form.instance.latitud|default_if_none:"—" }}</code></span>
+        <span style="margin-left:1rem;">Lng: <code id="lng-show">{{ form.instance.longitud|default_if_none:"—" }}</code></span>
+      </div>
+    </fieldset>
+
+    <!-- Fotos -->
+    <fieldset class="card">
+      <legend>Fotos</legend>
+      {{ formset.management_form }}
+
+      {# Errores de formset a nivel global (mínimo 1 foto) #}
+      {% for f in formset.forms %}
+        {% if f.non_field_errors %}
+          <div class="alert alert-error">{{ f.non_field_errors }}</div>
+        {% endif %}
+      {% endfor %}
+
+      <div class="grid-3">
+        {% for f in formset.forms %}
+          <div class="photo-card">
+            <div>{{ f.imagen.label_tag }} {{ f.imagen }}</div>
+            <div>{{ f.es_portada.label_tag }} {{ f.es_portada }}</div>
+            <div>{{ f.orden.label_tag }} {{ f.orden }}</div>
+            {% if f.instance.pk %}
+              <div class="photo-info">
+                <strong>Actual:</strong>
+                {% if f.instance.imagen %}
+                  <a href="{{ f.instance.imagen.url }}" target="_blank">Ver imagen</a>
+                {% else %}—{% endif %}
+              </div>
+              <div class="photo-del">{{ f.DELETE }} <label>Eliminar</label></div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      <small>
+        Sube al menos una foto. Si no marcas portada, tomaremos automáticamente la primera.
+        Si marcas varias como portada, se conservará solo la primera.
+      </small>
+    </fieldset>
+
+    <div style="margin-top:1rem;">
+      <button type="submit" class="btn">
+        {% if modo == "crear" %}Crear publicación{% else %}Guardar cambios{% endif %}
+      </button>
+    </div>
+  </form>
+</div>
+
+{# Leaflet Core #}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+{# Leaflet-Control-Geocoder (autocompletado) #}
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"/>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+<script>
+// ---------- util: compone la dirección desde inputs ----------
+function buildAddress() {
+  const get = id => document.getElementById(id)?.value?.trim() || "";
+  const partes = [
+    get("id_calle"),
+    get("id_numero"),
+    get("id_colonia"),
+    get("id_codigo_postal"),
+    get("id_ciudad"),
+    get("id_estado"),
+    "México"
+  ].filter(Boolean);
+  return partes.join(", ");
+}
+
+// ---------- mapa ----------
+const latInput = document.getElementById("id_latitud");
+const lngInput = document.getElementById("id_longitud");
+const latShow  = document.getElementById("lat-show");
+const lngShow  = document.getElementById("lng-show");
+
+const latInit = latInput.value ? parseFloat(latInput.value) : null;
+const lngInit = lngInput.value ? parseFloat(lngInput.value) : null;
+
+const centerLat = (latInit !== null) ? latInit : 31.6904;   // Ciudad Juárez
+const centerLng = (lngInit !== null) ? lngInit : -106.4245;
+
+const map = L.map('map').setView([centerLat, centerLng], (latInit && lngInit) ? 15 : 12);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '&copy; OpenStreetMap'
+}).addTo(map);
+
+let marker = null;
+function setMarker(lat, lng) {
+  if (!marker) {
+    marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+    marker.on('dragend', (e) => {
+      const { lat, lng } = e.target.getLatLng();
+      latInput.value = lat.toFixed(6);
+      lngInput.value = lng.toFixed(6);
+      latShow.textContent = latInput.value;
+      lngShow.textContent = lngInput.value;
+    });
+  } else {
+    marker.setLatLng([lat, lng]);
+  }
+  latInput.value = lat.toFixed(6);
+  lngInput.value = lng.toFixed(6);
+  latShow.textContent = latInput.value;
+  lngShow.textContent = lngInput.value;
+}
+
+// Click en mapa → fijar coords
+map.on('click', (e) => {
+  const { lat, lng } = e.latlng;
+  setMarker(lat, lng);
+});
+
+// Si había coords previas, mostrar marcador
+if (latInit !== null && lngInit !== null) {
+  setMarker(latInit, lngInit);
+}
+
+// ---------- geocoder (barra de búsqueda en el mapa) ----------
+const geocoder = L.Control.geocoder({
+  defaultMarkGeocode: false,
+  geocoder: L.Control.Geocoder.nominatim({ geocodingQueryParams: { countrycodes: 'mx', addressdetails: 1 } }),
+  placeholder: 'Buscar dirección...',
+}).on('markgeocode', function(e) {
+  const { center } = e.geocode;
+  map.setView(center, 16);
+  setMarker(center.lat, center.lng);
+}).addTo(map);
+
+// ---------- botón "Buscar en mapa" (desde los inputs de dirección) ----------
+document.getElementById("btn-geocode").addEventListener("click", async () => {
+  const query = buildAddress();
+  if (!query) {
+    alert("Escribe al menos calle y colonia para buscar.");
+    return;
+  }
+  try {
+    const url = new URL("https://nominatim.openstreetmap.org/search");
+    url.searchParams.set("q", query);
+    url.searchParams.set("format", "json");
+    url.searchParams.set("addressdetails", "1");
+    url.searchParams.set("limit", "1");
+    url.searchParams.set("countrycodes", "mx");
+
+    const resp = await fetch(url.toString(), { headers: { "Accept-Language": "es" } });
+    const data = await resp.json();
+    if (data && data.length) {
+      const lat = parseFloat(data[0].lat);
+      const lon = parseFloat(data[0].lon);
+      setMarker(lat, lon);
+      map.setView([lat, lon], 16);
+    } else {
+      alert("No se encontró esa dirección. Ajusta los campos (por ejemplo, colonia/CP).");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Ocurrió un problema al buscar la dirección.");
+  }
+});
+</script>
+
+<style>
+.form-wrap .card { background:#fff; border:1px solid #e5e5e5; border-radius:12px; padding:1rem; margin-bottom:1rem; }
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+.grid-3 { display:grid; grid-template-columns:repeat(3, 1fr); gap:1rem; }
+.grid-5 { display:grid; grid-template-columns:repeat(5, 1fr); gap:1rem; }
+
+.input-text, .input-number, .input-select, .input-textarea {
+  width:100%; padding:.6rem .75rem; border:1px solid #ddd; border-radius:.5rem; font:inherit; background:#fff;
+}
+.input-text:focus, .input-number:focus, .input-select:focus, .input-textarea:focus {
+  outline:none; border-color:#888; box-shadow:0 0 0 3px rgba(0,0,0,.05);
+}
+
+.btn { padding:.6rem 1rem; border:none; border-radius:.5rem; background:#333; color:#fff; cursor:pointer; }
+.btn:hover { background:#555; }
+
+.photo-card { border:1px dashed #ddd; padding:.75rem; border-radius:.5rem; }
+.photo-info { margin-top:.25rem; font-size:.9rem; }
+.coord-hint { font-size:.9rem; color:#444; margin-top:.25rem; }
+.alert-error { background:#ffe8e8; border:1px solid #ffb3b3; color:#a40000; padding:.6rem .8rem; border-radius:.5rem; margin-bottom:1rem; }
+
+@media (max-width: 900px){ .grid-5 { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 700px){ .grid-3, .grid-2 { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
