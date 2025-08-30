@@ -15,7 +15,8 @@ def home(request):
     recientes = (
         Publicacion.objects
         .filter(estatus="disponible")
-        .prefetch_related("fotos")
+        .select_related("usuario__perfil")        # ⚡ optimización
+        .prefetch_related("fotos")                # ⚡ optimización
         .order_by("-fecha_creacion")[:6]
     )
     return render(request, "principal/home.html", {"recientes": recientes})
@@ -52,7 +53,8 @@ def resultados_busqueda(request):
             or_block |= Q(**{c: tk})
         qs = qs.filter(or_block)
 
-    qs = qs.prefetch_related('fotos').order_by('-fecha_creacion')
+    # ⚡ optimización: usuario/perfil + fotos en un solo query
+    qs = qs.select_related("usuario__perfil").prefetch_related("fotos").order_by("-fecha_creacion")
 
     paginator = Paginator(qs, 12)
     page_obj = paginator.get_page(request.GET.get('page'))
@@ -71,7 +73,8 @@ def recientes_html(request):
     recientes = (
         Publicacion.objects
         .filter(estatus="disponible")
-        .prefetch_related("fotos")
+        .select_related("usuario__perfil")        # ⚡ optimización
+        .prefetch_related("fotos")                # ⚡ optimización
         .order_by("-fecha_creacion")[:6]
     )
     return render(request, "principal/_recientes.html", {"recientes": recientes})

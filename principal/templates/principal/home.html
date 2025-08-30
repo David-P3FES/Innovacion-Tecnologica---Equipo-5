@@ -65,6 +65,29 @@
             <div class="price">${{ pub.precio|floatformat:0|intcomma }}</div>
             <div class="addr">{{ pub.direccion_completa }}</div>
             <div class="meta">Hace {{ pub.fecha_creacion|timesince }}</div>
+
+            <!-- ===== Publicado por + Contacto ===== -->
+            <div class="seller">
+              <div class="seller__who">
+                Publicado por:
+                <strong>{% firstof pub.usuario.get_full_name pub.usuario.username %}</strong>
+              </div>
+              <div class="seller__actions">
+                {% with email=pub.usuario.email phone=pub.usuario.perfil.whatsapp %}
+                  {% if email %}
+                    <a class="btn-ico" href="mailto:{{ email }}?subject={{ pub.titulo|urlencode }}">✉️ Email</a>
+                  {% endif %}
+                  {% if phone %}
+                    {% if phone|length == 10 %}
+                      <a class="btn-ico" target="_blank" href="https://wa.me/52{{ phone }}?text={{ pub.titulo|urlencode }}">WhatsApp</a>
+                    {% else %}
+                      <a class="btn-ico" target="_blank" href="https://wa.me/{{ phone|cut:'+' }}?text={{ pub.titulo|urlencode }}">WhatsApp</a>
+                    {% endif %}
+                  {% endif %}
+                {% endwith %}
+              </div>
+            </div>
+            <!-- /Publicado por -->
           </div>
         </article>
       {% endfor %}
@@ -92,67 +115,32 @@
   background-size:cover; background-position:center;
   transform: scale(1.04); 
   filter: contrast(1.05) brightness(.95) saturate(1.05);
-  background-image: url("{% static 'img/hero-home.jpg' %}"); /* cambia la ruta si usas otra imagen */
+  background-image: url("{% static 'img/hero-home.jpg' %}");
 }
 .hero__overlay{
   position:absolute; inset:0;
   background: linear-gradient(180deg, rgba(0,0,0,.45) 0%, rgba(0,0,0,.35) 40%, rgba(0,0,0,.25) 100%);
 }
-.hero__content{
-  position:relative; z-index:2; color:#fff; text-align:center; max-width: 980px; width:100%;
-}
-.hero__title{
-  margin:0 0 .5rem; 
-  font-size: clamp(28px, 5vw, 48px); 
-  line-height:1.05; 
-  font-weight: 800;
-  text-shadow: 0 2px 18px rgba(0,0,0,.25);
-}
-.hero__subtitle{
-  margin:0 0 1rem; 
-  font-size: clamp(14px, 2.2vw, 20px); 
-  opacity:.95;
-}
+.hero__content{ position:relative; z-index:2; color:#fff; text-align:center; max-width: 980px; width:100%; }
+.hero__title{ margin:0 0 .5rem; font-size: clamp(28px, 5vw, 48px); line-height:1.05; font-weight: 800; text-shadow: 0 2px 18px rgba(0,0,0,.25); }
+.hero__subtitle{ margin:0 0 1rem; font-size: clamp(14px, 2.2vw, 20px); opacity:.95; }
 
 /* ===== SEARCHBAR ===== */
 .searchbar{
-  display:flex; 
-  gap:.5rem; 
-  justify-content:center; 
-  align-items:center;
-  padding:.5rem; 
-  border-radius:999px; 
-  background: rgba(255,255,255,.9);
-  box-shadow: 0 12px 30px rgba(0,0,0,.16);
-  backdrop-filter: blur(3px);
-  width: min(100%, 980px); 
-  margin: 0 auto;
+  display:flex; gap:.5rem; justify-content:center; align-items:center;
+  padding:.5rem; border-radius:999px; background: rgba(255,255,255,.9);
+  box-shadow: 0 12px 30px rgba(0,0,0,.16); backdrop-filter: blur(3px);
+  width: min(100%, 980px); margin: 0 auto;
 }
 .searchbar__select, .searchbar__input{
-  height:44px; 
-  border:1px solid #e6e6e6; 
-  border-radius:999px; 
-  padding: 0 .9rem; 
-  outline: none;
-  background:#fff; 
-  color:#111; 
-  font-size: 15px;
+  height:44px; border:1px solid #e6e6e6; border-radius:999px; padding: 0 .9rem; outline: none;
+  background:#fff; color:#111; font-size: 15px;
 }
 .searchbar__select{ min-width:140px; }
 .searchbar__input{ flex:1; min-width: 220px; }
-
 .searchbar__btn{
-  height:44px; 
-  border:none; 
-  border-radius:999px; 
-  padding: 0 1rem; 
-  cursor:pointer;
-  background:#5f7f64; 
-  color:#fff; 
-  font-weight:700; 
-  display:inline-flex; 
-  align-items:center; 
-  gap:.45rem;
+  height:44px; border:none; border-radius:999px; padding: 0 1rem; cursor:pointer;
+  background:#5f7f64; color:#fff; font-weight:700; display:inline-flex; align-items:center; gap:.45rem;
   box-shadow: 0 6px 16px rgba(0,0,0,.18);
 }
 .searchbar__btn:hover{ background:#4f6b54; }
@@ -176,6 +164,13 @@
 .addr{ color:#444; }
 .meta{ color:#666; font-size:.9rem; }
 .empty{ border:1px dashed #ddd; border-radius:12px; background:#fff; padding:1rem; color:#666; }
+
+/* ===== Bloque vendedor/contacto ===== */
+.seller{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-top:.35rem;}
+.seller__who{color:#333;font-size:.92rem;}
+.seller__actions{display:flex;gap:.4rem;flex-wrap:wrap}
+.btn-ico{display:inline-flex;align-items:center;gap:.35rem;padding:.28rem .6rem;border:1px solid #e5e5e5;border-radius:.5rem;text-decoration:none;color:#111;background:#fafafa}
+.btn-ico:hover{background:#f1f1f1}
 
 /* ===== Responsive ===== */
 @media (max-width: 900px){ .grid-recientes{ grid-template-columns:1fr 1fr; } }

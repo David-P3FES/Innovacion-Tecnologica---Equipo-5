@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+  {% extends "base.html" %}
 {% load static %}
 
 {% block content %}
@@ -216,36 +216,76 @@ function setMarker(lat,lng){
 if (latInit!=null && lngInit!=null) setMarker(latInit,lngInit);
 map.on("click", e=> setMarker(e.latlng.lat, e.latlng.lng));
 
-/* ===== Botón "Buscar en mapa": intenta varias variantes ===== */
+/* ===== Botón "Buscar en mapa": con mejor manejo de errores y fallback ===== */
 $("btn-geocode").addEventListener("click", async ()=>{
   const candidates = buildAddressParts();
-  if (!candidates.length){ alert("Escribe al menos calle y número/colonia para buscar."); return; }
+  if (!candidates.length){
+    alert("Escribe al menos calle y número/colonia para buscar.");
+    return;
+  }
 
-  let found = false;
-  for (const q of candidates){
+  const calle = norm($("id_calle")?.value);
+  const num   = norm($("id_numero")?.value);
+  const col   = norm($("id_colonia")?.value);
+  const cd    = norm($("id_ciudad")?.value);
+  const edo   = norm($("id_estado")?.value);
+  const cp    = norm($("id_codigo_postal")?.value);
+
+  const sleep = (ms)=>new Promise(r=>setTimeout(r,ms));
+
+  async function tryQuery(u){
     try{
-      const u = new URL("https://nominatim.openstreetmap.org/search");
-      u.searchParams.set("q", q);
-      u.searchParams.set("format","json");
-      u.searchParams.set("addressdetails","1");
-      u.searchParams.set("limit","1");
-      u.searchParams.set("countrycodes","mx");
-
       const r = await fetch(u.toString(), { headers: { "Accept-Language":"es" } });
+      if (!r.ok){
+        const txt = await r.text();
+        console.warn("Geocode HTTP", r.status, txt.slice(0,200));
+        return null;
+      }
       const j = await r.json();
       if (Array.isArray(j) && j.length){
-        const lat = parseFloat(j[0].lat), lon = parseFloat(j[0].lon);
-        setMarker(lat, lon);
-        map.setView([lat,lon], 16);
-        map.invalidateSize();
-        found = true;
-        break;
+        return { lat: parseFloat(j[0].lat), lon: parseFloat(j[0].lon) };
       }
+      return null;
     }catch(e){
       console.error("Geocode error:", e);
+      return null;
     }
   }
+
+  let found = null;
+
+  // 1) Búsqueda libre (varias combinaciones) con pausa para evitar 429
+  for (const q of candidates){
+    const u = new URL("https://nominatim.openstreetmap.org/search");
+    u.searchParams.set("q", q);
+    u.searchParams.set("format","json");
+    u.searchParams.set("addressdetails","1");
+    u.searchParams.set("limit","1");
+    u.searchParams.set("countrycodes","mx");
+    found = await tryQuery(u);
+    if (found) break;
+    await sleep(600);
+  }
+
+  // 2) Fallback estructurado
   if (!found){
+    const u2 = new URL("https://nominatim.openstreetmap.org/search");
+    if (calle || num) u2.searchParams.set("street", [calle, num].filter(Boolean).join(" "));
+    if (col) u2.searchParams.set("neighbourhood", col);
+    if (cp)  u2.searchParams.set("postalcode", cp);
+    if (cd)  u2.searchParams.set("city", cd);
+    if (edo) u2.searchParams.set("state", edo);
+    u2.searchParams.set("country","México");
+    u2.searchParams.set("format","json");
+    u2.searchParams.set("limit","1");
+    found = await tryQuery(u2);
+  }
+
+  if (found){
+    setMarker(found.lat, found.lon);
+    map.setView([found.lat,found.lon], 16);
+    map.invalidateSize();
+  }else{
     alert("No se encontró esa dirección. Ajusta colonia/CP/ciudad/estado y prueba de nuevo.");
   }
 });
