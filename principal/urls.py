@@ -29,5 +29,7 @@ urlpatterns = [
 
     path("me-encantas/", principal_views.mis_favoritos, name="mis_favoritos"),
     path("fav/toggle/<int:pk>/", views.toggle_favorito, name="toggle_favorito"),
+
+    path("publicacion/<int:pk>/", views.publicacion_detalle, name="publicacion_detalle"),
 ]
 

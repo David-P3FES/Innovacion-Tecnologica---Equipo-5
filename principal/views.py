@@ -1,13 +1,12 @@
 # principal/views.py
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
-from django.db.models import Q, Count
+from django.db.models import Q, Count, Prefetch
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
 
 # 👇 Importa tus modelos reales
-from publicaciones.models import Publicacion, Favorito  # Favorito debe existir en publicaciones.models
-
+from publicaciones.models import Publicacion, Favorito, FotoPublicacion  # añadimos FotoPublicacion
 
 # ---------- Helpers ----------
 def _to_decimal(s):
@@ -212,4 +211,33 @@ def mis_favoritos(request):
     return render(request, "principal/mis_favoritos.html", {
         "publicaciones": pubs,
         "liked_ids": liked_ids,
+    })
+
+
+# ---------- Detalle de publicación ----------
+def publicacion_detalle(request, pk: int):
+    """
+    Página de detalle con toda la info + galería + mapa + estado + ❤.
+    """
+    pub = (
+        Publicacion.objects
+        .select_related("usuario__perfil")  # autor + perfil
+        .prefetch_related(
+            Prefetch("fotos", queryset=FotoPublicacion.objects.order_by("orden", "id"))
+        )
+        .annotate(like_count=Count("favoritos"))
+        .filter(pk=pk)
+        .first()
+    )
+    if not pub:
+        # asegúrate de devolver 404 si no existe
+        pub = get_object_or_404(Publicacion, pk=pk)
+
+    liked = False
+    if request.user.is_authenticated:
+        liked = Favorito.objects.filter(usuario=request.user, publicacion=pub).exists()
+
+    return render(request, "principal/publicacion_detalle.html", {
+        "pub": pub,
+        "liked": liked,
     })
