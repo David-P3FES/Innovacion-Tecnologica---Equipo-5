@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load humanize %}
 
 {% block content %}
 <div class="panel-wrap" style="max-width:1200px;margin:1.5rem auto;">
@@ -30,7 +31,7 @@
       {% for pub in page_obj.object_list %}
         <div class="card">
           <div class="thumb">
-            {# Portada: primera por orden; si no hay, muestra "Sin foto" #}
+            {# Portada: primera por orden; si no hay, "Sin foto" #}
             {% with portada=pub.fotos.all|dictsort:"orden"|first %}
               {% if portada and portada.0.imagen %}
                 <img src="{{ portada.0.imagen.url }}" alt="Portada {{ pub.titulo }}">
@@ -46,10 +47,10 @@
               <span class="badge badge-{{ pub.tipo_operacion }}">{{ pub.get_tipo_operacion_display }}</span>
             </div>
 
-            <div class="price">${{ pub.precio }}</div>
+            <div class="price">${{ pub.precio|floatformat:0|intcomma }}</div>
             <div class="meta">
               <span>{{ pub.recamaras }} rec</span> ·
-              <span>{{ pub.banos }} baños</span> ·
+              <span>{{ pub.banos|floatformat:"-1" }} baños</span> ·
               <span>{{ pub.estacionamientos }} estac</span>
             </div>
             <div class="addr">{{ pub.direccion_completa }}</div>
@@ -76,14 +77,13 @@
                   <input type="hidden" name="estatus" value="en_trato">
                   <button type="submit" class="menu-item">En trato</button>
                 </form>
-                <form action="{% url 'publicaciones:cambiar_estatus' pub.pk %}" method="post">{% csrf_token %}
+                <form action="{% url 'publicaciones:eliminar' pub.pk %}" method="post">{% csrf_token %}
                   <input type="hidden" name="estatus" value="cerrada">
                   <button type="submit" class="menu-item">Vendida/Rentada</button>
                 </form>
               </div>
             </div>
 
-            {# Eliminar con confirm y escapejs para evitar romper el string #}
             <form action="{% url 'publicaciones:eliminar' pub.pk %}" method="post"
                   onsubmit="return confirm('¿Eliminar «{{ pub.titulo|escapejs }}»? Esta acción no se puede deshacer.');">
               {% csrf_token %}
@@ -94,7 +94,6 @@
       {% endfor %}
     </div>
 
-    {# Paginación #}
     <div class="pagination">
       {% if page_obj.has_previous %}
         <a class="page" href="?page={{ page_obj.previous_page_number }}{% if estatus_sel %}&estatus={{ estatus_sel }}{% endif %}{% if operacion_sel %}&operacion={{ operacion_sel }}{% endif %}">&laquo; Anterior</a>

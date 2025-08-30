@@ -12,7 +12,13 @@ class PublicacionForm(forms.ModelForm):
             "titulo": forms.TextInput(attrs={"placeholder": "Título breve", "class": "input-text"}),
             "descripcion": forms.Textarea(attrs={"rows": 4, "placeholder": "Describe la propiedad", "class": "input-textarea"}),
 
-            "precio": forms.NumberInput(attrs={"step": "0.01", "placeholder": "0.00", "class": "input-number"}),
+            # ⬇️ Cambiamos a TextInput para permitir máscara $1,200,000 en la UI
+            "precio": forms.TextInput(attrs={
+                "placeholder": "$0",
+                "class": "input-text input-currency",
+                "inputmode": "numeric",  # teclado numérico en móvil
+                "autocomplete": "off",
+            }),
             "tipo_operacion": forms.Select(attrs={"class": "input-select"}),
             "tipo_financiamiento": forms.Select(attrs={"class": "input-select"}),
 
@@ -48,27 +54,24 @@ class _BaseFotoFormSet(BaseInlineFormSet):
     def clean(self):
         super().clean()
         total = 0
-
         for form in self.forms:
             if not hasattr(form, "cleaned_data"):
                 continue
             if form.cleaned_data.get("DELETE"):
                 continue
-
             tiene_instancia = bool(getattr(form.instance, "pk", None) and form.instance.imagen)
             tiene_imagen_nueva = bool(form.cleaned_data.get("imagen"))
             if tiene_imagen_nueva or tiene_instancia:
                 total += 1
-
         if total < 1:
             raise forms.ValidationError("Debes subir al menos una foto.")
 
-# Permitimos 0..N portadas; luego normalizamos en la vista
+# ⬇️ extra=0 para no mostrar huecos; los creamos por JS con empty_form
 FotoPublicacionFormSet = inlineformset_factory(
     parent_model=Publicacion,
     model=FotoPublicacion,
     fields=("imagen", "es_portada", "orden"),
-    extra=3,
+    extra=0,
     can_delete=True,
     formset=_BaseFotoFormSet,
 )
