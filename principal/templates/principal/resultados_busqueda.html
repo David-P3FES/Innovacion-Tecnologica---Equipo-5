@@ -2,105 +2,312 @@
 {% load humanize %}
 
 {% block content %}
-<div style="max-width:1200px;margin:1.25rem auto;">
-  <h1 style="margin:0 0 .75rem;">Resultados de búsqueda</h1>
+<div class="wrap">
+  <h1 class="title">Resultados de búsqueda</h1>
 
-  <form method="get" action="{% url 'principal:resultados_busqueda' %}" style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;">
-    <select name="tipo_operacion" style="padding:.5rem .6rem;border:1px solid #ddd;border-radius:.5rem;">
-      <option value="" {% if not tipo_sel %}selected{% endif %}>Tipo (todos)</option>
-      <option value="venta" {% if tipo_sel == "venta" %}selected{% endif %}>Venta</option>
-      <option value="renta" {% if tipo_sel == "renta" %}selected{% endif %}>Renta</option>
-    </select>
-    <input type="text" name="direccion" value="{{ q }}" placeholder="Dirección, ciudad o colonia"
-           style="flex:1;min-width:240px;padding:.5rem .6rem;border:1px solid #ddd;border-radius:.5rem;">
-    <button type="submit" style="padding:.5rem .9rem;border:none;border-radius:.5rem;background:#333;color:#fff;">Buscar</button>
-    <a href="{% url 'principal:resultados_busqueda' %}" style="padding:.5rem .9rem;border:1px solid #ddd;border-radius:.5rem;background:#f7f7f7;color:#222;text-decoration:none;">Limpiar</a>
-  </form>
+  <!-- Botón para abrir filtros en móvil -->
+  <button class="btn-filtros" type="button" id="btn-filtros">Filtros</button>
 
-  <p style="color:#666;margin:.25rem 0 1rem;">
-    Se encontraron <strong>{{ total }}</strong> resultados{% if q %} para “{{ q }}”{% endif %}{% if tipo_sel %} en {{ tipo_sel }}{% endif %}.
-  </p>
+  <div class="layout">
+    <!-- ===== Sidebar de filtros ===== -->
+    <aside class="sidebar pretty" id="sidebar">
+      <form method="get" action="{% url 'principal:resultados_busqueda' %}" class="filters v2">
 
-  {% if page_obj.object_list %}
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;">
-      {% for pub in page_obj.object_list %}
-        <article style="border:1px solid #eee;border-radius:12px;overflow:hidden;background:#fff;">
-          <div style="height:180px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;">
-            {% with portada=pub.foto_portada %}
-              {% if portada %}
-                <img src="{{ portada.imagen.url }}" alt="{{ pub.titulo }}" style="width:100%;height:100%;object-fit:cover;">
-              {% else %}
-                <span style="color:#777;">Sin foto</span>
-              {% endif %}
-            {% endwith %}
+        <div class="f-header">
+          <div class="f-title">Filtros</div>
+          <button type="button" class="f-close" id="btn-filtros-close">×</button>
+        </div>
+
+        <!-- Texto libre -->
+        <div class="f-section">
+          <label class="f-label" for="in-direccion">Búsqueda</label>
+          <input class="f-input" id="in-direccion" type="text" name="direccion" value="{{ q }}" placeholder="Dirección, colonia, ciudad…" />
+        </div>
+
+        <!-- Tipo de operación -->
+        <div class="f-section">
+          <label class="f-label" for="sel-tipo">Tipo de operación</label>
+          <select class="f-input" id="sel-tipo" name="tipo_operacion">
+            <option value="" {% if not tipo_sel %}selected{% endif %}>Todos</option>
+            <option value="venta" {% if tipo_sel == "venta" %}selected{% endif %}>Venta</option>
+            <option value="renta" {% if tipo_sel == "renta" %}selected{% endif %}>Renta</option>
+          </select>
+        </div>
+
+        <!-- Precio -->
+        <div class="f-section">
+          <div class="f-subtitle">Precio</div>
+          <label class="f-sublabel">Mín. / Máx.</label>
+          <div class="f-pair">
+            <input class="f-input f-left" id="precio_min" type="number" inputmode="numeric"
+                   name="precio_min" value="{{ precio_min }}" min="0" step="1000" placeholder="0" />
+            <input class="f-input f-right" id="precio_max" type="number" inputmode="numeric"
+                   name="precio_max" value="{{ precio_max }}" min="0" step="1000" placeholder="∞" />
           </div>
-          <div style="padding:.8rem;">
-            <div style="display:flex;justify-content:space-between;gap:.5rem;align-items:center;">
-              <h3 style="margin:0;font-size:1.05rem;">{{ pub.titulo }}</h3>
-              <span style="background:#eef;border-radius:.4rem;padding:.15rem .4rem;font-size:.8rem;text-transform:capitalize;">
-                {{ pub.get_tipo_operacion_display }}
-              </span>
-            </div>
-            <div style="font-weight:700;margin-top:.25rem;">${{ pub.precio|floatformat:0|intcomma }}</div>
-            <div style="color:#444;margin-top:.25rem;">{{ pub.direccion_completa }}</div>
+        </div>
 
-            <!-- ===== Publicado por + Contacto ===== -->
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-top:.35rem;">
-              <div style="color:#333;font-size:.92rem;">
-                Publicado por:
-                <strong>{% firstof pub.usuario.get_full_name pub.usuario.username %}</strong>
-              </div>
-              <div style="display:flex;gap:.4rem;flex-wrap:wrap;">
-                {% with email=pub.usuario.email phone=pub.usuario.perfil.whatsapp %}
-                  {% if email %}
-                    <a href="mailto:{% autoescape off %}{{ email }}{% endautoescape %}?subject={{ pub.titulo|urlencode }}"
-                       style="display:inline-flex;align-items:center;gap:.35rem;padding:.28rem .6rem;border:1px solid #e5e5e5;border-radius:.5rem;text-decoration:none;color:#111;background:#fafafa;">
-                      ✉️ Email
-                    </a>
-                  {% endif %}
-                  {% if phone %}
-                    {% if phone|length == 10 %}
-                      {% with wnum="52"|add:phone %}
-                        <a target="_blank" href="https://wa.me/{{ wnum }}?text={{ pub.titulo|urlencode }}"
-                           style="display:inline-flex;align-items:center;gap:.35rem;padding:.28rem .6rem;border:1px solid #e5e5e5;border-radius:.5rem;text-decoration:none;color:#111;background:#fafafa;">
-                          WhatsApp
-                        </a>
-                      {% endwith %}
-                    {% else %}
-                      <a target="_blank" href="https://wa.me/{{ phone|cut:'+' }}?text={{ pub.titulo|urlencode }}"
-                         style="display:inline-flex;align-items:center;gap:.35rem;padding:.28rem .6rem;border:1px solid #e5e5e5;border-radius:.5rem;text-decoration:none;color:#111;background:#fafafa;">
-                        WhatsApp
-                      </a>
-                    {% endif %}
+        <!-- Características -->
+        <div class="f-section">
+          <div class="f-subtitle">Características</div>
+          <div class="f-row3">
+            <div>
+              <label class="f-sublabel" for="rec_min">Recámaras</label>
+              <input class="f-input" id="rec_min" type="number" name="rec_min" value="{{ rec_min }}" min="0" step="1" />
+            </div>
+            <div>
+              <label class="f-sublabel" for="banos_min">Baños</label>
+              <input class="f-input" id="banos_min" type="number" name="banos_min" value="{{ banos_min }}" min="0" step="0.5" />
+            </div>
+            <div>
+              <label class="f-sublabel" for="est_min">Estac.</label>
+              <input class="f-input" id="est_min" type="number" name="est_min" value="{{ est_min }}" min="0" step="1" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Superficie -->
+        <div class="f-section">
+          <div class="f-subtitle">Superficie</div>
+          <div class="f-row2">
+            <div>
+              <label class="f-sublabel" for="m2c_min">Construcción (m²)</label>
+              <input class="f-input" id="m2c_min" type="number" name="m2c_min" value="{{ m2c_min }}" min="0" step="10" />
+            </div>
+            <div>
+              <label class="f-sublabel" for="m2t_min">Terreno (m²)</label>
+              <input class="f-input" id="m2t_min" type="number" name="m2t_min" value="{{ m2t_min }}" min="0" step="10" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Financiamiento -->
+        <div class="f-section">
+          <label class="f-label" for="finan">Financiamiento</label>
+          <select class="f-input" id="finan" name="financiamiento">
+            <option value="" {% if not financiamiento %}selected{% endif %}>Cualquiera</option>
+            <option value="contado" {% if financiamiento == "contado" %}selected{% endif %}>Contado</option>
+            <option value="credito" {% if financiamiento == "credito" %}selected{% endif %}>Crédito</option>
+            <option value="ambos" {% if financiamiento == "ambos" %}selected{% endif %}>Crédito o contado</option>
+          </select>
+        </div>
+
+        <!-- Ubicación -->
+        <div class="f-section">
+          <div class="f-subtitle">Ubicación</div>
+          <div class="f-row2">
+            <div>
+              <label class="f-sublabel" for="estado">Estado</label>
+              <input class="f-input" id="estado" type="text" name="estado" value="{{ estado }}" placeholder="Chihuahua" />
+            </div>
+            <div>
+              <label class="f-sublabel" for="ciudad">Ciudad</label>
+              <input class="f-input" id="ciudad" type="text" name="ciudad" value="{{ ciudad }}" placeholder="Juárez" />
+            </div>
+          </div>
+        </div>
+
+        <div class="f-actions">
+          <button class="btn-apply" type="submit">Aplicar filtros</button>
+          <a class="btn-clear" href="{% url 'principal:resultados_busqueda' %}">Limpiar</a>
+        </div>
+      </form>
+    </aside>
+
+    <!-- ===== Listado ===== -->
+    <main class="results">
+      <p class="resume">
+        Se encontraron <strong>{{ total }}</strong> resultados{% if q %} para “{{ q }}”{% endif %}{% if tipo_sel %} en {{ tipo_sel }}{% endif %}.
+      </p>
+
+      {% if page_obj.object_list %}
+        <div class="grid">
+          {% for pub in page_obj.object_list %}
+            <article class="card">
+              <div class="thumb">
+                {% with portada=pub.foto_portada %}
+                  {% if portada %}
+                    <img src="{{ portada.imagen.url }}" alt="{{ pub.titulo }}">
+                  {% else %}
+                    <div class="noimg">Sin foto</div>
                   {% endif %}
                 {% endwith %}
               </div>
-            </div>
-            <!-- /Publicado por -->
-          </div>
-        </article>
-      {% endfor %}
-    </div>
+              <div class="body">
+                <div class="row">
+                  <h3 class="c-title">{{ pub.titulo }}</h3>
+                  <span class="badge">{{ pub.get_tipo_operacion_display }}</span>
+                </div>
+                <div class="price">${{ pub.precio|floatformat:0|intcomma }}</div>
+                <div class="addr">{{ pub.direccion_completa }}</div>
 
-    <div style="display:flex;justify-content:center;gap:.5rem;margin:1rem 0;">
-      {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}&tipo_operacion={{ tipo_sel }}&direccion={{ q|urlencode }}" style="padding:.35rem .6rem;border:1px solid #ddd;border-radius:.4rem;text-decoration:none;color:#222;">« Anterior</a>
+                <!-- Publicado por + contacto -->
+                <div class="seller">
+                  <div class="seller__who">
+                    Publicado por:
+                    <strong>{% firstof pub.usuario.get_full_name pub.usuario.username %}</strong>
+                  </div>
+                  <div class="seller__actions">
+                    {% with email=pub.usuario.email phone=pub.usuario.perfil.whatsapp %}
+                      {% if email %}
+                        <a class="btn-ico" href="mailto:{{ email }}?subject={{ pub.titulo|urlencode }}">✉️ Email</a>
+                      {% endif %}
+                      {% if phone %}
+                        {% if phone|length == 10 %}
+                          <a class="btn-ico" target="_blank" href="https://wa.me/52{{ phone }}?text={{ pub.titulo|urlencode }}">WhatsApp</a>
+                        {% else %}
+                          <a class="btn-ico" target="_blank" href="https://wa.me/{{ phone|cut:'+' }}?text={{ pub.titulo|urlencode }}">WhatsApp</a>
+                        {% endif %}
+                      {% endif %}
+                    {% endwith %}
+                  </div>
+                </div>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+
+        <!-- paginación -->
+        <div class="pager">
+          {% if page_obj.has_previous %}
+            <a class="p-btn" href="?page={{ page_obj.previous_page_number }}&{{ request.GET.urlencode|cut:'page='|cut:'page=' }}">« Anterior</a>
+          {% endif %}
+          <span class="p-cur">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+          {% if page_obj.has_next %}
+            <a class="p-btn" href="?page={{ page_obj.next_page_number }}&{{ request.GET.urlencode|cut:'page='|cut:'page=' }}">Siguiente »</a>
+          {% endif %}
+        </div>
+      {% else %}
+        <div class="empty">
+          <p>No encontramos resultados.</p>
+          <ul>
+            <li>Ajusta precio, recámaras o ubicación.</li>
+            <li>Usa términos como “Centro”, “Juárez”, “Chihuahua”.</li>
+          </ul>
+        </div>
       {% endif %}
-      <span style="padding:.35rem .6rem;border:1px solid #ddd;border-radius:.4rem;background:#f6f6f6;">
-        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
-      </span>
-      {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}&tipo_operacion={{ tipo_sel }}&direccion={{ q|urlencode }}" style="padding:.35rem .6rem;border:1px solid #ddd;border-radius:.4rem;text-decoration:none;color:#222;">Siguiente »</a>
-      {% endif %}
-    </div>
-  {% else %}
-    <div style="background:#fff;border:1px dashed #ddd;border-radius:12px;padding:1.25rem;">
-      <p style="margin:0 0 .5rem;">No encontramos resultados.</p>
-      <ul style="margin:.25rem 0 0 1rem;color:#555;">
-        <li>Prueba con el nombre de la <b>colonia</b> o <b>ciudad</b>.</li>
-        <li>Usa términos como “Centro”, “Juárez”, “Chihuahua”, “San Pedro”.</li>
-      </ul>
-    </div>
-  {% endif %}
+    </main>
+  </div>
 </div>
+
+<style>
+/* —— layout general ——————————————————————— */
+.wrap{max-width:1240px;margin:1rem auto;padding:0 1rem;}
+.title{margin:0 0 .5rem;}
+.layout{display:grid; grid-template-columns:280px 1fr; gap:1rem; align-items:start;}
+
+/* —— botón filtros (solo visible en móvil) ————————— */
+.btn-filtros{
+  display:none; margin:.25rem 0 .75rem; border:1px solid #e6e6e6;
+  background:#ffffff; color:#111; padding:.5rem .85rem; border-radius:12px; cursor:pointer;
+  box-shadow:0 6px 18px rgba(0,0,0,.06);
+}
+
+/* —— panel de filtros —— */
+.sidebar.pretty{
+  border:1px solid #ececec; border-radius:16px; background:#ffffff;
+  padding:12px 12px 14px; position:sticky; top:12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.04);
+}
+.filters.v2{display:flex; flex-direction:column; gap:14px;}
+.f-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:2px;}
+.f-title{font-weight:800; font-size:1.05rem;}
+.f-close{appearance:none;border:none;background:transparent;font-size:22px;line-height:1;cursor:pointer;border-radius:8px;padding:2px 6px;}
+.f-close:hover{background:#f4f4f4}
+
+.f-section{padding:12px; border:1px solid #eee; border-radius:14px; background:#fafafa;}
+.f-label{font-weight:700; margin-bottom:.4rem; display:block;}
+.f-subtitle{font-weight:700; font-size:.95rem; margin-bottom:6px;}
+.f-sublabel{font-size:.82rem; color:#666; margin:0 0 .25rem; line-height:1.2;}
+
+/* —— inputs consistentes —— */
+.f-input{
+  width:100%; height:44px; box-sizing:border-box;
+  background:#fff; border:1px solid #dadada; border-radius:10px;
+  padding:.55rem .75rem; outline:none; font:inherit; color:#111;
+  transition:border-color .15s, box-shadow .15s, background .15s;
+}
+.f-input:focus{border-color:#7aa7ff; box-shadow:0 0 0 3px rgba(122,167,255,.22);}
+.f-input::placeholder{color:#9aa0a6;}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+input[type="number"]{ -moz-appearance:textfield; }
+
+/* —— filas —— */
+.f-row2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+.f-row3{display:grid; grid-template-columns:repeat(3,1fr); gap:12px;}
+
+/* —— Par unido para Precio —— */
+.f-pair{
+  display:flex; align-items:stretch; gap:0;
+  border-radius:10px; overflow:hidden; isolation:isolate;
+}
+.f-pair .f-input{border-radius:0; border-left:1px solid #dadada;}
+.f-pair .f-input:first-child{border-left:none; border-top-left-radius:10px; border-bottom-left-radius:10px;}
+.f-pair .f-input:last-child{border-top-right-radius:10px; border-bottom-right-radius:10px;}
+
+/* —— acciones —— */
+.f-actions{display:flex; gap:8px; margin-top:2px;}
+.btn-apply{
+  border:none; background:#333; color:#fff; padding:.55rem .9rem; border-radius:10px; cursor:pointer; font-weight:700;
+  box-shadow:0 6px 16px rgba(0,0,0,.12);
+}
+.btn-apply:hover{filter:brightness(.95);}
+.btn-clear{
+  display:inline-flex; align-items:center; justify-content:center; gap:.35rem;
+  border:1px solid #e1e1e1; background:#fbfbfb; color:#111; padding:.55rem .9rem; border-radius:10px; text-decoration:none;
+}
+.btn-clear:hover{background:#f2f2f2}
+
+/* —— resultados —— */
+.results .resume{color:#666; margin:.15rem 0 .75rem;}
+.grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1rem;}
+.card{border:1px solid #eee; border-radius:12px; overflow:hidden; background:#fff;}
+.thumb{height:180px; background:#f5f5f5; display:flex; align-items:center; justify-content:center;}
+.thumb img{width:100%; height:100%; object-fit:cover;}
+.noimg{color:#777;}
+.body{padding:.8rem; display:flex; flex-direction:column; gap:.35rem;}
+.row{display:flex; justify-content:space-between; align-items:center; gap:.5rem;}
+.c-title{margin:0; font-size:1.05rem;}
+.badge{background:#eef; padding:.15rem .4rem; border-radius:.4rem; font-size:.8rem;}
+.price{font-weight:800;}
+.addr{color:#444;}
+.seller{display:flex; justify-content:space-between; align-items:center; gap:.5rem; margin-top:.35rem;}
+.seller__who{color:#333; font-size:.92rem;}
+.seller__actions{display:flex; gap:.4rem; flex-wrap:wrap}
+.btn-ico{display:inline-flex; align-items:center; gap:.35rem; padding:.28rem .6rem; border:1px solid #e5e5e5; border-radius:.5rem; text-decoration:none; color:#111; background:#fafafa}
+.btn-ico:hover{background:#f1f1f1}
+
+.pager{display:flex; justify-content:center; gap:.5rem; margin:1rem 0;}
+.p-btn{padding:.35rem .6rem; border:1px solid #ddd; border-radius:.4rem; text-decoration:none; color:#222;}
+.p-cur{padding:.35rem .6rem; border:1px solid #ddd; border-radius:.4rem; background:#f6f6f6;}
+
+.empty{background:#fff; border:1px dashed #ddd; border-radius:12px; padding:1.25rem; color:#555;}
+
+/* —— Responsive —— */
+@media (max-width: 980px){
+  .layout{grid-template-columns:1fr;}
+  .btn-filtros{display:inline-flex;}
+  .sidebar.pretty{
+    display:none; position:fixed; left:0; right:0; bottom:0; top:auto;
+    border-radius:16px 16px 0 0; padding:14px; z-index:50; box-shadow:0 -16px 40px rgba(0,0,0,.15);
+  }
+  .sidebar.pretty.open{display:block; animation:slideUp .18s ease-out;}
+  .grid{grid-template-columns:repeat(2,1fr);}
+}
+@media (max-width: 640px){
+  .grid{grid-template-columns:1fr;}
+  .f-row3{grid-template-columns:1fr 1fr;}
+}
+@keyframes slideUp{from{transform:translateY(12px);opacity:0} to{transform:translateY(0);opacity:1}}
+</style>
+
+<script>
+// Toggle del panel en móvil
+document.getElementById("btn-filtros")?.addEventListener("click", ()=>{
+  document.getElementById("sidebar")?.classList.toggle("open");
+});
+document.getElementById("btn-filtros-close")?.addEventListener("click", ()=>{
+  document.getElementById("sidebar")?.classList.remove("open");
+});
+</script>
 {% endblock %}
