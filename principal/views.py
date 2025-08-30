@@ -1,13 +1,33 @@
 # principal/views.py
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Count
+from django.http import JsonResponse, HttpResponseBadRequest
+from django.contrib.auth.decorators import login_required
+
+# 👇 Importa tus modelos reales
+from publicaciones.models import Publicacion, Favorito  # Favorito debe existir en publicaciones.models
 
 
-# 👇 Importa el modelo real de tus listados (el que usas en el panel)
-from publicaciones.models import Publicacion
+# ---------- Helpers ----------
+def _to_decimal(s):
+    try:
+        return float(str(s).replace(",", "").strip())
+    except Exception:
+        return None
+
+def _liked_ids_for(user, pubs_queryset_or_list):
+    """Devuelve set de IDs de publicaciones que el usuario ya marcó como favorito."""
+    if not user.is_authenticated:
+        return set()
+    ids = list(getattr(pubs_queryset_or_list, "values_list", lambda *a, **k: pubs_queryset_or_list)("id", flat=True))
+    if not ids:
+        return set()
+    liked = Favorito.objects.filter(usuario=user, publicacion_id__in=ids).values_list("publicacion_id", flat=True)
+    return set(liked)
 
 
+# ---------- Home ----------
 def home(request):
     """
     Home con hero + buscador y 'Recientemente publicadas'.
@@ -16,19 +36,20 @@ def home(request):
     recientes = (
         Publicacion.objects
         .filter(estatus="disponible")
-        .select_related("usuario__perfil")        # ⚡ optimización
-        .prefetch_related("fotos")                # ⚡ optimización
+        .select_related("usuario__perfil")      # ⚡ evitar N+1
+        .prefetch_related("fotos")              # ⚡ evitar N+1
+        .annotate(like_count=Count("favoritos"))
         .order_by("-fecha_creacion")[:6]
     )
-    return render(request, "principal/home.html", {"recientes": recientes})
+    liked_ids = _liked_ids_for(request.user, recientes)
+
+    return render(request, "principal/home.html", {
+        "recientes": recientes,
+        "liked_ids": liked_ids,                 # para pintar corazón lleno
+    })
 
 
-def _to_decimal(s):
-    try:
-        return float(str(s).replace(",", "").strip())
-    except Exception:
-        return None
-
+# ---------- Resultados de búsqueda con filtros ----------
 def resultados_busqueda(request):
     """
     Resultados de búsqueda pública con panel de filtros.
@@ -108,12 +129,20 @@ def resultados_busqueda(request):
                 or_block |= Q(**{c: tk})
             qs = qs.filter(or_block)
 
-    # ── 7) Optimización y orden
-    qs = qs.select_related("usuario__perfil").prefetch_related("fotos").order_by("-fecha_creacion")
+    # ── 7) Optimización, conteo de likes y orden
+    qs = (
+        qs.select_related("usuario__perfil")
+          .prefetch_related("fotos")
+          .annotate(like_count=Count("favoritos"))
+          .order_by("-fecha_creacion")
+    )
 
     # ── 8) Paginación
     paginator = Paginator(qs, 12)
     page_obj = paginator.get_page(request.GET.get("page"))
+
+    # ── 9) IDs ya likeados por el usuario para pintar UI
+    liked_ids = _liked_ids_for(request.user, page_obj.object_list)
 
     ctx = {
         "page_obj": page_obj,
@@ -121,7 +150,7 @@ def resultados_busqueda(request):
         "tipo_sel": tipo_sel,
         "q": texto,
 
-        # Para mantener estado del formulario en la plantilla
+        # Estado del formulario
         "precio_min": request.GET.get("precio_min", ""),
         "precio_max": request.GET.get("precio_max", ""),
         "rec_min": request.GET.get("rec_min", ""),
@@ -132,17 +161,55 @@ def resultados_busqueda(request):
         "financiamiento": financiamiento,
         "estado": estado,
         "ciudad": ciudad,
+
+        # UI likes
+        "liked_ids": liked_ids,
     }
     return render(request, "principal/resultados_busqueda.html", ctx)
 
 
-# (Opcional) Si quieres actualizar "recientes" vía fetch sin recargar la página:
+# ---------- Parcial de recientes (opcional para HTMX/Fetch) ----------
 def recientes_html(request):
     recientes = (
         Publicacion.objects
         .filter(estatus="disponible")
-        .select_related("usuario__perfil")        # ⚡ optimización
-        .prefetch_related("fotos")                # ⚡ optimización
+        .select_related("usuario__perfil")
+        .prefetch_related("fotos")
+        .annotate(like_count=Count("favoritos"))
         .order_by("-fecha_creacion")[:6]
     )
-    return render(request, "principal/_recientes.html", {"recientes": recientes})
+    liked_ids = _liked_ids_for(request.user, recientes)
+    return render(request, "principal/_recientes.html", {
+        "recientes": recientes,
+        "liked_ids": liked_ids,
+    })
+
+
+# ---------- Favoritos ----------
+@login_required
+def toggle_favorito(request, pk):
+    """Alterna favorito via POST (AJAX). Devuelve {'liked': True|False}."""
+    if request.method != "POST":
+        return HttpResponseBadRequest("POST required")
+    pub = get_object_or_404(Publicacion, pk=pk)
+    obj, created = Favorito.objects.get_or_create(usuario=request.user, publicacion=pub)
+    if not created:
+        obj.delete()
+    return JsonResponse({"liked": created})
+
+@login_required
+def mis_favoritos(request):
+    """Listado del usuario: 'Me encantas'."""
+    pubs = (
+        Publicacion.objects
+        .filter(favoritos__usuario=request.user)
+        .select_related("usuario__perfil")
+        .prefetch_related("fotos")
+        .annotate(like_count=Count("favoritos"))
+        .order_by("-fecha_creacion")
+    )
+    liked_ids = _liked_ids_for(request.user, pubs)
+    return render(request, "principal/mis_favoritos.html", {
+        "publicaciones": pubs,
+        "liked_ids": liked_ids,
+    })

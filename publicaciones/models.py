@@ -148,3 +148,21 @@ class FotoPublicacion(models.Model):
 
     def __str__(self):
         return f"Foto #{self.pk} de {self.publicacion.titulo}"
+    
+    # publicaciones/models.py
+from django.conf import settings
+from django.db import models
+
+# ... tu modelo Publicacion ya existe ...
+
+class Favorito(models.Model):
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="favoritos")
+    publicacion = models.ForeignKey('Publicacion', on_delete=models.CASCADE, related_name="favoritos")
+    creado = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("usuario", "publicacion")
+        ordering = ("-creado",)
+
+    def __str__(self):
+        return f"{self.usuario} ❤ {self.publicacion_id}"

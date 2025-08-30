@@ -47,13 +47,17 @@
               <a href="{% url 'principal:home' %}" class="btn-login">
                 <i class="fas fa-home"></i> Home
               </a>
-              <a href="#" class="btn-login"><i class="fas fa-heart"></i> Me encantas</a>
+              <a href="{% url 'principal:mis_favoritos' %}" class="btn-login">
+                <i class="fas fa-heart"></i> Me encantas
+              </a>
               <a href="{% url 'publicaciones:panel' %}" class="btn-login">
                 <i class="fas fa-home"></i> Vender/Rentar
               </a>
             {% else %}
               <!-- En cualquier otra vista, orden normal -->
-              <a href="#" class="btn-login"><i class="fas fa-heart"></i> Me encantas</a>
+              <a href="{% url 'principal:mis_favoritos' %}" class="btn-login">
+                <i class="fas fa-heart"></i> Mis favoritos
+              </a>
               <a href="{% url 'publicaciones:panel' %}" class="btn-login">
                 <i class="fas fa-home"></i> Vender/Rentar
               </a>
@@ -70,7 +74,10 @@
               <i class="fas fa-sign-out-alt"></i> Salir
             </a>
           {% else %}
-            <!-- Solo iniciar sesión -->
+            <!-- Si no hay sesión, que mande a login pero con next a mis_favoritos -->
+            <a href="{% url 'account_login' %}?next={% url 'principal:mis_favoritos' %}" class="btn-login">
+              <i class="fas fa-heart"></i> Me encantas
+            </a>
             <a href="{% url 'account_login' %}" class="btn-login">
               <i class="fas fa-user"></i> Iniciar sesión
             </a>

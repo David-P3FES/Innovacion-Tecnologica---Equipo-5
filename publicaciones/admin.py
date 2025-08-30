@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.apps import apps
+from .models import Publicacion, Favorito
 
 Publicacion = apps.get_model("publicaciones", "Publicacion")
 FotoPublicacion = apps.get_model("publicaciones", "FotoPublicacion")
@@ -59,3 +60,9 @@ class FotoPublicacionAdmin(admin.ModelAdmin):
         if {"publicacion", "orden"} <= fields:
             return ("publicacion", "orden")
         return ("id",)
+
+@admin.register(Favorito)
+class FavoritoAdmin(admin.ModelAdmin):
+    list_display = ("usuario", "publicacion", "creado")
+    list_filter = ("creado",)
+    search_fields = ("usuario__username", "publicacion__titulo")
