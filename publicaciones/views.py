@@ -44,7 +44,8 @@ def crear_publicacion(request):
             formset.save()
             _normalizar_portada(publicacion)
             messages.success(request, "¡Publicación creada correctamente!")
-            return redirect("publicaciones:editar", pk=publicacion.pk)
+            # Antes: return redirect("publicaciones:editar", pk=publicacion.pk)
+            return redirect("publicaciones:panel")  # ⬅️ redirige al panel
     else:
         form = PublicacionForm()
         formset = FotoPublicacionFormSet()
@@ -54,7 +55,6 @@ def crear_publicacion(request):
         "formset": formset,
         "modo": "crear",
     })
-
 
 @login_required
 def editar_publicacion(request, pk):
@@ -67,7 +67,8 @@ def editar_publicacion(request, pk):
             formset.save()
             _normalizar_portada(publicacion)
             messages.success(request, "¡Publicación actualizada!")
-            return redirect("publicaciones:editar", pk=publicacion.pk)
+            # Antes: return redirect("publicaciones:editar", pk=publicacion.pk)
+            return redirect("publicaciones:panel")   # ⬅️ ahora al panel
     else:
         form = PublicacionForm(instance=publicacion)
         formset = FotoPublicacionFormSet(instance=publicacion)

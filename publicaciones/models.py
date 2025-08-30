@@ -110,6 +110,17 @@ class Publicacion(models.Model):
     @property
     def tiene_coordenadas(self) -> bool:
         return self.latitud is not None and self.longitud is not None
+    
+    # al final de la clase Publicacion
+
+    @property
+    def foto_portada(self):
+        """Devuelve la foto de portada (o la primera por orden) o None."""
+        f = self.fotos.filter(es_portada=True).order_by("orden", "id").first()
+        if not f:
+            f = self.fotos.order_by("orden", "id").first()
+        return f
+    
 
 
 class FotoPublicacion(models.Model):
