@@ -1,30 +1,31 @@
-<!--!
-  @file profile_view.html
-  @brief Plantilla para mostrar la información del perfil del usuario en la app cuentas.
-  @details
-   - Extiende de `base.html`.
-   - Muestra datos generales del usuario y campos adicionales del perfil.
-   - Incluye un enlace para actualizar la información.
--->
-
 {% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/ver_perfil.css' %}?v=2">
+{% endblock %}
 
 {% block content %}
 <div class="profile-container">
-  <!--! @brief Encabezado de la sección de perfil -->
-  <h2>Mi Perfil</h2>
-
-  <!--! @brief Bloque de información del perfil -->
-  <div class="profile-info">
-    <p><strong>Usuario:</strong> {{ user.username }}</p>
-    <p><strong>Nombre:</strong> {{ user.first_name }}</p>
-    <p><strong>Apellido:</strong> {{ user.last_name }}</p>
-    <p><strong>Email:</strong> {{ user.email }}</p>
-    <p><strong>RFC:</strong> {{ perfil.rfc }}</p>
-    <p><strong>WhatsApp:</strong> {{ perfil.whatsapp }}</p>
+  <div class="profile-card">
+    <div class="profile-left">
+      <div class="profile-avatar" data-initials="{{ user.first_name|first|upper }}"></div>
+    </div>
+    <div class="profile-right">
+      <h2>Mi Perfil</h2>
+      <div class="profile-info">
+        <p><strong>Usuario:</strong> {{ user.username }}</p>
+        <p><strong>Nombre:</strong> {{ user.first_name }}</p>
+        <p><strong>Apellido:</strong> {{ user.last_name }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>RFC:</strong> {{ perfil.rfc }}</p>
+        <p><strong>WhatsApp:</strong> {{ perfil.whatsapp }}</p>
+      </div>
+      <a href="{% url 'cuentas:editar_perfil' %}" class="btn-guardar">Actualizar datos</a>
+    </div>
   </div>
-
-  <!--! @brief Enlace para redirigir a la edición de perfil -->
-  <a href="{% url 'cuentas:editar_perfil' %}" class="btn-guardar">Actualizar datos</a>
 </div>
+
+<script src="{% static 'js/perfil.js' %}"></script>
+<br>
 {% endblock %}
