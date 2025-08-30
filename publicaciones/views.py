@@ -6,6 +6,7 @@ from django.core.paginator import Paginator
 from django.views.decorators.http import require_POST
 from .models import Publicacion
 from .forms import PublicacionForm, FotoPublicacionFormSet
+from django.db.models import Q, Count
 
 def _normalizar_portada(publicacion):
     fotos = list(publicacion.fotos.order_by("orden", "id"))
@@ -85,10 +86,19 @@ def panel_ventas(request):
     """
     Lista sólo las publicaciones del usuario autenticado,
     ordenadas por fecha_creacion desc (definido en Meta).
-    Incluye paginación.
+    Incluye paginación y conteos por estatus.
     """
-    qs = Publicacion.objects.filter(usuario=request.user)
-    # filtros rápidos opcionales (estatus / operación)
+    base_qs = Publicacion.objects.filter(usuario=request.user)
+    # ⬇️ Conteos por estatus
+    stats = base_qs.aggregate(
+        total=Count('id'),
+        disponibles=Count('id', filter=Q(estatus='disponible')),
+        en_trato=Count('id', filter=Q(estatus='en_trato')),
+        cerradas=Count('id', filter=Q(estatus='cerrada')),
+    )
+
+    # filtros rápidos
+    qs = base_qs
     estatus = request.GET.get("estatus")
     operacion = request.GET.get("operacion")
     if estatus:
@@ -96,7 +106,7 @@ def panel_ventas(request):
     if operacion:
         qs = qs.filter(tipo_operacion=operacion)
 
-    paginator = Paginator(qs, 9)  # 9 por página (3x3 cards)
+    paginator = Paginator(qs.prefetch_related("fotos"), 9)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
@@ -104,7 +114,9 @@ def panel_ventas(request):
         "page_obj": page_obj,
         "estatus_sel": estatus or "",
         "operacion_sel": operacion or "",
+        "stats": stats,  # ⬅️ pásalo al template
     })
+
 
 
 @login_required

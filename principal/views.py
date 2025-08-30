@@ -1,67 +1,77 @@
-"""
-@file views.py
-@brief Vistas de la aplicación `principal`.
-@details Define la lógica de las vistas principales:
-         - Home con verificación de perfil.
-         - Resultados de búsqueda de propiedades.
-         - Página de detalle de prioridad (placeholder).
-"""
+# principal/views.py
+from django.shortcuts import render
+from django.core.paginator import Paginator
+from django.db.models import Q
 
-from django.shortcuts import render, redirect
-from .models import Propiedad
-from django.http import HttpResponse
+# 👇 Importa el modelo real de tus listados (el que usas en el panel)
+from publicaciones.models import Publicacion
 
 
 def home(request):
     """
-    @brief Vista de inicio de la aplicación principal.
-    @details
-     - Si el usuario está autenticado pero su perfil no está completo,
-       se le redirige a la vista `cuentas:complete_profile`.
-     - En caso contrario, se carga la plantilla `principal/home.html`.
-
-    @param request Objeto HttpRequest con información de la petición.
-    @return HttpResponse con la página de inicio o redirección.
+    Home con hero + buscador y 'Recientemente publicadas'.
+    Trae solo publicaciones 'disponible', ordenadas por fecha (6).
     """
-    if request.user.is_authenticated:
-        perfil = getattr(request.user, "perfil", None)  # perfil relacionado al user
-        if perfil and not perfil.is_complete():
-            return redirect('cuentas:complete_profile')
-    return render(request, 'principal/home.html')
+    recientes = (
+        Publicacion.objects
+        .filter(estatus="disponible")
+        .prefetch_related("fotos")
+        .order_by("-fecha_creacion")[:6]
+    )
+    return render(request, "principal/home.html", {"recientes": recientes})
 
 
 def resultados_busqueda(request):
     """
-    @brief Vista de resultados de búsqueda de propiedades.
-    @details
-     - Recupera el parámetro `q` desde la URL.
-     - Filtra las propiedades por título (coincidencia parcial, insensible a mayúsculas).
-     - Solo se muestran aquellas con estado "disponible".
-     - Si no hay query, retorna lista vacía.
-
-    @param request Objeto HttpRequest con información de la petición.
-    @return HttpResponse con la plantilla `principal/resultados_busqueda.html`
-            y el contexto que incluye propiedades y la query.
+    Resultados de búsqueda pública:
+    - Filtra por tipo_operacion (venta/renta) y por texto libre en dirección/título/etc.
+    - Solo muestra 'disponible' (cara pública).
     """
-    query = request.GET.get('q')
-    propiedades = Propiedad.objects.filter(
-        titulo__icontains=query,
-        estado='disponible'
-    ) if query else []
-    return render(request, 'principal/resultados_busqueda.html', {
-        'propiedades': propiedades,
-        'query': query
-    })
+    tipo = (request.GET.get('tipo_operacion') or '').strip().lower()
+    texto = (request.GET.get('direccion') or '').strip()
+
+    qs = Publicacion.objects.filter(estatus='disponible')
+
+    if tipo in ('venta', 'renta'):
+        qs = qs.filter(tipo_operacion=tipo)
+
+    tokens = [t for t in texto.replace(',', ' ').split() if len(t) >= 2]
+    campos = [
+        'titulo__icontains',
+        'descripcion__icontains',
+        'calle__icontains',
+        'numero__icontains',
+        'colonia__icontains',
+        'ciudad__icontains',
+        'estado__icontains',
+        'codigo_postal__icontains',
+    ]
+    for tk in tokens:
+        or_block = Q()
+        for c in campos:
+            or_block |= Q(**{c: tk})
+        qs = qs.filter(or_block)
+
+    qs = qs.prefetch_related('fotos').order_by('-fecha_creacion')
+
+    paginator = Paginator(qs, 12)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    ctx = {
+        'page_obj': page_obj,
+        'total': paginator.count,
+        'tipo_sel': tipo,
+        'q': texto,
+    }
+    return render(request, 'principal/resultados_busqueda.html', ctx)
 
 
-def detalle_prioridad(request):
-    """
-    @brief Vista de detalle de prioridad (placeholder).
-    @details
-     - Devuelve un HttpResponse simple de prueba.
-     - Pendiente de implementación futura para mostrar detalle real.
-
-    @param request Objeto HttpRequest.
-    @return HttpResponse con un mensaje de placeholder.
-    """
-    return HttpResponse("Aquí se mostrarán los detalles de la prioridad")
+# (Opcional) Si quieres actualizar "recientes" vía fetch sin recargar la página:
+def recientes_html(request):
+    recientes = (
+        Publicacion.objects
+        .filter(estatus="disponible")
+        .prefetch_related("fotos")
+        .order_by("-fecha_creacion")[:6]
+    )
+    return render(request, "principal/_recientes.html", {"recientes": recientes})
