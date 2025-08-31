@@ -39,11 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
 
     # Apps personalizadas
     'principal',
     'cuentas.apps.CuentasConfig',   # registra señales
-
+    'publicaciones',
     # Utilidades
     'widget_tweaks',
 
@@ -53,6 +54,8 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+
+    
 ]
 
 SITE_ID = 3  #: ID del sitio para django.contrib.sites
@@ -156,8 +159,10 @@ STATICFILES_DIRS = [
     BASE_DIR / "cuentas" / "static",
 ]
 
+# Archivos de usuario (fotos)
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR / 'media'
+
 
 # ==============================
 # Configuración por defecto de campos

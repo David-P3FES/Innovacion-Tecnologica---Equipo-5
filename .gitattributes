@@ -3,7 +3,7 @@
 # ========================================
 
 # Todos los archivos de texto: Git los normaliza a LF internamente
-* text=auto
+* text=auto eol=lf
 
 # Forzamos LF en lenguajes y archivos comunes de Django
 *.py    text eol=lf
@@ -36,4 +36,3 @@ requirements*.txt text eol=lf
 *.woff2 binary
 *.ttf   binary
 *.eot   binary
-    
