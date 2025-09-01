@@ -16,16 +16,14 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.profile-container{
-  min-height: 100dvh;
+.profile-container {
   display: flex;
-  align-items: center;
+  align-items: center   ;
   justify-content: center;
-  padding: 2rem;
+  padding: 20px 2.5rem 0; 
 }
 
 .profile-card {
-  width: min(900px, 95%);
   background: #fff;
   border-radius: 20px;
   box-shadow: var(--shadow);
@@ -33,6 +31,7 @@ body {
   animation: fadeInUp .6s ease-out both;
   display: grid;
   grid-template-columns: 280px 1fr;
+  margin: 5px;
 }
 
 .profile-left {
@@ -98,7 +97,9 @@ body {
 }
 
 .btn-guardar {
-  display: inline-flex;
+  grid-column: 1 / -1;
+  width: 92.5%;
+  display: flex;
   align-items: center;
   justify-content: center;
   padding: 14px 18px;
@@ -113,7 +114,9 @@ body {
   transition: var(--transition);
   position: relative;
   overflow: hidden;
+  margin-top: .5rem;
 }
+
 .btn-guardar:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 25px rgba(0,0,0,.2);
