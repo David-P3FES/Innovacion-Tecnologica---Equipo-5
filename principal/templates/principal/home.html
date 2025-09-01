@@ -1,202 +1,219 @@
 {% extends "base.html" %}
 {% load static %}
-
-{# 
-  @file home.html
-  @brief Plantilla de inicio con hero, buscador y propiedades destacadas.
-  @details 
-   - Si el usuario está logueado y no ha completado su perfil, muestra un aviso con link.
-   - Incluye hero central con formulario de búsqueda accesible.
-   - Muestra grilla de propiedades destacadas o mensaje si no hay disponibles.
-   - Integra un select personalizado con soporte para teclado.
-#}
+{% load humanize %}
 
 {% block content %}
 
-{# Carga del CSS correspondiente (ajustar según estructura) #}
-<link rel="stylesheet" href="{% static 'css/home.css' %}">
-
-{# @section aviso Aviso de completar perfil #}
-{% if request.user.is_authenticated and request.user.profile and not request.user.profile.is_complete %}
-<section class="banner-incomplete" role="alert" aria-live="polite">
-  <div class="banner-incomplete__inner">
-    <strong>¡Falta completar tu perfil!</strong>
-    <span>Para publicar o rentar, completa tu RFC y WhatsApp.</span>
-    <a class="btn btn--small btn--primary" href="{% url 'cuentas:complete_profile' %}">
-      Completar perfil
-    </a>
-  </div>
-</section>
-{% endif %}
-{# @endsection aviso #}
-
-<!--! @section hero Sección principal (hero) -->
+<!-- ===== HERO con imagen de fondo y overlay ===== -->
 <section class="hero">
-  <div class="hero-inner">
-    <h2>¡Encuentra tu nueva casa o renta una Ya!</h2>
-    <p>Conecta con los mejores vendedores o inmobiliarias de México.</p>
+  <div class="hero__bg"></div>
+  <div class="hero__overlay"></div>
 
-    <!--! @section search_bar Barra de búsqueda -->
-    <form method="GET" action="{% url 'principal:resultados_busqueda' %}" class="search-bar" role="search" aria-label="Buscar propiedades">
-      <div class="c-select" data-select>
-        <select name="tipo_operacion" class="js-custom-select" aria-label="Tipo de operación">
-          <option value="">Tipo</option>
-          <option value="venta">Venta</option>
-          <option value="renta">Renta</option>
-        </select>
-      </div>
+  <div class="hero__content">
+    <h1 class="hero__title">¡Encuentra tu nueva casa o renta una Ya!</h1>
+    <p class="hero__subtitle">Conecta con los mejores vendedores o inmobiliarias de México.</p>
 
-      <input 
-        type="text" 
-        name="direccion" 
+    <!-- ===== Buscador ===== -->
+    <form method="get" action="{% url 'principal:resultados_busqueda' %}" class="searchbar">
+      <select name="tipo_operacion" class="searchbar__select" aria-label="Tipo de operación">
+        <option value="">Tipo</option>
+        <option value="venta">Venta</option>
+        <option value="renta">Renta</option>
+      </select>
+
+      <input
+        type="text"
+        name="direccion"
+        class="searchbar__input"
         placeholder="Buscar por dirección, ciudad o colonia"
-        aria-label="Buscar por dirección, ciudad o colonia"
-      >
+        aria-label="Dirección, ciudad o colonia"
+      />
 
-      <button type="submit" class="btn-buscar">
-        <i class="fas fa-search" aria-hidden="true"></i>
-        <span>Buscar</span>
+      <button type="submit" class="searchbar__btn">
+        <span class="searchbar__icon">🔍</span>
+        Buscar
       </button>
     </form>
-    <!--! @endsection search_bar -->
-
-    <noscript>
-      <p class="noscript-msg">
-        Para una mejor experiencia habilita JavaScript. Aún puedes usar el selector “Tipo” nativo.
-      </p>
-    </noscript>
   </div>
 </section>
-<!--! @endsection hero -->
 
-<!--! @section destacados Propiedades destacadas -->
-<section class="seccion-productos">
-  <h2>Propiedades destacadas</h2>
-  <div class="grid-productos">
-    {% for propiedad in propiedades %}
-      <article class="producto">
-        <h3>{{ propiedad.titulo }}</h3>
-        <p>{{ propiedad.descripcion|truncatechars:100 }}</p>
-        <p><strong>${{ propiedad.precio }}</strong></p>
-        <p>{{ propiedad.direccion }}</p>
-        <a href="{% url 'detalle_propiedad' propiedad.id %}" class="btn-principal" aria-label="Ver detalles de {{ propiedad.titulo }}">
-          Ver detalles
-        </a>
-      </article>
-    {% empty %}
-      <div class="producto coming-soon">
-        <h3>No hay propiedades disponibles todavía</h3>
-        <p>Pronto podrás explorar opciones aquí.</p>
-      </div>
-    {% endfor %}
+<!-- ===== Recientemente publicadas ===== -->
+<section class="recientes-wrap">
+  <div class="recientes-head">
+    <h2>Recientemente publicadas</h2>
+    <a href="{% url 'principal:resultados_busqueda' %}" class="link">Ver todas</a>
   </div>
-</section>
-<!--! @endsection destacados -->
 
-{# @section js Script de select personalizado #}
+  {% if recientes %}
+    <div class="grid-recientes">
+      {% for pub in recientes %}
+        <article class="card">
+          <!-- LINK de cobertura a detalle -->
+          <a class="cover-link" href="{% url 'principal:publicacion_detalle' pub.id %}"></a>
+
+          <div class="thumb">
+            {% with portada=pub.foto_portada %}
+              {% if portada %}
+                <img src="{{ portada.imagen.url }}" alt="{{ pub.titulo }}">
+              {% else %}
+                <div class="noimg">Sin foto</div>
+              {% endif %}
+            {% endwith %}
+
+            <!-- Estatus -->
+            {% if pub.estatus %}
+              <span class="status-badge status-{{ pub.estatus }}">{{ pub.get_estatus_display }}</span>
+            {% endif %}
+
+            <!-- Corazón + contador -->
+            <button
+              class="like-btn {% if liked_ids and pub.id in liked_ids %}is-liked{% endif %}"
+              type="button"
+              data-pub="{{ pub.id }}"
+              title="{% if liked_ids and pub.id in liked_ids %}Quitar de favoritos{% else %}Agregar a favoritos{% endif %}">
+              <span class="like-ico">❤</span>
+            </button>
+            <span class="like-count">{{ pub.like_count|default:0 }}</span>
+          </div>
+
+          <div class="body">
+            <div class="row">
+              <h3 class="title">{{ pub.titulo }}</h3>
+              <span class="badge">{{ pub.get_tipo_operacion_display }}</span>
+            </div>
+            <div class="price">${{ pub.precio|floatformat:0|intcomma }}</div>
+            <div class="addr">{{ pub.direccion_completa }}</div>
+            <div class="meta">Hace {{ pub.fecha_creacion|timesince }}</div>
+
+            <!-- Publicado por + Contacto -->
+            <div class="seller">
+              <div class="seller__who">
+                Publicado por:
+                <strong>{% firstof pub.usuario.get_full_name pub.usuario.username %}</strong>
+              </div>
+              <div class="seller__actions">
+                {% with email=pub.usuario.email phone=pub.usuario.perfil.whatsapp %}
+                  {% if email %}
+                    <a class="btn-ico" href="mailto:{{ email }}?subject={{ pub.titulo|urlencode }}">✉️ Email</a>
+                  {% endif %}
+                  {% if phone %}
+                    {% if phone|length == 10 %}
+                      <a class="btn-ico" target="_blank" href="https://wa.me/52{{ phone }}?text={{ pub.titulo|urlencode }}">WhatsApp</a>
+                    {% else %}
+                      <a class="btn-ico" target="_blank" href="https://wa.me/{{ phone|cut:'+' }}?text={{ pub.titulo|urlencode }}">WhatsApp</a>
+                    {% endif %}
+                  {% endif %}
+                {% endwith %}
+              </div>
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty">Aún no hay publicaciones recientes.</div>
+  {% endif %}
+</section>
+
+<style>
+/* ===== HERO ===== */
+.hero{position:relative;min-height:360px;display:flex;align-items:center;justify-content:center;padding:3.5rem 1rem;overflow:hidden;background:#f7f7f5;border-bottom:1px solid rgba(0,0,0,.05);}
+.hero__bg{position:absolute;inset:0;background-size:cover;background-position:center;transform:scale(1.04);filter:contrast(1.05) brightness(.95) saturate(1.05);background-image:url("{% static 'img/hero-home.jpg' %}");}
+.hero__overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.45) 0%,rgba(0,0,0,.35) 40%,rgba(0,0,0,.25) 100%);}
+.hero__content{position:relative;z-index:2;color:#fff;text-align:center;max-width:980px;width:100%;}
+.hero__title{margin:0 0 .5rem;font-size:clamp(28px,5vw,48px);line-height:1.05;font-weight:800;text-shadow:0 2px 18px rgba(0,0,0,.25);}
+.hero__subtitle{margin:0 0 1rem;font-size:clamp(14px,2.2vw,20px);opacity:.95;}
+.searchbar{display:flex;gap:.5rem;justify-content:center;align-items:center;padding:.5rem;border-radius:999px;background:rgba(255,255,255,.9);box-shadow:0 12px 30px rgba(0,0,0,.16);backdrop-filter:blur(3px);width:min(100%,980px);margin:0 auto;}
+.searchbar__select,.searchbar__input{height:44px;border:1px solid #e6e6e6;border-radius:999px;padding:0 .9rem;outline:none;background:#fff;color:#111;font-size:15px;}
+.searchbar__select{min-width:140px;}
+.searchbar__input{flex:1;min-width:220px;}
+.searchbar__btn{height:44px;border:none;border-radius:999px;padding:0 1rem;cursor:pointer;background:#5f7f64;color:#fff;font-weight:700;display:inline-flex;align-items:center;gap:.45rem;box-shadow:0 6px 16px rgba(0,0,0,.18);}
+.searchbar__btn:hover{background:#4f6b54;}
+.searchbar__icon{line-height:1;}
+
+/* ===== Recientes ===== */
+.recientes-wrap{max-width:1200px;margin:1.25rem auto 2rem;padding:0 1rem;}
+.recientes-head{display:flex;justify-content:space-between;align-items:center;margin:.25rem 0 .75rem;}
+.recientes-head h2{margin:0;font-size:1.25rem;}
+.link{text-decoration:none;font-weight:600;color:#2d6cdf;}
+.grid-recientes{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
+.card{position:relative;border:1px solid #eee;border-radius:12px;overflow:hidden;background:#fff;}
+.cover-link{position:absolute;inset:0;z-index:1;} /* hace la card clicable */
+.thumb{position:relative;height:180px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;}
+.thumb img{width:100%;height:100%;object-fit:cover;}
+.noimg{color:#777;}
+.body{padding:.8rem;display:flex;flex-direction:column;gap:.35rem;}
+.row{display:flex;justify-content:space-between;align-items:center;gap:.5rem;}
+.title{margin:0;font-size:1.05rem;}
+.badge{background:#eef;padding:.15rem .4rem;border-radius:.4rem;font-size:.8rem;}
+.price{font-weight:800;}
+.addr{color:#444;}
+.meta{color:#666;font-size:.9rem;}
+.empty{border:1px dashed #ddd;border-radius:12px;background:#fff;padding:1rem;color:#666;}
+
+/* ===== Vendedor/contacto ===== */
+.seller{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-top:.35rem;}
+.seller__who{color:#333;font-size:.92rem;}
+.seller__actions{display:flex;gap:.4rem;flex-wrap:wrap}
+.btn-ico{position:relative;z-index:2;display:inline-flex;align-items:center;gap:.35rem;padding:.28rem .6rem;border:1px solid #e5e5e5;border-radius:.5rem;text-decoration:none;color:#111;background:#fafafa}
+.btn-ico:hover{background:#f1f1f1}
+
+/* ===== Corazón, contador y estatus ===== */
+.like-btn{position:absolute;top:10px;right:10px;z-index:2;display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:999px;border:1px solid #e8e8e8;background:rgba(255,255,255,.9);cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.12);}
+.like-btn .like-ico{font-size:18px;line-height:1;color:#888;}
+.like-btn.is-liked{background:#ffe9ed;border-color:#ffc6d0;}
+.like-btn.is-liked .like-ico{color:#e25563;}
+.like-btn:hover{filter:brightness(.98);}
+.like-count{position:absolute;top:10px;right:52px;z-index:2;font-size:.9rem;color:#333;background:#fff;border:1px solid #eee;border-radius:999px;padding:.1rem .45rem;}
+.status-badge{position:absolute;left:10px;top:10px;z-index:2;font-size:.78rem;color:#fff;border-radius:8px;padding:.15rem .45rem;text-transform:capitalize;box-shadow:0 8px 20px rgba(0,0,0,.12);}
+.status-disponible{background:#16a34a;}
+.status-en_trato{background:#f59e0b;}
+.status-cerrada{background:#6b7280;}
+
+/* ===== Responsive ===== */
+@media (max-width:900px){.grid-recientes{grid-template-columns:1fr 1fr;}}
+@media (max-width:760px){
+  .searchbar{flex-wrap:wrap;border-radius:16px;padding:.75rem;gap:.6rem;}
+  .searchbar__select,.searchbar__input,.searchbar__btn{height:46px;width:100%;border-radius:12px;}
+}
+@media (max-width:640px){.grid-recientes{grid-template-columns:1fr;}}
+</style>
+
+<!-- ===== Scripts de favoritos ===== -->
 <script>
-(function(){
-  const PALETTE = { emptyText: 'Tipo' };
-  document.querySelectorAll('.c-select').forEach(initCustomSelect);
+  window.AUTHENTICATED = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
+  function getCsrf(){ const m=document.cookie.match(/csrftoken=([^;]+)/); return m?m[1]:''; }
 
-  function initCustomSelect(wrapper){
-    const native = wrapper.querySelector('.js-custom-select');
-    if(!native) return;
-    wrapper.setAttribute('aria-expanded','false');
+  document.addEventListener("click", async (e)=>{
+    const btn = e.target.closest(".like-btn");
+    if(!btn) return;
 
-    // Botón visible
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'c-select__button';
-    btn.setAttribute('aria-haspopup','listbox');
-    btn.setAttribute('aria-expanded','false');
+    const pubId = btn.dataset.pub;
 
-    const valueSpan = document.createElement('span');
-    valueSpan.className = 'c-select__value';
-    valueSpan.textContent = native.selectedOptions[0]?.text || PALETTE.emptyText;
+    if(!window.AUTHENTICATED){
+      const next = encodeURIComponent(window.location.pathname + window.location.search);
+      window.location.href = "{% url 'account_login' %}?next=" + next;
+      return;
+    }
 
-    const chev = document.createElement('i');
-    chev.className = 'c-select__chevron';
-    btn.appendChild(valueSpan);
-    btn.appendChild(chev);
-
-    // Panel de opciones
-    const panel = document.createElement('ul');
-    panel.className = 'c-select__panel';
-    panel.setAttribute('role','listbox');
-    panel.tabIndex = -1;
-
-    Array.from(native.options).forEach((opt)=>{
-      const li = document.createElement('li');
-      li.className = 'c-select__option';
-      li.setAttribute('role','option');
-      li.dataset.value = opt.value;
-      li.textContent = opt.text;
-      if(opt.selected) li.setAttribute('aria-selected','true');
-      if(opt.value === '') li.dataset.placeholder = '1';
-      li.addEventListener('click', ()=> selectValue(opt.value, opt.text));
-      panel.appendChild(li);
-    });
-
-    wrapper.appendChild(btn);
-    wrapper.appendChild(panel);
-
-    // Abrir / cerrar
-    btn.addEventListener('click', toggle);
-    document.addEventListener('click', (e)=>{ if(!wrapper.contains(e.target)) close(); });
-
-    // Teclado en botón
-    btn.addEventListener('keydown', (e)=>{
-      const openKeys = ['ArrowDown','ArrowUp','Enter',' '];
-      if(openKeys.includes(e.key)){ e.preventDefault(); open(); focusFirst(); }
-    });
-
-    // Teclado en panel
-    panel.addEventListener('keydown', (e)=>{
-      const active = panel.querySelector('.is-active');
-      const items = Array.from(panel.querySelectorAll('.c-select__option'));
-      let idx = active ? items.indexOf(active) : -1;
-
-      if(e.key === 'Escape'){ e.preventDefault(); close(); btn.focus(); return; }
-      if(e.key === 'Enter'){ e.preventDefault(); (active||items[0]).click(); return; }
-      if(e.key === 'ArrowDown'){ e.preventDefault(); idx = Math.min(idx+1, items.length-1); setActive(items[idx]); }
-      if(e.key === 'ArrowUp'){ e.preventDefault(); idx = Math.max(idx-1, 0); setActive(items[idx]); }
-      if(e.key.length === 1 && /\S/.test(e.key)){
-        const i = items.findIndex(el => el.textContent.trim().toLowerCase().startsWith(e.key.toLowerCase()));
-        if(i>=0) setActive(items[i]);
-      }
-    });
-
-    function toggle(){ (wrapper.getAttribute('aria-expanded') === 'true') ? close() : open(); }
-    function open(){ wrapper.setAttribute('aria-expanded','true'); btn.setAttribute('aria-expanded','true'); panel.focus(); }
-    function close(){ wrapper.setAttribute('aria-expanded','false'); btn.setAttribute('aria-expanded','false'); clearActive(); }
-
-    function selectValue(val, label){
-      native.value = val;
-      valueSpan.textContent = label || PALETTE.emptyText;
-      panel.querySelectorAll('.c-select__option').forEach(o=>{
-        o.removeAttribute('aria-selected');
-        if(o.dataset.value === val) o.setAttribute('aria-selected','true');
+    try{
+      const r = await fetch("{% url 'principal:toggle_favorito' 0 %}".replace("/0/","/"+pubId+"/"), {
+        method:"POST",
+        headers:{ "X-CSRFToken": getCsrf(), "X-Requested-With":"XMLHttpRequest" }
       });
-      native.dispatchEvent(new Event('change', { bubbles:true }));
-      close(); btn.focus();
+      const j = await r.json();
+      if(j.liked){
+        btn.classList.add("is-liked");
+        const c = btn.nextElementSibling; if(c && c.classList.contains("like-count")) c.textContent = (+c.textContent||0)+1;
+      }else{
+        btn.classList.remove("is-liked");
+        const c = btn.nextElementSibling; if(c && c.classList.contains("like-count")) c.textContent = Math.max(0,(+c.textContent||0)-1);
+      }
+    }catch(err){
+      console.error(err);
+      alert("No se pudo actualizar tu favorito. Inténtalo de nuevo.");
     }
-
-    function setActive(el){
-      clearActive();
-      el.classList.add('is-active');
-      el.scrollIntoView({block:'nearest'});
-    }
-    function clearActive(){
-      panel.querySelectorAll('.is-active').forEach(e=>e.classList.remove('is-active'));
-    }
-    function focusFirst(){
-      const first = panel.querySelector('.c-select__option[aria-selected="true"]') || panel.querySelector('.c-select__option');
-      if(first) setActive(first);
-    }
-  }
-})();
+  });
 </script>
-{# @endsection js #}
 
 {% endblock %}
