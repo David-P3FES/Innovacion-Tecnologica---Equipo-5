@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block content %}
+<div class="wrap">
+
+  <!-- ===== GALERÍA ARRIBA ===== -->
+  <section class="gallery card">
+    {% if pub.fotos.all %}
+      <div class="gallery-main">
+        <img id="g-main" src="{{ pub.fotos.all.0.imagen.url }}" alt="{{ pub.titulo }}">
+      </div>
+      <div class="thumbs" id="g-thumbs">
+        {% for f in pub.fotos.all %}
+          <button class="thumb{% if forloop.first %} is-active{% endif %}" type="button" data-src="{{ f.imagen.url }}">
+            <img src="{{ f.imagen.url }}" alt="Foto {{ forloop.counter }} de {{ pub.titulo }}">
+          </button>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty">Esta publicación aún no tiene fotos.</div>
+    {% endif %}
+  </section>
+
+  <!-- ===== INFO (TÍTULO / PRECIO / ESTATUS / VENDEDOR / ❤ / STATS) ===== -->
+  <header class="head card">
+    <div class="h-left">
+      <h1 class="title">{{ pub.titulo }}</h1>
+
+      <div class="sub">
+        <span class="price">${{ pub.precio|floatformat:0|intcomma }}</span>
+        <span class="pill pill-op">{{ pub.get_tipo_operacion_display }}</span>
+        {% if pub.estatus %}
+          <span class="pill pill-status status-{{ pub.estatus }}">{{ pub.get_estatus_display }}</span>
+        {% endif %}
+      </div>
+
+      <div class="addr">📍 {{ pub.direccion_completa }}</div>
+      <div class="meta">🕒 Publicada hace {{ pub.fecha_creacion|timesince }}</div>
+
+      <ul class="stats">
+        <li>🛏️ {{ pub.recamaras }} Rec.</li>
+        <li>🛁 {{ pub.banos|floatformat:1 }} Baños</li>
+        <li>🚗 {{ pub.estacionamientos }} Estac.</li>
+        <li>📐 {{ pub.metros_construccion }} m² Const.</li>
+        <li>🧭 {{ pub.metros_terreno }} m² Terreno</li>
+        <li>💳 {{ pub.get_tipo_financiamiento_display }}</li>
+      </ul>
+    </div>
+
+    <div class="h-right">
+      <button
+        id="btn-like"
+        class="like-btn {% if liked %}is-liked{% endif %}"
+        data-pub="{{ pub.id }}"
+        title="{% if liked %}Quitar de favoritos{% else %}Agregar a favoritos{% endif %}">
+        <span class="like-ico">❤</span>
+        <span id="like-count">{{ pub.like_count|default:0 }}</span>
+      </button>
+
+      <div class="seller">
+        <div class="seller__who">
+          Publicado por: <strong>{% firstof pub.usuario.get_full_name pub.usuario.username %}</strong>
+        </div>
+        <div class="seller__actions">
+          {% with email=pub.usuario.email phone=pub.usuario.perfil.whatsapp %}
+            {% if email %}
+              <a class="btn-ico" href="mailto:{{ email }}?subject={{ pub.titulo|urlencode }}">✉️ Email</a>
+            {% endif %}
+            {% if phone %}
+              {% if phone|length == 10 %}
+                <a class="btn-ico" target="_blank" href="https://wa.me/52{{ phone }}?text={{ pub.titulo|urlencode }}">WhatsApp</a>
+              {% else %}
+                <a class="btn-ico" target="_blank" href="https://wa.me/{{ phone|cut:'+' }}?text={{ pub.titulo|urlencode }}">WhatsApp</a>
+              {% endif %}
+            {% endif %}
+          {% endwith %}
+        </div>
+      </div>
+
+      <a class="crumbs" href="javascript:history.back()">← Volver</a>
+    </div>
+  </header>
+
+  <!-- ===== DESCRIPCIÓN (CON AIRE) ===== -->
+  <section class="details card">
+    <h2>Descripción</h2>
+    <p class="desc">{{ pub.descripcion|default:"(Sin descripción)" }}</p>
+  </section>
+
+  <!-- ===== MAPA HASTA ABAJO ===== -->
+  <section class="mapa card">
+    <h2>Ubicación</h2>
+    {% if pub.tiene_coordenadas %}
+      <div id="map"
+           data-lat="{{ pub.latitud|default_if_none:'' }}"
+           data-lon="{{ pub.longitud|default_if_none:'' }}"
+           style="height:420px;border-radius:12px;"></div>
+
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+      <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+      <script>
+        const mapEl = document.getElementById('map');
+        const lat = parseFloat(mapEl.dataset.lat);
+        const lon = parseFloat(mapEl.dataset.lon);
+
+        if (Number.isFinite(lat) && Number.isFinite(lon)) {
+          const map = L.map('map').setView([lat, lon], 16);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap'
+          }).addTo(map);
+          L.marker([lat, lon]).addTo(map).bindPopup(`{{ pub.titulo|escapejs }}`);
+        }
+      </script>
+    {% else %}
+      <div class="empty">Esta publicación aún no tiene coordenadas para el mapa.</div>
+    {% endif %}
+  </section>
+</div>
+
+<style>
+/* ===== Layout general ===== */
+.wrap{max-width:1240px;margin:1rem auto;padding:0 1rem;display:flex;flex-direction:column;gap:1.25rem;}
+.card{background:#fff;border:1px solid #eee;border-radius:16px;padding:1rem 1rem;box-shadow:0 6px 18px rgba(0,0,0,.05);}
+.crumbs{display:inline-block;margin-top:.75rem;color:#2d6cdf;text-decoration:none}
+
+/* ===== Galería ===== */
+.gallery{padding:1rem}
+.gallery-main{width:100%;border-radius:14px;overflow:hidden}
+.gallery-main img{width:100%;max-height:520px;display:block;object-fit:cover;border-radius:14px}
+.thumbs{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.6rem}
+.thumb{border:1px solid #e6e6e6;border-radius:10px;overflow:hidden;background:#fafafa;padding:0;cursor:pointer;transition:transform .08s ease}
+.thumb:hover{transform:scale(1.02)}
+.thumb img{width:120px;height:80px;object-fit:cover;display:block}
+.thumb.is-active{outline:2px solid #2d6cdf}
+
+/* ===== Header / Info ===== */
+.head{display:flex;justify-content:space-between;gap:1.5rem;align-items:flex-start}
+.title{margin:0 0 .25rem;font-size:clamp(20px,2.6vw,32px);font-weight:800;color:#1a2233}
+.sub{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:.25rem 0 1rem}
+.price{font-weight:800;font-size:1.35rem}
+.pill{padding:.22rem .6rem;border-radius:999px;font-size:.85rem;font-weight:600}
+.pill-op{background:#eef}
+.status-disponible{background:#16a34a;color:#fff}
+.status-en_trato{background:#f59e0b;color:#fff}
+.status-cerrada{background:#6b7280;color:#fff}
+.addr{color:#444;margin:.15rem 0}
+.meta{color:#666;font-size:.92rem;margin-bottom:.6rem}
+.stats{display:flex;flex-wrap:wrap;gap:.5rem;margin:0;padding:0;list-style:none}
+.stats li{background:#f7f7f7;border:1px solid #eee;border-radius:999px;padding:.28rem .55rem;font-size:.9rem}
+
+/* Vendedor + Like */
+.h-right{min-width:260px;display:flex;flex-direction:column;align-items:flex-end;gap:.6rem}
+.like-btn{display:inline-flex;align-items:center;gap:.4rem;border:1px solid #e8e8e8;background:#fff;border-radius:999px;padding:.4rem .65rem;cursor:pointer;box-shadow:0 3px 6px rgba(0,0,0,.06)}
+.like-btn .like-ico{font-size:18px;color:#888}
+.like-btn.is-liked{background:#ffe9ed;border-color:#ffc6d0}
+.like-btn.is-liked .like-ico{color:#e25563}
+.seller{margin-top:.25rem}
+.seller__who{margin-bottom:.25rem}
+.seller__actions{display:flex;gap:.4rem;flex-wrap:wrap}
+.btn-ico{display:inline-flex;align-items:center;gap:.35rem;padding:.35rem .7rem;border:1px solid #e5e5e5;border-radius:10px;text-decoration:none;color:#111;background:#fafafa}
+.btn-ico:hover{background:#f1f1f1}
+
+/* ===== Descripción ===== */
+.details h2{margin:0 0 .25rem}
+.desc{margin:0;padding:.35rem 0 0 0;line-height:1.6;color:#2b2b2b}
+
+/* ===== Mapa ===== */
+.mapa h2{margin:0 0 .5rem}
+
+/* ===== Responsive ===== */
+@media (max-width: 980px){
+  .head{flex-direction:column}
+  .h-right{align-items:flex-start}
+  .thumb img{width:92px;height:62px}
+}
+</style>
+
+<script>
+/* ===== Thumbnails: cambiar imagen principal ===== */
+(function(){
+  const main = document.getElementById('g-main');
+  const thumbs = document.getElementById('g-thumbs');
+  if(!main || !thumbs) return;
+  thumbs.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.thumb');
+    if(!btn) return;
+    const src = btn.dataset.src;
+    if(!src) return;
+    main.src = src;
+    thumbs.querySelectorAll('.thumb').forEach(t => t.classList.remove('is-active'));
+    btn.classList.add('is-active');
+  });
+})();
+
+/* ===== Favoritos ===== */
+window.AUTHENTICATED = "{{ request.user.is_authenticated|yesno:'true,false' }}" === "true";
+function getCsrf(){ const m=document.cookie.match(/csrftoken=([^;]+)/); return m?m[1]:''; }
+
+document.getElementById("btn-like")?.addEventListener("click", async (e)=>{
+  const btn = e.currentTarget;
+  const pubId = btn.dataset.pub;
+
+  if(!window.AUTHENTICATED){
+    const next = encodeURIComponent(window.location.pathname + window.location.search);
+    window.location.href = "{% url 'account_login' %}?next=" + next;
+    return;
+  }
+
+  try{
+    const r = await fetch("{% url 'principal:toggle_favorito' 0 %}".replace("/0/","/"+pubId+"/"), {
+      method:"POST",
+      headers:{ "X-CSRFToken": getCsrf(), "X-Requested-With":"XMLHttpRequest" }
+    });
+    const j = await r.json();
+    const countEl = document.getElementById("like-count");
+    if(j.liked){
+      btn.classList.add("is-liked");
+      if(countEl) countEl.textContent = (+countEl.textContent||0)+1;
+    }else{
+      btn.classList.remove("is-liked");
+      if(countEl) countEl.textContent = Math.max(0,(+countEl.textContent||0)-1);
+    }
+  }catch(err){
+    console.error(err);
+    alert("No se pudo actualizar tu favorito. Inténtalo de nuevo.");
+  }
+});
+</script>
+{% endblock %}

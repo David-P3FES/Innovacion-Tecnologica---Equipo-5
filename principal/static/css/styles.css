@@ -305,3 +305,7 @@ footer {
   justify-content: center;  /* al centro horizontal */
   align-items: center;      /* al centro vertical */
 }
+
+.map-box { height: 420px; width: 100%; border-radius: 12px; overflow: hidden; background:#f3f3f3; }
+.leaflet-container { width: 100% !important; min-height: 420px; }
+.mt-12 { margin-top:.75rem; }

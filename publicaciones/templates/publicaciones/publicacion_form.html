@@ -1,0 +1,487 @@
+  {% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="form-wrap" style="max-width:1100px;margin:1.5rem auto;">
+  <h1 class="page-title">
+    {% if modo == "crear" %}Nueva publicación{% else %}Editar publicación{% endif %}
+  </h1>
+
+  {# Errores resumidos #}
+  {% if form.errors or form.non_field_errors or formset.non_form_errors %}
+    <div class="alert alert-error" style="margin-bottom:1rem;">
+      <strong>Revisa los campos:</strong>
+      <ul style="margin:.5rem 0 0 1rem;">
+        {% for field in form %}
+          {% for err in field.errors %}
+            <li><b>{{ field.label }}:</b> {{ err }}</li>
+          {% endfor %}
+        {% endfor %}
+        {% for err in form.non_field_errors %}<li>{{ err }}</li>{% endfor %}
+        {% for err in formset.non_form_errors %}<li>{{ err }}</li>{% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <form method="post" enctype="multipart/form-data" id="pub-form">
+    {% csrf_token %}
+
+    <!-- 1) Datos generales -->
+    <fieldset class="card">
+      <legend>Datos generales</legend>
+      <div class="grid-2">
+        <div class="field">{{ form.titulo.label_tag }}{{ form.titulo }}</div>
+        <div class="field">{{ form.precio.label_tag }}{{ form.precio }}</div>
+        <div class="field">{{ form.tipo_operacion.label_tag }}{{ form.tipo_operacion }}</div>
+        <div class="field">{{ form.tipo_financiamiento.label_tag }}{{ form.tipo_financiamiento }}</div>
+      </div>
+      <div class="field mt-12">
+        {{ form.descripcion.label_tag }}{{ form.descripcion }}
+      </div>
+    </fieldset>
+
+    <!-- 2) Estatus -->
+    <fieldset class="card">
+      <legend>Estatus</legend>
+      <div class="field w-50">{{ form.estatus.label_tag }}{{ form.estatus }}</div>
+    </fieldset>
+
+    <!-- 3) Ubicación (Dirección + Mapa) -->
+    <fieldset class="card">
+      <legend>Ubicación</legend>
+
+      <!-- Dirección -->
+      <div class="grid-3">
+        <div class="field">{{ form.calle.label_tag }}{{ form.calle }}</div>
+        <div class="field">{{ form.numero.label_tag }}{{ form.numero }}</div>
+        <div class="field">{{ form.codigo_postal.label_tag }}{{ form.codigo_postal }}</div>
+      </div>
+      <div class="grid-3 mt-12">
+        <div class="field">{{ form.colonia.label_tag }}{{ form.colonia }}</div>
+        <div class="field">{{ form.ciudad.label_tag }}{{ form.ciudad }}</div>
+        <div class="field">{{ form.estado.label_tag }}{{ form.estado }}</div>
+      </div>
+      <div class="row mt-12">
+        <button type="button" id="btn-geocode" class="btn">Buscar en mapa</button>
+        <small class="hint">Tip: escribe calle y número; agrega colonia / CP / ciudad / estado si es necesario.</small>
+      </div>
+
+      <!-- Mapa -->
+      <p class="hint mt-12">Haz clic en el mapa o arrastra el marcador para ajustar la ubicación.</p>
+      <div id="map" class="map-box"></div>
+
+      {{ form.latitud }} {{ form.longitud }}
+      <div class="coord-hint">
+        <span>Lat: <code id="lat-show">{{ form.instance.latitud|default_if_none:"—" }}</code></span>
+        <span class="sep">Lng: <code id="lng-show">{{ form.instance.longitud|default_if_none:"—" }}</code></span>
+      </div>
+    </fieldset>
+
+    <!-- 4) Características -->
+    <fieldset class="card">
+      <legend>Características</legend>
+      <div class="grid-5">
+        <div class="field">{{ form.recamaras.label_tag }}{{ form.recamaras }}</div>
+        <div class="field">{{ form.banos.label_tag }}{{ form.banos }}</div>
+        <div class="field">{{ form.estacionamientos.label_tag }}{{ form.estacionamientos }}</div>
+        <div class="field has-m2">{{ form.metros_construccion.label_tag }}{{ form.metros_construccion }}</div>
+        <div class="field has-m2">{{ form.metros_terreno.label_tag }}{{ form.metros_terreno }}</div>
+      </div>
+    </fieldset>
+
+    <!-- 5) Fotos (uploader minimalista) -->
+    <fieldset class="card">
+      <legend>Fotos</legend>
+
+      {{ formset.management_form }}
+      <template id="tmpl-empty-form">
+        <div class="file-form">
+          {{ formset.empty_form.imagen }}
+          {{ formset.empty_form.es_portada }}
+          {{ formset.empty_form.orden }}
+          {{ formset.empty_form.DELETE }}
+        </div>
+      </template>
+
+      <div class="photos-bar">
+        <div id="dropzone" class="dropzone-mini">
+          Arrastra aquí o
+          <button type="button" id="btn-pick" class="btn btn-light">＋ Agregar foto</button>
+          <input id="file-input" type="file" accept="image/*" multiple hidden>
+        </div>
+      </div>
+
+      <div id="previews" class="previews-slim">
+        {# Fotos existentes en edición #}
+        {% for f in formset.forms %}
+          {% if f.instance.pk %}
+            <div class="photo-slim appear">
+              <button type="button" class="close-x js-remove-existing" title="Eliminar" data-del="{{ f.prefix }}-DELETE">×</button>
+              <img src="{{ f.instance.imagen.url }}" alt="foto">
+              <input type="hidden" name="{{ f.prefix }}-id" value="{{ f.instance.pk }}">
+              <input type="hidden" name="{{ f.prefix }}-imagen" value="{{ f.instance.imagen.name }}">
+              <input type="checkbox" name="{{ f.prefix }}-DELETE" id="{{ f.prefix }}-DELETE" hidden>
+              <input type="hidden" name="{{ f.prefix }}-orden" value="{{ f.instance.orden }}">
+              <input type="hidden" name="{{ f.prefix }}-es_portada" value="{{ f.instance.es_portada|yesno:'1,0' }}">
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <small class="hint">Sube al menos una foto. Si no marcas portada, la vista tomará la primera; si marcas varias, dejará una sola.</small>
+    </fieldset>
+
+    <div class="actions">
+      <button type="submit" class="btn">
+        {% if modo == "crear" %}Crear publicación{% else %}Guardar cambios{% endif %}
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+<script>
+/* ===== helpers ===== */
+const norm = v => (v||"").toString().trim();
+const $ = id => document.getElementById(id);
+
+/* Dirección → variantes robustas para geocodificar */
+function buildAddressParts(){
+  const calle = norm($("id_calle")?.value);
+  const num   = norm($("id_numero")?.value);
+  let col     = norm($("id_colonia")?.value);
+  let cd      = norm($("id_ciudad")?.value);
+  let edo     = norm($("id_estado")?.value);
+  const cp    = norm($("id_codigo_postal")?.value);
+
+  if (/^ciudad\s+/i.test(cd)) cd = cd.replace(/^ciudad\s+/i,'');
+  if (/^cd\.\s*/i.test(cd))   cd = cd.replace(/^cd\.\s*/i,'');
+  if (/juarez/i.test(cd))     cd = "Juárez";
+  if (/chih(uahua)?/i.test(edo)) edo = "Chihuahua";
+
+  const linea1 = [calle, num].filter(Boolean).join(" ");
+  return [
+    [linea1, col, cp, cd, edo, "México"],
+    [linea1, col, cd, edo, "México"],
+    [linea1, cd, edo, "México"],
+    [linea1, "Juárez", "Chihuahua", "México"],
+  ].map(p => p.filter(Boolean).join(", ")).filter(Boolean);
+}
+
+/* ===== MAPA (con fixes de tamaño) ===== */
+const latInput = $("id_latitud");
+const lngInput = $("id_longitud");
+const latShow  = $("lat-show");
+const lngShow  = $("lng-show");
+
+const latInit = latInput.value ? parseFloat(latInput.value) : null;
+const lngInit = lngInput.value ? parseFloat(lngInput.value) : null;
+const center  = (latInit!=null && lngInit!=null) ? [latInit,lngInit] : [31.6904, -106.4245];
+
+const map = L.map("map", { zoomControl:true }).setView(center, (latInit!=null)?15:12);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 19,
+  attribution: "&copy; OpenStreetMap",
+  updateWhenIdle: false,
+  keepBuffer: 4
+}).addTo(map);
+
+map.whenReady(()=> setTimeout(()=> map.invalidateSize(), 0));
+window.addEventListener("load",   ()=> map.invalidateSize());
+window.addEventListener("resize", ()=> map.invalidateSize());
+new ResizeObserver(()=> map.invalidateSize()).observe(document.getElementById("map"));
+
+let marker=null;
+function updateCoord(lat,lng){
+  latInput.value = lat.toFixed(6);
+  lngInput.value = lng.toFixed(6);
+  if (latShow) latShow.textContent = latInput.value;
+  if (lngShow) lngShow.textContent = lngInput.value;
+}
+function setMarker(lat,lng){
+  if(!marker){
+    marker = L.marker([lat,lng], { draggable:true }).addTo(map);
+    marker.on("dragend", e=>{
+      const {lat,lng} = e.target.getLatLng();
+      updateCoord(lat,lng);
+    });
+  }else{
+    marker.setLatLng([lat,lng]);
+  }
+  updateCoord(lat,lng);
+}
+if (latInit!=null && lngInit!=null) setMarker(latInit,lngInit);
+map.on("click", e=> setMarker(e.latlng.lat, e.latlng.lng));
+
+/* ===== Botón "Buscar en mapa": con mejor manejo de errores y fallback ===== */
+$("btn-geocode").addEventListener("click", async ()=>{
+  const candidates = buildAddressParts();
+  if (!candidates.length){
+    alert("Escribe al menos calle y número/colonia para buscar.");
+    return;
+  }
+
+  const calle = norm($("id_calle")?.value);
+  const num   = norm($("id_numero")?.value);
+  const col   = norm($("id_colonia")?.value);
+  const cd    = norm($("id_ciudad")?.value);
+  const edo   = norm($("id_estado")?.value);
+  const cp    = norm($("id_codigo_postal")?.value);
+
+  const sleep = (ms)=>new Promise(r=>setTimeout(r,ms));
+
+  async function tryQuery(u){
+    try{
+      const r = await fetch(u.toString(), { headers: { "Accept-Language":"es" } });
+      if (!r.ok){
+        const txt = await r.text();
+        console.warn("Geocode HTTP", r.status, txt.slice(0,200));
+        return null;
+      }
+      const j = await r.json();
+      if (Array.isArray(j) && j.length){
+        return { lat: parseFloat(j[0].lat), lon: parseFloat(j[0].lon) };
+      }
+      return null;
+    }catch(e){
+      console.error("Geocode error:", e);
+      return null;
+    }
+  }
+
+  let found = null;
+
+  // 1) Búsqueda libre (varias combinaciones) con pausa para evitar 429
+  for (const q of candidates){
+    const u = new URL("https://nominatim.openstreetmap.org/search");
+    u.searchParams.set("q", q);
+    u.searchParams.set("format","json");
+    u.searchParams.set("addressdetails","1");
+    u.searchParams.set("limit","1");
+    u.searchParams.set("countrycodes","mx");
+    found = await tryQuery(u);
+    if (found) break;
+    await sleep(600);
+  }
+
+  // 2) Fallback estructurado
+  if (!found){
+    const u2 = new URL("https://nominatim.openstreetmap.org/search");
+    if (calle || num) u2.searchParams.set("street", [calle, num].filter(Boolean).join(" "));
+    if (col) u2.searchParams.set("neighbourhood", col);
+    if (cp)  u2.searchParams.set("postalcode", cp);
+    if (cd)  u2.searchParams.set("city", cd);
+    if (edo) u2.searchParams.set("state", edo);
+    u2.searchParams.set("country","México");
+    u2.searchParams.set("format","json");
+    u2.searchParams.set("limit","1");
+    found = await tryQuery(u2);
+  }
+
+  if (found){
+    setMarker(found.lat, found.lon);
+    map.setView([found.lat,found.lon], 16);
+    map.invalidateSize();
+  }else{
+    alert("No se encontró esa dirección. Ajusta colonia/CP/ciudad/estado y prueba de nuevo.");
+  }
+});
+
+/* ===== PRECIO (máscara MXN) =====
+   Requiere que el widget en forms.py sea TextInput (no NumberInput). */
+(function(){
+  const precio = document.getElementById("id_precio");
+  if (!precio) return;
+  function onlyDigits(s){ return (s||'').replace(/[^\d.,]/g,''); }
+  function toNumberForModel(display){
+    let s=onlyDigits(display);
+    if(s.indexOf(",")>-1 && s.indexOf(".")>-1) s=s.replace(/,/g,"");
+    else if(s.indexOf(",")>-1) s=s.replace(/,/g,"");
+    return s||"";
+  }
+  function asCurrencyMXN(n){
+    try{ return new Intl.NumberFormat("es-MX",{style:"currency",currency:"MXN",maximumFractionDigits:0}).format(n);}
+    catch{return "$"+n;}
+  }
+  function formatVisual(){
+    const raw=toNumberForModel(precio.value);
+    if(!raw){ precio.value=""; return; }
+    const n=Number(raw);
+    if(Number.isFinite(n)) precio.value=asCurrencyMXN(n);
+  }
+
+  formatVisual();
+  precio.addEventListener("input", ()=>{
+    const caret = precio.selectionStart;
+    precio.value = onlyDigits(precio.value);
+    try{ precio.setSelectionRange(caret, caret);}catch{}
+  });
+  precio.addEventListener("blur", formatVisual);
+
+  document.getElementById("pub-form").addEventListener("submit", ()=>{
+    const n = toNumberForModel(precio.value);
+    if (n){ const num = Number(n); precio.value = Number.isFinite(num)? num.toFixed(2) : n; }
+  });
+})();
+
+/* ===== FOTOS (dropzone minimal + tarjetas con X) ===== */
+(function(){
+  const dz = document.getElementById("dropzone");
+  const pick = document.getElementById("btn-pick");
+  const input = document.getElementById("file-input");
+  const grid = document.getElementById("previews");
+  const tmpl = document.getElementById("tmpl-empty-form").content;
+
+  const mgmtTotal = document.querySelector('input[name$="-TOTAL_FORMS"]');
+
+  function nextIndex(){ const n = parseInt(mgmtTotal.value||"0",10); mgmtTotal.value = String(n+1); return n; }
+
+  function makeHiddenFields(idx, file){
+    const frag = document.importNode(tmpl, true);
+    const wrap = document.createElement("div");
+    wrap.appendChild(frag);
+    wrap.innerHTML = wrap.innerHTML.replace(/__prefix__/g, idx);
+
+    const holder = wrap.querySelector(".file-form");
+    const fileInput = holder.querySelector('input[type="file"]');
+    const portadaInput = holder.querySelector('input[name$="-es_portada"]');
+    const ordenInput = holder.querySelector('input[name$="-orden"]');
+
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    fileInput.files = dt.files;
+
+    portadaInput.value = "0";    // la vista decide la portada final
+    ordenInput.value = idx;      // se reescribe al enviar
+
+    holder.style.display = "none";
+    return holder;
+  }
+
+  function addCard(file){
+    const idx = nextIndex();
+    const hiddenFields = makeHiddenFields(idx, file);
+
+    const card = document.createElement("div");
+    card.className = "photo-slim appear";
+
+    const btn = document.createElement("button");
+    btn.type="button"; btn.className="close-x"; btn.title="Eliminar"; btn.textContent="×";
+    btn.addEventListener("click", ()=>{ 
+      const del = hiddenFields.querySelector('input[name$="-DELETE"]');
+      if (del) del.checked = true;
+      card.remove(); 
+    });
+
+    const img = document.createElement("img");
+    const reader = new FileReader();
+    reader.onload = e => img.src = e.target.result;
+    reader.readAsDataURL(file);
+
+    card.append(btn, img, hiddenFields);
+    grid.appendChild(card);
+  }
+
+  function handleFiles(files){ [...files].filter(f=>/^image\//.test(f.type)).forEach(addCard); }
+
+  pick.addEventListener("click", ()=>input.click());
+  input.addEventListener("change", e=>{ handleFiles(e.target.files); input.value=""; });
+
+  dz.addEventListener("dragover", e=>{ e.preventDefault(); dz.classList.add("hover"); });
+  dz.addEventListener("dragleave", ()=>dz.classList.remove("hover"));
+  dz.addEventListener("drop", e=>{
+    e.preventDefault(); dz.classList.remove("hover");
+    handleFiles(e.dataTransfer.files);
+  });
+
+  // eliminar existentes (marca DELETE oculto)
+  document.querySelectorAll(".js-remove-existing").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const delName = btn.getAttribute("data-del");
+      const del = document.querySelector(`input[name="${delName}"]`);
+      if (del){ del.checked = true; btn.closest(".photo-slim").remove(); }
+    });
+  });
+
+  // antes de enviar → reescribe "orden" según el orden visual
+  document.getElementById("pub-form").addEventListener("submit", ()=>{
+    [...grid.querySelectorAll('.photo-slim')].forEach((card, i)=>{
+      const input = card.querySelector('input[name$="-orden"]');
+      if (input) input.value = String(i);
+    });
+  });
+})();
+</script>
+
+<style>
+.page-title { margin: 0 0 1rem; font-weight: 700; }
+
+/* Tarjetas y layout */
+.card { background:#fff; border:1px solid #e8e8e8; border-radius:16px; padding:1rem 1.25rem; margin-bottom:1rem; }
+.card > legend { font-weight:600; padding:0 .35rem; }
+.hint { color:#666; }
+
+.grid-2, .grid-3, .grid-5 { display:grid; gap:1rem; }
+.grid-2 { grid-template-columns:repeat(2,1fr); }
+.grid-3 { grid-template-columns:repeat(3,1fr); }
+.grid-5 { grid-template-columns:repeat(5,1fr); }
+
+/* Inputs */
+.field { position: relative; }
+.field label { display:block; margin-bottom:.35rem; font-weight:600; color:#333; }
+.input-text, .input-number, .input-select, .input-textarea {
+  width:100%; padding:.70rem .85rem; border:1px solid #d9d9d9; border-radius:.65rem;
+  background:#fcfcfc; font:inherit; min-height:44px; box-sizing:border-box;
+}
+.input-textarea { min-height:110px; }
+.input-text:focus, .input-number:focus, .input-select:focus, .input-textarea:focus {
+  outline:none; border-color:#a8a8a8; box-shadow:0 0 0 4px rgba(0,0,0,.05); background:#fff;
+}
+
+/* Ubicación */
+.map-box { height: 420px; width: 100%; border-radius: 12px; overflow: hidden; background:#f3f3f3; }
+.leaflet-container { width: 100% !important; min-height: 420px; background:#f3f3f3 !important; }
+.mt-12 { margin-top:.75rem; }
+.w-50 { max-width: 520px; }
+.row { display:flex; gap:.75rem; align-items:center; flex-wrap:wrap; }
+.coord-hint { font-size:.95rem; color:#444; margin-top:.25rem; }
+.coord-hint .sep { margin-left:1rem; }
+
+/* m² visual en inputs de metros */
+.field.has-m2::after { content:"m²"; position:absolute; right:.75rem; top: 40px; color:#666; pointer-events:none; }
+.input-number.has-suffix-m2 { padding-right: 2.2rem; }
+
+/* Fotos minimal */
+.photos-bar{ display:flex; justify-content:flex-start; margin-bottom:.6rem; }
+.dropzone-mini{
+  background:#fafafa; border:1.5px dashed #cfcfcf; border-radius:12px; padding:.6rem .8rem;
+  display:inline-flex; gap:.5rem; align-items:center; transition:background .2s,border-color .2s;
+}
+.dropzone-mini.hover{ background:#f3faff; border-color:#7aa7ff; }
+.btn-light { background:#f1f1f1; color:#222; border:1px solid #ddd; }
+.previews-slim{ display:grid; grid-template-columns:repeat(4,1fr); gap:.8rem; }
+.photo-slim{
+  position:relative; border-radius:12px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,.06); background:#fff;
+  animation:pop .18s ease-out both;
+}
+.photo-slim img{ width:100%; height:190px; object-fit:cover; display:block; }
+.photo-slim .close-x{
+  position:absolute; top:6px; right:6px; width:28px; height:28px; border:none; border-radius:50%;
+  background:rgba(0,0,0,.55); color:#fff; font-size:18px; line-height:28px; cursor:pointer;
+}
+.photo-slim .close-x:hover{ background:rgba(0,0,0,.75); }
+
+@keyframes pop{ from{transform:scale(.98);opacity:0} to{transform:scale(1);opacity:1} }
+
+.alert-error { background:#ffecec; border:1px solid #ffc7c7; color:#9a1c1c; padding:.65rem .85rem; border-radius:.65rem; margin-bottom:1rem; }
+.actions { margin-top:1rem; }
+
+/* Responsive */
+@media (max-width: 1000px){ .previews-slim{ grid-template-columns:repeat(3,1fr);} }
+@media (max-width: 900px){ .grid-5 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 700px){ .grid-3, .grid-2 { grid-template-columns:1fr; } .previews-slim{ grid-template-columns:repeat(2,1fr);} }
+</style>
+{% endblock %}
