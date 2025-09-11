@@ -15,6 +15,7 @@
   --stone: #E6E7E8;    
   --text: #29323A;
   --radius: 12px;
+  --font-sans: "Inter", "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 html, body { height: 100%; }
@@ -211,24 +212,32 @@ body {
 }
 
 .avatar-circle {
-  width: 42px;
-  height: 42px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  background: #fff;
-  border: 2px solid rgba(255,255,255,.5);
-  box-shadow: 0 4px 16px rgba(0,0,0,.12);
-  display: grid;
-  place-items: center;
+  border: 2px solid rgba(255,255,255,.7);
+  box-shadow: 0 4px 10px rgba(0,0,0,.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #ffffff; 
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), transparent 60%),
+              var(--primary-gradient);
+  user-select: none;
 }
 
-.avatar-initial {
-  font-weight: 800;
-  font-size: 18px;
-  background: linear-gradient(135deg, var(--olive) 0%, var(--blue-gray) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
+.avatar-circle::after{
+  content: attr(data-initial);
+  position:absolute; inset:0; display:grid; place-items:center;
+  font-family: "Inter", "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-weight:600;
+  font-size:14px;
+  letter-spacing:.2px;
+  color:#fff;
+  text-shadow:0 1px 0 rgba(0,0,0,.22), 0 0 2px rgba(0,0,0,.08);
+  transform: translateY(3px);
 }
 
 .header, .header-content, .navbar-actions { overflow: visible; }
@@ -267,7 +276,7 @@ body {
 }
 
 .user-dropdown{
-  position:absolute; right: 24px; top:calc(100% + 10px);
+  position:absolute; right: 18px; top:calc(100% + 10px);
   min-width:200px; padding:8px 0;
   background:#f5f6f2; color:#9CB28A;
   border-radius:12px; box-shadow:0 16px 36px rgba(0,0,0,.2);

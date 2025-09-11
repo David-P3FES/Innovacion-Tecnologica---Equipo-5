@@ -19,11 +19,12 @@
   <link rel="stylesheet" href="{% static 'css/base.css' %}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-  <!-- CSRF para JS si lo necesitas -->
   <meta name="csrf-token" content="{{ csrf_token }}"/>
 
-  <!-- Bloques opcionales para metas/estilos extra -->
   {% block extra_head %}{% endblock %}
   {% block extra_css %}{% endblock %}
 </head>
@@ -44,13 +45,13 @@
             
             {% if request.resolver_match.url_name == 'ver_perfil' %}
               <a href="{% url 'principal:home' %}" class="btn-login">
-                <i class="fas fa-home"></i> Home
+                <i class="fas fa-home"></i> Inicio
               </a>
               <a href="{% url 'principal:mis_favoritos' %}" class="btn-login">
                 <i class="fas fa-heart"></i> Me encantas
               </a>
               <a href="{% url 'publicaciones:panel' %}" class="btn-login">
-                <i class="fas fa-home"></i> Vender/Rentar
+                <i class="fas fa-house-circle-check"></i>Vender/Rentar
               </a>
             {% else %}
               <a href="{% url 'principal:mis_favoritos' %}" class="btn-login">
@@ -197,6 +198,5 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 {% endblock %}
-  <!--! @endsection extra_js -->
 </body>
 </html>

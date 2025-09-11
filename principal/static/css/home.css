@@ -9,10 +9,7 @@
   --shadow:0 10px 28px rgba(16,24,20,.06);
   --olive:#7aa58a;
   --blue-gray:#607468;
-  --olive-dark:#466557;
-  --blue-gray-dark:#2b3a35;
-  --primary-gradient:linear-gradient(135deg,var(--olive-dark) 0%,var(--blue-gray-dark) 100%);
-  --primary-gradientt:linear-gradient(135deg,var(--olive) 0%,var(--blue-gray) 100%);
+  --primary-gradient:linear-gradient(135deg,var(--olive) 0%,var(--blue-gray) 100%);
 
   --hue:150deg;
   --primary:#7aa58a;
