@@ -1,79 +1,178 @@
-/*!
- * @file profile.css
- * @brief Estilos para la vista de perfil de usuario en la app cuentas.
- *
- * Este archivo define el diseño y formato de la página de perfil,
- * incluyendo el contenedor principal, los encabezados, formularios
- * y botones de acción.
- */
-
-.profile-container {
-    /*! 
-     * @brief Contenedor principal del perfil.
-     * Define tamaño máximo, márgenes, fondo, sombra y tipografía.
-     */
-    max-width: 500px;
-    margin: 40px auto;
-    background: #f8f9fa;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    font-family: 'Poppins', sans-serif;
+:root{
+  --olive:#9CB28A;
+  --blue-gray:#6E889B;
+  --off-white:#F5F6F2;
+  --stone:#E6E7E8;
+  --text:#29323A;
+  --primary-gradient:linear-gradient(135deg,var(--olive) 0%,var(--blue-gray) 100%);
+  --secondary-gradient:linear-gradient(135deg,var(--off-white) 0%,var(--stone) 100%);
+  --shadow:0 15px 35px rgba(0,0,0,.15);
+  --transition:all .28s cubic-bezier(.4,0,.2,1);
+  --card-radius:20px;
+  --field-radius:14px;
 }
 
-.profile-container h2 {
-    /*! @brief Estilo para el título principal del perfil. */
-    text-align: center;
-    margin-bottom: 15px;
-    color: #213448;
+*{box-sizing:border-box}
+
+body{
+  background:var(--off-white);
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color:var(--text);
+  line-height:1.45;
 }
 
-.profile-container p {
-    /*! @brief Estilo para subtítulos o mensajes debajo del título. */
-    text-align: center;
-    color: #666;
-    margin-bottom: 20px;
+.profile-container{
+  max-width:1040px;
+  margin:0 auto;
+  padding:28px 24px 40px;
+  display:block;
 }
 
-.profile-form .form-group {
-    /*! @brief Espaciado entre grupos de campos dentro del formulario. */
-    margin-bottom: 15px;
+.profile-container>h2{
+  margin:0 0 .25rem;
+  font-size:1.85rem;
+  font-weight:800;
+  letter-spacing:.2px;
+  color:var(--text);
 }
 
-.profile-form label {
-    /*! @brief Estilos de las etiquetas de los inputs. */
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 600;
-    color: #333;
+.profile-container>p{
+  margin:0 0 1.25rem;
+  color:#5B6772;
 }
 
-.profile-form input {
-    /*! @brief Estilos para los campos de texto del formulario. */
-    width: 100%;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 14px;
+.error-box{
+  background:#fff;
+  border:1px solid #e7b2b2;
+  color:#8a2b2b;
+  padding:12px 14px;
+  border-radius:12px;
+  box-shadow:0 6px 16px rgba(138,43,43,.08);
+  margin:0 0 16px;
 }
 
-.btn-guardar {
-    /*! 
-     * @brief Botón principal para guardar los cambios en el perfil.
-     * Tiene un diseño uniforme con fondo oscuro y hover más claro.
-     */
-    width: 100%;
-    background: #333333;
-    color: #fff;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background 0.3s;
+.profile-form{
+  position:relative;
+  background:#fff;
+  border-radius:var(--card-radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  animation:fadeInUp .6s ease-out both;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px 20px;
+  padding:24px;
+  min-height:320px;
 }
 
-.btn-guardar:hover {
-    /*! @brief Estilo hover para el botón de guardar. */
-    background: #555555;
+.form-group{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.form-group>label{
+  font-size:.9rem;
+  font-weight:700;
+  color:#4b5561;
+  letter-spacing:.2px;
+}
+
+.profile-form input[type="text"],
+.profile-form input[type="email"],
+.profile-form input[type="tel"],
+.profile-form input[type="number"],
+.profile-form input[type="password"],
+.profile-form select,
+.profile-form textarea{
+  width:100%;
+  border:1px solid rgba(41,50,58,.12);
+  background:var(--secondary-gradient);
+  border-radius:var(--field-radius);
+  padding:12px 14px;
+  outline:none;
+  transition:var(--transition);
+  box-shadow:0 4px 12px rgba(0,0,0,.05);
+  color:var(--text);
+}
+
+.profile-form textarea{min-height:110px;resize:vertical}
+
+.profile-form input::placeholder,
+.profile-form textarea::placeholder{color:#8893a0}
+
+.profile-form input:focus,
+.profile-form select:focus,
+.profile-form textarea:focus{
+  border-color:color-mix(in oklab, var(--blue-gray), #000 10%);
+  box-shadow:0 0 0 3px color-mix(in oklab, var(--blue-gray), #fff 75%), 0 8px 22px rgba(0,0,0,.12);
+  background:#fff;
+}
+
+.form-group .error{
+  margin:2px 0 0;
+  font-size:.82rem;
+  color:#8a2b2b;
+}
+
+.profile-form [aria-invalid="true"]{
+  border-color:#d97373!important;
+  box-shadow:0 0 0 3px rgba(217,115,115,.18);
+  background:#fff;
+}
+
+.btn-guardar{
+  grid-column:1/-1;
+  margin-top:4px;
+  justify-self:center;
+  width:min(92.5%,560px);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:14px 18px;
+  border-radius:14px;
+  background:var(--primary-gradient);
+  color:#fff!important;
+  font-weight:800;
+  letter-spacing:.3px;
+  text-transform:uppercase;
+  border:none;
+  cursor:pointer;
+  text-decoration:none;
+  transition:var(--transition);
+  position:relative;
+  overflow:hidden;
+}
+
+.btn-guardar:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 25px rgba(0,0,0,.2);
+}
+
+.btn-guardar:focus-visible{
+  outline:none;
+  box-shadow:0 0 0 3px color-mix(in oklab, var(--olive), #fff 75%), 0 12px 25px rgba(0,0,0,.24);
+}
+
+@keyframes fadeInUp{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+@media (max-width:820px){
+  .profile-form{
+    grid-template-columns:1fr;
+    gap:14px 16px;
+    padding:20px;
+    min-height:auto;
+  }
+  .btn-guardar{width:100%}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .profile-form{animation:none}
+  .btn-guardar,
+  .profile-form input,
+  .profile-form select,
+  .profile-form textarea{transition:none}
 }

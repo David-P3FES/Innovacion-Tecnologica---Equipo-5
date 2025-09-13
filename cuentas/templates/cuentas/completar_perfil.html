@@ -2,31 +2,30 @@
   @file profile.html
   @brief Plantilla para completar el perfil del usuario en la app cuentas.
   @details
-   - Extiende de `base.html`.
    - Permite a los usuarios llenar datos personales y de contacto.
    - Incluye validación de errores por campo y generales.
 -->
 
 {% extends "base.html" %}
 
+{% load static %}
+
 {% block content %}
+<link rel="stylesheet" href="{% static 'css/base.css' %}">
+<link rel="stylesheet" href="{% static 'css/completar_perfil.css' %}?v=1">
 <div class="profile-container">
-    <!--! @brief Encabezado y descripción de la sección de perfil -->
     <h2>Completa tu perfil</h2>
     <p>Por favor llena los siguientes datos:</p>
 
-    <!--! @brief Errores generales del formulario -->
     {% if form.non_field_errors %}
       <div class="error-box">
         {{ form.non_field_errors }}
       </div>
     {% endif %}
 
-    <!--! @brief Formulario para actualizar información de usuario -->
     <form method="post" class="profile-form">
         {% csrf_token %}
 
-        <!--! @brief Campo para capturar el RFC -->
         <div class="form-group">
             <label for="id_rfc">RFC:</label>
             {{ form.rfc }}
@@ -35,7 +34,6 @@
             {% endfor %}
         </div>
 
-        <!--! @brief Campo para capturar el número de WhatsApp -->
         <div class="form-group">
             <label for="id_whatsapp">WhatsApp:</label>
             {{ form.whatsapp }}
@@ -44,7 +42,6 @@
             {% endfor %}
         </div>
 
-        <!--! @brief Campo de nombre de usuario -->
         <div class="form-group">
             <label for="id_username">Usuario:</label>
             {{ form.username }}
@@ -53,7 +50,6 @@
             {% endfor %}
         </div>
 
-        <!--! @brief Campo para el nombre -->
         <div class="form-group">
             <label for="id_first_name">Nombre:</label>
             {{ form.first_name }}
@@ -62,7 +58,6 @@
             {% endfor %}
         </div>
 
-        <!--! @brief Campo para el apellido -->
         <div class="form-group">
             <label for="id_last_name">Apellido:</label>
             {{ form.last_name }}
@@ -71,7 +66,6 @@
             {% endfor %}
         </div>
 
-        <!--! @brief Campo para el correo electrónico -->
         <div class="form-group">
             <label for="id_email">Email:</label>
             {{ form.email }}
@@ -80,7 +74,6 @@
             {% endfor %}
         </div>
 
-        <!--! @brief Botón para guardar los cambios en el perfil -->
         <button type="submit" class="btn-guardar">Guardar perfil</button>
     </form>
 </div>
