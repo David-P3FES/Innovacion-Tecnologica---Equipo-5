@@ -1,22 +1,31 @@
-# principal/views.py
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
 from django.db.models import Q, Count, Prefetch
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
+import unicodedata
 
-# 👇 Importa tus modelos reales
-from publicaciones.models import Publicacion, Favorito, FotoPublicacion  # añadimos FotoPublicacion
 
-# ---------- Helpers ----------
+from publicaciones.models import Publicacion, Favorito, FotoPublicacion
+
 def _to_decimal(s):
+    """
+    @brief Convierte string a decimal de forma segura
+    @param s String a convertir
+    @return Valor decimal o None si no es válido
+    """
     try:
         return float(str(s).replace(",", "").strip())
     except Exception:
         return None
 
 def _liked_ids_for(user, pubs_queryset_or_list):
-    """Devuelve set de IDs de publicaciones que el usuario ya marcó como favorito."""
+    """
+    @brief Obtiene IDs de publicaciones marcadas como favorito por el usuario
+    @param user Usuario autenticado
+    @param pubs_queryset_or_list Queryset o lista de publicaciones
+    @return Set con IDs de publicaciones favoritas del usuario
+    """
     if not user.is_authenticated:
         return set()
     ids = list(getattr(pubs_queryset_or_list, "values_list", lambda *a, **k: pubs_queryset_or_list)("id", flat=True))
@@ -25,18 +34,30 @@ def _liked_ids_for(user, pubs_queryset_or_list):
     liked = Favorito.objects.filter(usuario=user, publicacion_id__in=ids).values_list("publicacion_id", flat=True)
     return set(liked)
 
+def _quitar_acentos(texto):
+    """
+    @brief Normaliza texto removiendo acentos y caracteres especiales
+    @param texto Texto a normalizar
+    @return Texto normalizado en minúsculas sin acentos
+    """
+    if not texto:
+        return ""
+    texto = unicodedata.normalize('NFD', texto)
+    texto = ''.join(char for char in texto if unicodedata.category(char) != 'Mn')
+    return texto.lower()
 
-# ---------- Home ----------
 def home(request):
     """
-    Home con hero + buscador y 'Recientemente publicadas'.
-    Trae solo publicaciones 'disponible', ordenadas por fecha (6).
+    @brief Vista principal con hero, buscador y publicaciones recientes
+    @details Muestra las 6 publicaciones más recientes con estatus 'disponible'
+    @param request Objeto HttpRequest
+    @return HttpResponse renderizado con template home.html
     """
     recientes = (
         Publicacion.objects
         .filter(estatus="disponible")
-        .select_related("usuario__perfil")      # ⚡ evitar N+1
-        .prefetch_related("fotos")              # ⚡ evitar N+1
+        .select_related("usuario__perfil")
+        .prefetch_related("fotos")
         .annotate(like_count=Count("favoritos"))
         .order_by("-fecha_creacion")[:6]
     )
@@ -44,24 +65,10 @@ def home(request):
 
     return render(request, "principal/home.html", {
         "recientes": recientes,
-        "liked_ids": liked_ids,                 # para pintar corazón lleno
+        "liked_ids": liked_ids,
     })
 
-
-# ---------- Resultados de búsqueda con filtros ----------
 def resultados_busqueda(request):
-    """
-    Resultados de búsqueda pública con panel de filtros.
-    Parámetros GET soportados:
-      - direccion (texto libre: calle/colonia/ciudad/estado/CP/título/descr)
-      - tipo_operacion: venta|renta
-      - precio_min, precio_max (números)
-      - rec_min, banos_min, est_min (números)
-      - m2c_min, m2t_min (números)
-      - financiamiento: contado|credito|ambos
-      - estado, ciudad (texto)
-    """
-    # ── 1) Leer parámetros
     texto = (request.GET.get("direccion") or "").strip()
     tipo_sel = (request.GET.get("tipo_operacion") or "").strip().lower()
     financiamiento = (request.GET.get("financiamiento") or "").strip().lower()
@@ -73,19 +80,16 @@ def resultados_busqueda(request):
     rec_min    = _to_decimal(request.GET.get("rec_min"))
     banos_min  = _to_decimal(request.GET.get("banos_min"))
     est_min    = _to_decimal(request.GET.get("est_min"))
-    m2c_min    = _to_decimal(request.GET.get("m2c_min"))  # construcción
-    m2t_min    = _to_decimal(request.GET.get("m2t_min"))  # terreno
+    m2c_min    = _to_decimal(request.GET.get("m2c_min"))
+    m2t_min    = _to_decimal(request.GET.get("m2t_min"))
 
-    # ── 2) Base queryset (solo disponibles)
     qs = Publicacion.objects.filter(estatus="disponible")
 
-    # ── 3) Filtros exactos / choices
     if tipo_sel in ("venta", "renta"):
         qs = qs.filter(tipo_operacion=tipo_sel)
     if financiamiento in ("contado", "credito", "ambos"):
         qs = qs.filter(tipo_financiamiento=financiamiento)
 
-    # ── 4) Filtros numéricos
     if precio_min is not None:
         qs = qs.filter(precio__gte=precio_min)
     if precio_max is not None:
@@ -103,13 +107,11 @@ def resultados_busqueda(request):
     if m2t_min is not None:
         qs = qs.filter(metros_terreno__gte=int(m2t_min))
 
-    # ── 5) Ubicación
     if estado:
         qs = qs.filter(estado__icontains=estado)
     if ciudad:
         qs = qs.filter(ciudad__icontains=ciudad)
 
-    # ── 6) Búsqueda por texto (tokenizada)
     if texto:
         tokens = [t for t in texto.replace(",", " ").split() if len(t) >= 2]
         campos = [
@@ -122,13 +124,40 @@ def resultados_busqueda(request):
             "estado__icontains",
             "codigo_postal__icontains",
         ]
+        
+        qs_filtrado = qs
         for tk in tokens:
             or_block = Q()
             for c in campos:
                 or_block |= Q(**{c: tk})
-            qs = qs.filter(or_block)
+            qs_filtrado = qs_filtrado.filter(or_block)
+        
+        if not qs_filtrado.exists():
+            texto_sin_acentos = _quitar_acentos(texto)
+            ids_coincidentes = []
+            
+            for pub in qs:
+                campos_texto = [
+                    pub.titulo or "",
+                    pub.descripcion or "",
+                    pub.calle or "",
+                    pub.numero or "",
+                    pub.colonia or "",
+                    pub.ciudad or "",
+                    pub.estado or "",
+                    pub.codigo_postal or "",
+                ]
+                
+                texto_completo = " ".join(campos_texto).lower()
+                texto_completo_sin_acentos = _quitar_acentos(texto_completo)
+                
+                if texto_sin_acentos in texto_completo_sin_acentos:
+                    ids_coincidentes.append(pub.id)
+            
+            qs = qs.filter(id__in=ids_coincidentes)
+        else:
+            qs = qs_filtrado
 
-    # ── 7) Optimización, conteo de likes y orden
     qs = (
         qs.select_related("usuario__perfil")
           .prefetch_related("fotos")
@@ -136,11 +165,9 @@ def resultados_busqueda(request):
           .order_by("-fecha_creacion")
     )
 
-    # ── 8) Paginación
     paginator = Paginator(qs, 12)
     page_obj = paginator.get_page(request.GET.get("page"))
 
-    # ── 9) IDs ya likeados por el usuario para pintar UI
     liked_ids = _liked_ids_for(request.user, page_obj.object_list)
 
     ctx = {
@@ -149,7 +176,7 @@ def resultados_busqueda(request):
         "tipo_sel": tipo_sel,
         "q": texto,
 
-        # Estado del formulario
+
         "precio_min": request.GET.get("precio_min", ""),
         "precio_max": request.GET.get("precio_max", ""),
         "rec_min": request.GET.get("rec_min", ""),
@@ -160,15 +187,16 @@ def resultados_busqueda(request):
         "financiamiento": financiamiento,
         "estado": estado,
         "ciudad": ciudad,
-
-        # UI likes
         "liked_ids": liked_ids,
     }
     return render(request, "principal/resultados_busqueda.html", ctx)
 
-
-# ---------- Parcial de recientes (opcional para HTMX/Fetch) ----------
 def recientes_html(request):
+    """
+    @brief Vista parcial para cargar publicaciones recientes via AJAX
+    @param request Objeto HttpRequest
+    @return HttpResponse con template parcial _recientes.html
+    """
     recientes = (
         Publicacion.objects
         .filter(estatus="disponible")
@@ -183,11 +211,14 @@ def recientes_html(request):
         "liked_ids": liked_ids,
     })
 
-
-# ---------- Favoritos ----------
 @login_required
 def toggle_favorito(request, pk):
-    """Alterna favorito via POST (AJAX). Devuelve {'liked': True|False}."""
+    """
+    @brief Alterna el estado de favorito de una publicación via AJAX
+    @param request Objeto HttpRequest (debe ser POST)
+    @param pk ID de la publicación
+    @return JsonResponse con estado {'liked': True|False}
+    """
     if request.method != "POST":
         return HttpResponseBadRequest("POST required")
     pub = get_object_or_404(Publicacion, pk=pk)
@@ -198,7 +229,11 @@ def toggle_favorito(request, pk):
 
 @login_required
 def mis_favoritos(request):
-    """Listado del usuario: 'Me encantas'."""
+    """
+    @brief Vista de listado de publicaciones favoritas del usuario
+    @param request Objeto HttpRequest (requiere autenticación)
+    @return HttpResponse con template mis_favoritos.html
+    """
     pubs = (
         Publicacion.objects
         .filter(favoritos__usuario=request.user)
@@ -214,14 +249,17 @@ def mis_favoritos(request):
     })
 
 
-# ---------- Detalle de publicación ----------
 def publicacion_detalle(request, pk: int):
     """
-    Página de detalle con toda la info + galería + mapa + estado + ❤.
+    @brief Vista de detalle completo de una publicación
+    @details Muestra información completa, galería de fotos, mapa y estado de favorito
+    @param request Objeto HttpRequest
+    @param pk ID de la publicación a mostrar
+    @return HttpResponse con template publicacion_detalle.html
     """
     pub = (
         Publicacion.objects
-        .select_related("usuario__perfil")  # autor + perfil
+        .select_related("usuario__perfil")
         .prefetch_related(
             Prefetch("fotos", queryset=FotoPublicacion.objects.order_by("orden", "id"))
         )
@@ -230,7 +268,6 @@ def publicacion_detalle(request, pk: int):
         .first()
     )
     if not pub:
-        # asegúrate de devolver 404 si no existe
         pub = get_object_or_404(Publicacion, pk=pk)
 
     liked = False

@@ -30,6 +30,7 @@
         <option value="renta">Renta</option>
       </select>
 
+
       <input
         type="text"
         name="direccion"
@@ -122,6 +123,137 @@
 </section>
 
 <script>
+  (function(){
+    const selects = document.querySelectorAll('.searchbar__select');
+    selects.forEach(initFancySelect);
+
+    function initFancySelect(sel){
+      if (sel.dataset.enhanced) return;
+      sel.dataset.enhanced = '1';
+
+      // wrapper visual
+      const wrap = document.createElement('div');
+      wrap.className = 'selectx';
+      sel.parentNode.insertBefore(wrap, sel);
+      sel.classList.add('u-hidden-select');
+      wrap.appendChild(sel); 
+      
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'selectx__btn';
+      btn.setAttribute('aria-haspopup', 'listbox');
+      btn.setAttribute('aria-expanded', 'false');
+
+      const label = document.createElement('span');
+      label.className = 'selectx__label';
+      label.textContent = getLabel(sel);
+
+      const chev = document.createElement('span');
+      chev.className = 'selectx__chev';
+
+      btn.appendChild(label);
+      btn.appendChild(chev);
+      wrap.appendChild(btn);
+
+      // lista
+      const list = document.createElement('div');
+      list.className = 'selectx__list';
+      list.setAttribute('role', 'listbox');
+      wrap.appendChild(list);
+
+      // opciones
+      Array.from(sel.options).forEach((op, idx) => {
+        const item = document.createElement('div');
+        item.className = 'selectx__option';
+        item.setAttribute('role', 'option');
+        item.dataset.value = op.value;
+        item.setAttribute('aria-selected', op.selected ? 'true' : 'false');
+
+        const tick = document.createElement('span'); tick.className = 'selectx__tick';
+        const text = document.createElement('span'); text.textContent = op.textContent;
+
+        item.appendChild(tick);
+        item.appendChild(text);
+        list.appendChild(item);
+
+        item.addEventListener('click', () => choose(op.value));
+        item.addEventListener('mouseenter', () => focusIndex = idx);
+      });
+
+      // estado
+      let open = false;
+      let focusIndex = sel.selectedIndex >= 0 ? sel.selectedIndex : 0;
+
+      function openList(){
+        open = true;
+        wrap.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+        scrollIntoView();
+        document.addEventListener('click', onDocClick);
+        document.addEventListener('keydown', onKey);
+      }
+      function closeList(){
+        open = false;
+        wrap.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+        document.removeEventListener('click', onDocClick);
+        document.removeEventListener('keydown', onKey);
+      }
+      function onDocClick(e){
+        if (!wrap.contains(e.target)) closeList();
+      }
+      function onKey(e){
+        if (!open && (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ')){
+          e.preventDefault(); openList(); return;
+        }
+        if (!open) return;
+        if (e.key === 'Escape'){ closeList(); btn.focus(); }
+        else if (e.key === 'ArrowDown'){ e.preventDefault(); move(1); }
+        else if (e.key === 'ArrowUp'){ e.preventDefault(); move(-1); }
+        else if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); chooseIndex(focusIndex); }
+      }
+      function move(delta){
+        const opts = list.querySelectorAll('.selectx__option');
+        focusIndex = Math.max(0, Math.min(opts.length-1, focusIndex + delta));
+        opts[focusIndex].focus?.();
+        opts.forEach((o,i)=>o.classList.toggle('is-focus', i===focusIndex));
+        scrollIntoView();
+      }
+      function scrollIntoView(){
+        const opts = list.querySelectorAll('.selectx__option');
+        const el = opts[focusIndex]; if (!el) return;
+        const {top,bottom} = el.getBoundingClientRect();
+        const {top:lt,bottom:lb} = list.getBoundingClientRect();
+        if (top < lt) list.scrollTop -= (lt - top + 6);
+        if (bottom > lb) list.scrollTop += (bottom - lb + 6);
+      }
+      function choose(value){
+        sel.value = value; sel.dispatchEvent(new Event('change', {bubbles:true}));
+        label.textContent = getLabel(sel);
+        list.querySelectorAll('.selectx__option').forEach(o=>{
+          o.setAttribute('aria-selected', o.dataset.value === value ? 'true' : 'false');
+        });
+        closeList(); btn.focus();
+      }
+      function chooseIndex(i){
+        const opt = sel.options[i]; if (opt) choose(opt.value);
+      }
+      function getLabel(s){
+        const op = s.options[s.selectedIndex];
+        return op ? op.textContent : (s.options[0]?.textContent || 'Selecciona');
+      }
+
+      btn.addEventListener('click', ()=> open ? closeList() : openList());
+
+      // sincroniza si cambian el select nativo por código
+      sel.addEventListener('change', ()=>{
+        label.textContent = getLabel(sel);
+        list.querySelectorAll('.selectx__option').forEach(o=>{
+          o.setAttribute('aria-selected', o.dataset.value === sel.value ? 'true' : 'false');
+        });
+      });
+    }
+  })();
   window.AUTHENTICATED = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
   function getCsrf(){ const m=document.cookie.match(/csrftoken=([^;]+)/); return m?m[1]:''; }
 
@@ -206,7 +338,139 @@ document.addEventListener('DOMContentLoaded', () => {
     layer.appendChild(sp);
   }
 });
+
+(function(){
+  const selects = document.querySelectorAll('.searchbar__select');
+  selects.forEach(initFancySelect);
+
+  function initFancySelect(sel){
+    if (sel.dataset.enhanced) return;
+    sel.dataset.enhanced = '1';
+
+    // wrapper visual
+    const wrap = document.createElement('div');
+    wrap.className = 'selectx';
+    sel.parentNode.insertBefore(wrap, sel);
+    sel.classList.add('u-hidden-select');
+    wrap.appendChild(sel); // dejamos el <select> dentro pero oculto
+
+    // botón visible
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'selectx__btn';
+    btn.setAttribute('aria-haspopup', 'listbox');
+    btn.setAttribute('aria-expanded', 'false');
+
+    const label = document.createElement('span');
+    label.className = 'selectx__label';
+    label.textContent = getLabel(sel);
+
+    const chev = document.createElement('span');
+    chev.className = 'selectx__chev';
+
+    btn.appendChild(label);
+    btn.appendChild(chev);
+    wrap.appendChild(btn);
+
+    // lista
+    const list = document.createElement('div');
+    list.className = 'selectx__list';
+    list.setAttribute('role', 'listbox');
+    wrap.appendChild(list);
+
+    // opciones
+    Array.from(sel.options).forEach((op, idx) => {
+      const item = document.createElement('div');
+      item.className = 'selectx__option';
+      item.setAttribute('role', 'option');
+      item.dataset.value = op.value;
+      item.setAttribute('aria-selected', op.selected ? 'true' : 'false');
+
+      const tick = document.createElement('span'); tick.className = 'selectx__tick';
+      const text = document.createElement('span'); text.textContent = op.textContent;
+
+      item.appendChild(tick);
+      item.appendChild(text);
+      list.appendChild(item);
+
+      item.addEventListener('click', () => choose(op.value));
+      item.addEventListener('mouseenter', () => focusIndex = idx);
+    });
+
+    // estado
+    let open = false;
+    let focusIndex = sel.selectedIndex >= 0 ? sel.selectedIndex : 0;
+
+    function openList(){
+      open = true;
+      wrap.classList.add('open');
+      btn.setAttribute('aria-expanded', 'true');
+      scrollIntoView();
+      document.addEventListener('click', onDocClick);
+      document.addEventListener('keydown', onKey);
+    }
+    function closeList(){
+      open = false;
+      wrap.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+      document.removeEventListener('click', onDocClick);
+      document.removeEventListener('keydown', onKey);
+    }
+    function onDocClick(e){
+      if (!wrap.contains(e.target)) closeList();
+    }
+    function onKey(e){
+      if (!open && (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ')){
+        e.preventDefault(); openList(); return;
+      }
+      if (!open) return;
+      if (e.key === 'Escape'){ closeList(); btn.focus(); }
+      else if (e.key === 'ArrowDown'){ e.preventDefault(); move(1); }
+      else if (e.key === 'ArrowUp'){ e.preventDefault(); move(-1); }
+      else if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); chooseIndex(focusIndex); }
+    }
+    function move(delta){
+      const opts = list.querySelectorAll('.selectx__option');
+      focusIndex = Math.max(0, Math.min(opts.length-1, focusIndex + delta));
+      opts[focusIndex].focus?.();
+      opts.forEach((o,i)=>o.classList.toggle('is-focus', i===focusIndex));
+      scrollIntoView();
+    }
+    function scrollIntoView(){
+      const opts = list.querySelectorAll('.selectx__option');
+      const el = opts[focusIndex]; if (!el) return;
+      const {top,bottom} = el.getBoundingClientRect();
+      const {top:lt,bottom:lb} = list.getBoundingClientRect();
+      if (top < lt) list.scrollTop -= (lt - top + 6);
+      if (bottom > lb) list.scrollTop += (bottom - lb + 6);
+    }
+    function choose(value){
+      sel.value = value; sel.dispatchEvent(new Event('change', {bubbles:true}));
+      label.textContent = getLabel(sel);
+      list.querySelectorAll('.selectx__option').forEach(o=>{
+        o.setAttribute('aria-selected', o.dataset.value === value ? 'true' : 'false');
+      });
+      closeList(); btn.focus();
+    }
+    function chooseIndex(i){
+      const opt = sel.options[i]; if (opt) choose(opt.value);
+    }
+    function getLabel(s){
+      const op = s.options[s.selectedIndex];
+      return op ? op.textContent : (s.options[0]?.textContent || 'Selecciona');
+    }
+
+    // eventos botón
+    btn.addEventListener('click', ()=> open ? closeList() : openList());
+
+    // sincroniza si cambian el select nativo por código
+    sel.addEventListener('change', ()=>{
+      label.textContent = getLabel(sel);
+      list.querySelectorAll('.selectx__option').forEach(o=>{
+        o.setAttribute('aria-selected', o.dataset.value === sel.value ? 'true' : 'false');
+      });
+    });
+  }
+})();
 </script>
-
-
 {% endblock %}
