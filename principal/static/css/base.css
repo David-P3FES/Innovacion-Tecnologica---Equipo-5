@@ -8,21 +8,16 @@
  *  - Estilos responsivos para distintas pantallas.
  */
 
-/* ========================= */
-/* Variables globales */
-/* ========================= */
 :root {
-  --olive: #9CB28A;     /*! Color principal verde oliva */
-  --blue-gray: #6E889B; /*! Color gris azulado */
-  --off-white: #F5F6F2; /*! Fondo base */
-  --stone: #E6E7E8;     /*! Gris claro */
-  --text: #29323A;      /*! Color de texto */
-  --radius: 12px;       /*! Radio de bordes */
+  --olive: #9CB28A;
+  --blue-gray: #6E889B;
+  --off-white: #F5F6F2;
+  --stone: #E6E7E8;    
+  --text: #29323A;
+  --radius: 12px;
+  --font-sans: "Inter", "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-/* ========================= */
-/* Layout general */
-/* ========================= */
 html, body { height: 100%; }
 body {
   margin: 0;
@@ -39,16 +34,11 @@ body {
   margin: 28px auto;
 }
 
-/* ========================= */
-/* Header */
-/* ========================= */
 .header {
-  /*! Barra superior con gradiente */
   background: linear-gradient(90deg, var(--olive), var(--blue-gray));
   color: #fff;
 }
 .header-content {
-  /*! Contenedor interno del header */
   width: min(1200px, 92%);
   margin: 0 auto;
   display: flex;
@@ -71,7 +61,6 @@ body {
 }
 .nav-link:hover { opacity: .85; }
 .btn-login {
-  /*! Botón de login en el header */
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -84,9 +73,6 @@ body {
 }
 .btn-login:hover { background: #ffffff50; }
 
-/* ========================= */
-/* Footer */
-/* ========================= */
 .footer {
   margin-top: auto;
   background: #dbdbdb; 
@@ -94,7 +80,6 @@ body {
   padding: 40px 0 0;
 }
 .footer-wrap {
-  /*! Contenedor de columnas del footer */
   width: min(1200px, 92%);
   margin: 0 auto;
   display: grid;
@@ -119,13 +104,11 @@ body {
 }
 .footer-col ul li a:hover { text-decoration: underline; }
 
-/* Marca */
 .brand-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .brand-mark { background: var(--olive); color: #fff; font-weight: bold; border-radius: 6px; padding: 6px 10px; }
 .brand-name { font-weight: 700; color: #29323A; }
 .brand p { margin: 8px 0 12px; }
 
-/* Redes sociales */
 .social a {
   display: inline-flex;
   align-items: center;
@@ -146,7 +129,7 @@ body {
   color: #fff;
 }
 
-/* Contacto */
+
 .contact ul li {
   display: flex;
   align-items: flex-start;
@@ -154,7 +137,7 @@ body {
   margin-bottom: 8px;
 }
 
-/* Newsletter */
+
 .newsletter-row {
   display: flex;
   gap: 10px;
@@ -176,7 +159,7 @@ body {
 }
 .newsletter-row button:hover { background: #7d9b6f; }
 
-/* Barra inferior */
+
 .footer-bar {
   border-top: 1px solid rgba(0,0,0,.1);
   margin-top: 30px;
@@ -187,9 +170,7 @@ body {
 }
 .footer-bar .heart { color: var(--olive); }
 
-/* ========================= */
-/* Responsive */
-/* ========================= */
+
 @media (max-width: 820px) {
   .footer-wrap { grid-template-columns: 1fr 1fr; }
 }
@@ -201,9 +182,7 @@ body {
   .social { justify-content: center; }
 }
 
-/* ========================= */
-/* Extras */
-/* ========================= */
+
 .profile-info p {
   font-size: 15px;
   margin: 8px 0;
@@ -219,3 +198,101 @@ body {
   font-weight: 600;
 }
 .btn-secundario:hover { background: #aaa; }
+
+.user-menu { position: relative; }
+
+.avatar-btn {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.7);
+  box-shadow: 0 4px 10px rgba(0,0,0,.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #ffffff; 
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), transparent 60%),
+              var(--primary-gradient);
+  user-select: none;
+}
+
+.avatar-circle::after{
+  content: attr(data-initial);
+  position:absolute; inset:0; display:grid; place-items:center;
+  font-family: "Inter", "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-weight:600;
+  font-size:14px;
+  letter-spacing:.2px;
+  color:#fff;
+  text-shadow:0 1px 0 rgba(0,0,0,.22), 0 0 2px rgba(0,0,0,.08);
+  transform: translateY(3px);
+}
+
+.header, .header-content, .navbar-actions { overflow: visible; }
+
+.user-menu { position: relative; }
+
+.user-menu .trigger-wrap {
+  display: inline-flex; align-items: center; gap: 6px;
+}
+
+.caret-btn {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  margin-left: -11px;
+}
+
+.caret-btn::before {
+  content: "";
+  display: block;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 7px solid #ffffff;
+}
+
+.user-menu.open .caret-btn::before {
+  transform: rotate(180deg);
+}
+
+.user-dropdown{
+  position:absolute; right: 18px; top:calc(100% + 10px);
+  min-width:200px; padding:8px 0;
+  background:#f5f6f2; color:#9CB28A;
+  border-radius:12px; box-shadow:0 16px 36px rgba(0,0,0,.2);
+  display:none; z-index:9999; border:1px solid rgba(0,0,0,.06);
+  pointer-events: auto;
+}
+.user-dropdown::before{
+  content:""; position:absolute; right:20px; top:-7px;
+  width:14px; height:14px; transform: rotate(45deg);
+  background:#f5f6f2; border-left:1px solid rgba(0,0,0,.08); border-top:1px solid rgba(0,0,0,.08);
+}
+.user-dropdown a{
+  display:flex; align-items:center; gap:10px;
+  padding:10px 16px; color: #466557; text-decoration:none; font-weight:600; font-size:15px;
+}
+.user-dropdown a:hover{
+  background:#e6e7e8; border-radius:8px; color:#466557;
+}
+.user-menu.open .user-dropdown{ display:block; }
