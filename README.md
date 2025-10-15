@@ -7,7 +7,6 @@
 **Profesor:** Dr. Abraham López Nájera
 **Equipo:** 5
 
----
 
 ## **Integrantes del Equipo**
 
@@ -19,7 +18,6 @@
 | David Cano Muñiz                | 215814        |
 | Leonardo Ortega Escobar         | 215579        |
 
----
 
 ## **Descripción General del Proyecto**
 
@@ -31,13 +29,10 @@ El sistema permite a agentes, constructoras e inmobiliarias publicar sus propied
 Este desarrollo surge como respuesta a la creciente digitalización del sector inmobiliario y a la necesidad de reducir los fraudes y los procesos informales que actualmente se realizan a través de redes sociales.
 La plataforma se distingue por su escalabilidad, su interfaz intuitiva y su integración con servicios modernos como autenticación segura (Django Allauth) y pagos en línea (Stripe).
 
----
 
 ## **Objetivo General**
 
 Diseñar e implementar un sistema web funcional y escalable que permita la gestión integral de propiedades inmobiliarias, optimizando los procesos de publicación, búsqueda, comunicación y control de usuarios, bajo un entorno ágil de desarrollo.
-
----
 
 ## **Características Principales**
 
@@ -49,8 +44,6 @@ Diseñar e implementar un sistema web funcional y escalable que permita la gesti
 * Contacto directo entre cliente y anunciante mediante correo electrónico o WhatsApp.
 * Interfaz adaptable y moderna desarrollada con HTML, CSS y Bootstrap.
 * Organización modular conforme a los principios de **Scrum**, permitiendo desarrollo incremental.
-
----
 
 ## **Requisitos de Instalación**
 
@@ -71,7 +64,6 @@ Antes de instalar el sistema, asegúrese de contar con los siguientes componente
 * Figma
 * Cuenta de Stripe 
 * Configuración de correo electrónico 
----
 
 ### **2. Instalación del Proyecto**
 
@@ -105,8 +97,6 @@ python manage.py runserver
 
 Una vez iniciado el servidor, acceda a la aplicación desde su navegador en la dirección:
 **[http://127.0.0.1:8000](http://127.0.0.1:8000)**
-
----
 
 ## **Estructura del Proyecto**
 
@@ -147,8 +137,6 @@ INNOVACION-TECNOLOGICA/
 │
 └── requirements.txt             # Dependencias y librerías necesarias para la ejecución del sistema.
 ```
-
----
 
 ## **Metodología de Desarrollo**
 
