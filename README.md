@@ -7,7 +7,7 @@
 **Profesor:** Dr. Abraham López Nájera
 **Equipo:** 5
 
----
+--
 
 ## **Integrantes del Equipo**
 
