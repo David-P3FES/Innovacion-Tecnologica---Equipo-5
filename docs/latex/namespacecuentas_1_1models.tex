@@ -1,0 +1,109 @@
+\doxysection{Referencia del espacio de nombres cuentas.\+models}
+\hypertarget{namespacecuentas_1_1models}{}\label{namespacecuentas_1_1models}\index{cuentas.models@{cuentas.models}}
+\doxysubsubsection*{Clases}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classcuentas_1_1models_1_1Perfil}{Perfil}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Funciones}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacecuentas_1_1models_aa549f6c0362ff09015eda41ab9fd4c66}{crear\+\_\+perfil\+\_\+automatico}} (sender, instance, created, \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}kwargs)
+\item 
+bool \mbox{\hyperlink{namespacecuentas_1_1models_a0fe52ea1dccbe3802f8f38d4481c6a2a}{perfil\+\_\+incompleto}} (user)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+str \mbox{\hyperlink{namespacecuentas_1_1models_ae2cce4319043bfeaa7f9447bbd9c666e}{RFC\+\_\+\+REGEX}} = r\textquotesingle{}\texorpdfstring{$^\wedge$}{\string^}(\mbox{[}A-\/ZÑ\&\mbox{]}\{3\}\textbackslash{}d\{6\}\mbox{[}A-\/Z0-\/9\mbox{]}\{3\}\texorpdfstring{$\vert$}{|}\mbox{[}A-\/ZÑ\&\mbox{]}\{4\}\textbackslash{}d\{6\}\mbox{[}A-\/Z0-\/9\mbox{]}\{3\})\$\textquotesingle{}
+\item 
+\mbox{\hyperlink{namespacecuentas_1_1models_a8b5abc67055a54b081604746370214cc}{rfc\+\_\+validator}}
+\item 
+str \mbox{\hyperlink{namespacecuentas_1_1models_ad81d704feaf5078a2c88a1210e871fc4}{PHONE\+\_\+\+REGEX}} = r\textquotesingle{}\texorpdfstring{$^\wedge$}{\string^}(\textbackslash{}+?52)?1?\textbackslash{}d\{10\}\$\textquotesingle{}
+\item 
+\mbox{\hyperlink{namespacecuentas_1_1models_ab5ccdb19e6f0f1d2cfbfaac9d6b077cb}{phone\+\_\+validator}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Descripción detallada}
+\begin{DoxyVerb}@file models.py
+@brief Modelos y validadores de la aplicación `cuentas`.
+@details
+ Contiene:
+  - Validadores para RFC y número de WhatsApp.
+  - Modelo `Perfil` asociado a cada usuario.
+  - Señal para crear automáticamente un perfil al registrar un usuario.
+  - Función helper para comprobar si un perfil está incompleto.
+\end{DoxyVerb}
+ 
+
+\label{doc-func-members}
+\Hypertarget{namespacecuentas_1_1models_doc-func-members}
+\doxysubsection{Documentación de funciones}
+\Hypertarget{namespacecuentas_1_1models_aa549f6c0362ff09015eda41ab9fd4c66}\index{cuentas.models@{cuentas.models}!crear\_perfil\_automatico@{crear\_perfil\_automatico}}
+\index{crear\_perfil\_automatico@{crear\_perfil\_automatico}!cuentas.models@{cuentas.models}}
+\doxysubsubsection{\texorpdfstring{crear\_perfil\_automatico()}{crear\_perfil\_automatico()}}
+{\footnotesize\ttfamily \label{namespacecuentas_1_1models_aa549f6c0362ff09015eda41ab9fd4c66} 
+cuentas.\+models.\+crear\+\_\+perfil\+\_\+automatico (\begin{DoxyParamCaption}\item[{}]{sender}{, }\item[{}]{instance}{, }\item[{}]{created}{, }\item[{\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}}]{kwargs}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Crea automáticamente un objeto Perfil al registrar un nuevo usuario.
+@param sender Modelo que envía la señal (User).
+@param instance Instancia de usuario creada o actualizada.
+@param created Booleano que indica si el usuario fue creado.
+@param kwargs Argumentos adicionales de la señal.
+\end{DoxyVerb}
+ \Hypertarget{namespacecuentas_1_1models_a0fe52ea1dccbe3802f8f38d4481c6a2a}\index{cuentas.models@{cuentas.models}!perfil\_incompleto@{perfil\_incompleto}}
+\index{perfil\_incompleto@{perfil\_incompleto}!cuentas.models@{cuentas.models}}
+\doxysubsubsection{\texorpdfstring{perfil\_incompleto()}{perfil\_incompleto()}}
+{\footnotesize\ttfamily \label{namespacecuentas_1_1models_a0fe52ea1dccbe3802f8f38d4481c6a2a} 
+ bool cuentas.\+models.\+perfil\+\_\+incompleto (\begin{DoxyParamCaption}\item[{}]{user}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Comprueba si un usuario tiene un perfil incompleto.
+@param user Instancia de usuario a validar.
+@return True si el perfil no existe o está incompleto, False si está completo.
+\end{DoxyVerb}
+ 
+
+\label{doc-var-members}
+\Hypertarget{namespacecuentas_1_1models_doc-var-members}
+\doxysubsection{Documentación de variables}
+\Hypertarget{namespacecuentas_1_1models_ad81d704feaf5078a2c88a1210e871fc4}\index{cuentas.models@{cuentas.models}!PHONE\_REGEX@{PHONE\_REGEX}}
+\index{PHONE\_REGEX@{PHONE\_REGEX}!cuentas.models@{cuentas.models}}
+\doxysubsubsection{\texorpdfstring{PHONE\_REGEX}{PHONE\_REGEX}}
+{\footnotesize\ttfamily \label{namespacecuentas_1_1models_ad81d704feaf5078a2c88a1210e871fc4} 
+str cuentas.\+models.\+PHONE\+\_\+\+REGEX = r\textquotesingle{}\texorpdfstring{$^\wedge$}{\string^}(\textbackslash{}+?52)?1?\textbackslash{}d\{10\}\$\textquotesingle{}}
+
+\Hypertarget{namespacecuentas_1_1models_ab5ccdb19e6f0f1d2cfbfaac9d6b077cb}\index{cuentas.models@{cuentas.models}!phone\_validator@{phone\_validator}}
+\index{phone\_validator@{phone\_validator}!cuentas.models@{cuentas.models}}
+\doxysubsubsection{\texorpdfstring{phone\_validator}{phone\_validator}}
+{\footnotesize\ttfamily \label{namespacecuentas_1_1models_ab5ccdb19e6f0f1d2cfbfaac9d6b077cb} 
+cuentas.\+models.\+phone\+\_\+validator}
+
+{\bfseries Valor inicial\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ =\ \ RegexValidator(}
+\DoxyCodeLine{00002\ \ \ \ \ regex=PHONE\_REGEX,}
+\DoxyCodeLine{00003\ \ \ \ \ message=\textcolor{stringliteral}{'Número\ inválido.\ Usa\ 10\ dígitos\ (ej.\ 6561234567)\ o\ formato\ +5216561234567.'}}
+\DoxyCodeLine{00004\ )}
+
+\end{DoxyCode}
+\Hypertarget{namespacecuentas_1_1models_ae2cce4319043bfeaa7f9447bbd9c666e}\index{cuentas.models@{cuentas.models}!RFC\_REGEX@{RFC\_REGEX}}
+\index{RFC\_REGEX@{RFC\_REGEX}!cuentas.models@{cuentas.models}}
+\doxysubsubsection{\texorpdfstring{RFC\_REGEX}{RFC\_REGEX}}
+{\footnotesize\ttfamily \label{namespacecuentas_1_1models_ae2cce4319043bfeaa7f9447bbd9c666e} 
+str cuentas.\+models.\+RFC\+\_\+\+REGEX = r\textquotesingle{}\texorpdfstring{$^\wedge$}{\string^}(\mbox{[}A-\/ZÑ\&\mbox{]}\{3\}\textbackslash{}d\{6\}\mbox{[}A-\/Z0-\/9\mbox{]}\{3\}\texorpdfstring{$\vert$}{|}\mbox{[}A-\/ZÑ\&\mbox{]}\{4\}\textbackslash{}d\{6\}\mbox{[}A-\/Z0-\/9\mbox{]}\{3\})\$\textquotesingle{}}
+
+\Hypertarget{namespacecuentas_1_1models_a8b5abc67055a54b081604746370214cc}\index{cuentas.models@{cuentas.models}!rfc\_validator@{rfc\_validator}}
+\index{rfc\_validator@{rfc\_validator}!cuentas.models@{cuentas.models}}
+\doxysubsubsection{\texorpdfstring{rfc\_validator}{rfc\_validator}}
+{\footnotesize\ttfamily \label{namespacecuentas_1_1models_a8b5abc67055a54b081604746370214cc} 
+cuentas.\+models.\+rfc\+\_\+validator}
+
+{\bfseries Valor inicial\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ =\ \ RegexValidator(}
+\DoxyCodeLine{00002\ \ \ \ \ regex=RFC\_REGEX,}
+\DoxyCodeLine{00003\ \ \ \ \ message=\textcolor{stringliteral}{'RFC\ inválido.\ Ejemplo\ persona:\ GODE561231GR8\ /\ empresa:\ ABC001231AB1\ (usar\ MAYÚSCULAS).'}}
+\DoxyCodeLine{00004\ )}
+
+\end{DoxyCode}

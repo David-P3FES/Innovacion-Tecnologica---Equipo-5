@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/publicacion_detalle.css' %}?v=3">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+{% endblock %}
+
+{% block content %}
+<div class="detalle-wrap wrap">
+
+  <section class="detalle-gallery gallery detalle-card card">
+    {% if pub.fotos.all %}
+      <div class="detalle-gallery-main gallery-main">
+        <img id="g-main" src="{{ pub.fotos.all.0.imagen.url }}" alt="{{ pub.titulo }}">
+      </div>
+
+      <div class="detalle-thumbs-wrap thumbs-wrap">
+        <button class="detalle-thumbs-btn thumbs-btn thumbs-prev" type="button" aria-label="Anterior">‹</button>
+        <div class="detalle-thumbs thumbs" id="g-thumbs">
+          {% for f in pub.fotos.all %}
+            <button class="detalle-thumb thumb{% if forloop.first %} is-active{% endif %}" type="button" data-src="{{ f.imagen.url }}">
+              <img src="{{ f.imagen.url }}" alt="Foto {{ forloop.counter }} de {{ pub.titulo }}">
+            </button>
+          {% endfor %}
+        </div>
+        <button class="detalle-thumbs-btn thumbs-btn thumbs-next" type="button" aria-label="Siguiente">›</button>
+      </div>
+    {% else %}
+      <div class="detalle-empty empty">Esta publicación aún no tiene fotos.</div>
+    {% endif %}
+  </section>
+
+  <section class="header1 detalle-card card">
+    <div class="h-left">
+      <h1 class="detalle-title title">{{ pub.titulo }}</h1>
+
+      <div class="detalle-sub sub">
+        <span class="detalle-price price">${{ pub.precio|floatformat:0|intcomma }}</span>
+        <span class="detalle-pill pill detalle-pill-op pill-op">{{ pub.get_tipo_operacion_display }}</span>
+        {% if pub.estatus %}
+          <span class="detalle-pill pill pill-status detalle-status-{{ pub.estatus }} status-{{ pub.estatus }}">{{ pub.get_estatus_display }}</span>
+        {% endif %}
+      </div>
+
+      <div class="detalle-addr addr"> {{ pub.direccion_completa }}</div>
+      <div class="detalle-meta meta"> Publicada hace {{ pub.fecha_creacion|timesince }}</div>
+
+      <ul class="detalle-stats stats">
+        <li>{{ pub.recamaras }} Rec.</li>
+        <li>{{ pub.banos|floatformat:1 }} Baños</li>
+        <li>{{ pub.estacionamientos }} Estac.</li>
+        <li>{{ pub.metros_construccion }} m² Const.</li>
+        <li>{{ pub.metros_terreno }} m² Terreno</li>
+        <li>{{ pub.get_tipo_financiamiento_display }}</li>
+      </ul>
+    </div>
+
+    <div class="detalle-h-right h-right">
+      <button
+        id="btn-like"
+        class="detalle-like-btn like-btn {% if liked %}is-liked{% endif %}"
+        data-pub="{{ pub.id }}"
+        title="{% if liked %}Quitar de favoritos{% else %}Agregar a favoritos{% endif %}">
+        <span class="detalle-like-ico like-ico">❤</span>
+      </button>
+
+      <div class="detalle-seller seller">
+        <div class="detalle-seller__who seller__who">
+          <br>Publicado por: <strong>{% firstof pub.usuario.get_full_name pub.usuario.username %}</strong>
+        </div>
+        <div class="detalle-seller__actions seller__actions">
+          {% with email=pub.usuario.email phone=pub.usuario.perfil.whatsapp %}
+            {% if email %}
+              <a class="detalle-btn-ico btn-ico" href="mailto:{{ email }}?subject={{ pub.titulo|urlencode }}">Email</a>
+            {% endif %}
+            {% if phone %}
+              {% if phone|length == 10 %}
+                <a class="detalle-btn-ico btn-ico" target="_blank" href="https://wa.me/52{{ phone }}?text={{ pub.titulo|urlencode }}">WhatsApp</a>
+              {% else %}
+                <a class="detalle-btn-ico btn-ico" target="_blank" href="https://wa.me/{{ phone|cut:'+' }}?text={{ pub.titulo|urlencode }}">WhatsApp</a>
+              {% endif %}
+            {% endif %}
+          {% endwith %}
+        </div>
+      </div>
+
+      <a class="detalle-crumbs crumbs" href="javascript:history.back()"> Volver</a>
+    </div>
+  </section>
+
+  <section class="detalle-details details detalle-card card">
+    <h2>Descripción</h2>
+    <p class="detalle-desc desc">{{ pub.descripcion|default:"(Sin descripción)" }}</p>
+  </section>
+
+  <section class="detalle-mapa mapa detalle-card card">
+    <h2>Ubicación</h2>
+
+    {% if pub.tiene_coordenadas %}
+      <div id="map"
+           data-lat="{{ pub.latitud|default_if_none:'' }}"
+           data-lon="{{ pub.longitud|default_if_none:'' }}"
+           style="height:420px;border-radius:12px;"></div>
+    {% else %}
+      <div class="detalle-empty empty">Esta publicación aún no tiene coordenadas para el mapa.</div>
+    {% endif %}
+  </section>
+</div>
+
+<div id="lightbox" class="detalle-lightbox lightbox" aria-hidden="true">
+  <div class="detalle-lightbox__inner lightbox__inner">
+    <img id="lb-img" class="detalle-lightbox__img lightbox__img" src="" alt="">
+    <button id="lb-close" class="detalle-lightbox__btn lightbox__btn" aria-label="Cerrar">✕</button>
+    <div class="detalle-lightbox__nav lightbox__nav">
+      <button id="lb-prev" class="detalle-lightbox__arrow lightbox__arrow" aria-label="Anterior">‹</button>
+      <button id="lb-next" class="detalle-lightbox__arrow lightbox__arrow" aria-label="Siguiente">›</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function(){
+  const thumbsWrap = document.querySelector('.thumbs-wrap');
+  const rail = document.getElementById('g-thumbs');
+  const main = document.getElementById('g-main');
+  if(!thumbsWrap || !rail || !main) return;
+
+  const prev = thumbsWrap.querySelector('.thumbs-prev');
+  const next = thumbsWrap.querySelector('.thumbs-next');
+  const STEP = 260;
+
+  function updateArrows(){
+    const max = rail.scrollWidth - rail.clientWidth;
+    if(prev) prev.disabled = rail.scrollLeft <= 2;
+    if(next) next.disabled = rail.scrollLeft >= (max - 2);
+  }
+
+  prev?.addEventListener('click', ()=>{ rail.scrollBy({left:-STEP,behavior:'smooth'}); setTimeout(updateArrows,300); });
+  next?.addEventListener('click', ()=>{ rail.scrollBy({left: STEP,behavior:'smooth'}); setTimeout(updateArrows,300); });
+  rail.addEventListener('scroll', updateArrows);
+  window.addEventListener('resize', updateArrows);
+  updateArrows();
+
+  rail.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.thumb');
+    if(!btn) return;
+    const src = btn.dataset.src || btn.querySelector('img')?.src;
+    if(src) main.src = src;
+    rail.querySelectorAll('.thumb').forEach(t=>t.classList.remove('is-active'));
+    btn.classList.add('is-active');
+  });
+})();
+
+(function(){
+  const main = document.getElementById('g-main');
+  const rail = document.getElementById('g-thumbs');
+  const lightbox = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lb-img');
+  const bClose = document.getElementById('lb-close');
+  const bPrev = document.getElementById('lb-prev');
+  const bNext = document.getElementById('lb-next');
+  if(!main || !rail || !lightbox) return;
+
+  function gatherSources(){
+    const imgs = Array.from(rail.querySelectorAll('.thumb img'));
+    const arr = imgs.map(i => i.getAttribute('src'));
+    const current = main.getAttribute('src');
+    if(!arr.includes(current)) arr.unshift(current);
+    return arr;
+  }
+  let sources = gatherSources();
+  let idx = 0;
+
+  function openAt(i){
+    sources = gatherSources();
+    idx = (i + sources.length) % sources.length;
+    lbImg.src = sources[idx];
+    lightbox.classList.add('is-open');
+    document.body.style.overflow='hidden';
+  }
+  function closeLb(){ lightbox.classList.remove('is-open'); document.body.style.overflow=''; }
+  function next(){ openAt(idx+1); }
+  function prev(){ openAt(idx-1); }
+
+  main.addEventListener('click', ()=>{
+    const i = gatherSources().indexOf(main.getAttribute('src'));
+    openAt(i>=0?i:0);
+  });
+  bClose.addEventListener('click', closeLb);
+  bNext.addEventListener('click', next);
+  bPrev.addEventListener('click', prev);
+  lightbox.addEventListener('click', (e)=>{ if(e.target===lightbox) closeLb(); });
+  window.addEventListener('keydown', (e)=>{
+    if(!lightbox.classList.contains('is-open')) return;
+    if(e.key==='Escape') closeLb();
+    else if(e.key==='ArrowRight') next();
+    else if(e.key==='ArrowLeft') prev();
+  });
+})();
+
+/* ====== FAVORITOS ====== */
+(function(){
+  window.AUTHENTICATED = "{{ request.user.is_authenticated|yesno:'true,false' }}" === "true";
+  function getCsrf(){ const m=document.cookie.match(/csrftoken=([^;]+)/); return m?m[1]:''; }
+  document.getElementById("btn-like")?.addEventListener("click", async (e)=>{
+    const btn = e.currentTarget;
+    const pubId = btn.dataset.pub;
+    if(!window.AUTHENTICATED){
+      const next = encodeURIComponent(window.location.pathname + window.location.search);
+      window.location.href = "{% url 'account_login' %}?next=" + next;
+      return;
+    }
+    try{
+      const r = await fetch("{% url 'principal:toggle_favorito' 0 %}".replace("/0/","/"+pubId+"/"), {
+        method:"POST",
+        headers:{ "X-CSRFToken": getCsrf(), "X-Requested-With":"XMLHttpRequest" }
+      });
+      const j = await r.json();
+      const countEl = document.getElementById("like-count");
+      if(j.liked){
+        btn.classList.add("is-liked");
+        if(countEl) countEl.textContent = (+countEl.textContent||0)+1;
+      }else{
+        btn.classList.remove("is-liked");
+        if(countEl) countEl.textContent = Math.max(0,(+countEl.textContent||0)-1);
+      }
+    }catch(err){
+      console.error(err);
+      alert("No se pudo actualizar tu favorito. Inténtalo de nuevo.");
+    }
+  });
+})();
+
+/* ====== MAPA (Leaflet) ====== */
+(function(){
+  const mapEl = document.getElementById('map');
+  if(!mapEl) return;
+  const lat = parseFloat(mapEl.dataset.lat);
+  const lon = parseFloat(mapEl.dataset.lon);
+  if (Number.isFinite(lat) && Number.isFinite(lon)) {
+    const map = L.map('map').setView([lat, lon], 16);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19, attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+    L.marker([lat, lon]).addTo(map).bindPopup(`{{ pub.titulo|escapejs }}`);
+  }
+})();
+</script>
+{% endblock %}

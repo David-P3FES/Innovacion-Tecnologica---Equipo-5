@@ -1,0 +1,343 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block content %}
+<div class="wrap">
+  <h1 class="title">Resultados de búsqueda</h1>
+
+  <!-- Botón para abrir filtros en móvil -->
+  <button class="btn-filtros" type="button" id="btn-filtros">Filtros</button>
+
+  <div class="layout">
+    <!-- ===== Sidebar de filtros ===== -->
+    <aside class="sidebar pretty" id="sidebar">
+      <form method="get" action="{% url 'principal:resultados_busqueda' %}" class="filters v2">
+
+        <div class="f-header">
+          <div class="f-title">Filtros</div>
+          <button type="button" class="f-close" id="btn-filtros-close">×</button>
+        </div>
+
+        <!-- Texto libre -->
+        <div class="f-section">
+          <label class="f-label" for="in-direccion">Búsqueda</label>
+          <input class="f-input" id="in-direccion" type="text" name="direccion" value="{{ q }}" placeholder="Dirección, colonia, ciudad…" />
+        </div>
+
+        <!-- Tipo de operación -->
+        <div class="f-section">
+          <label class="f-label" for="sel-tipo">Tipo de operación</label>
+          <select class="f-input" id="sel-tipo" name="tipo_operacion">
+            <option value="" {% if not tipo_sel %}selected{% endif %}>Todos</option>
+            <option value="venta" {% if tipo_sel == "venta" %}selected{% endif %}>Venta</option>
+            <option value="renta" {% if tipo_sel == "renta" %}selected{% endif %}>Renta</option>
+          </select>
+        </div>
+
+        <!-- Precio (par unido) -->
+        <div class="f-section">
+          <div class="f-subtitle">Precio</div>
+          <label class="f-sublabel">Mín. / Máx.</label>
+          <div class="f-pair">
+            <input class="f-input f-left" id="precio_min" type="number" inputmode="numeric"
+                   name="precio_min" value="{{ precio_min }}" min="0" step="1000" placeholder="0" />
+            <input class="f-input f-right" id="precio_max" type="number" inputmode="numeric"
+                   name="precio_max" value="{{ precio_max }}" min="0" step="1000" placeholder="∞" />
+          </div>
+        </div>
+
+        <!-- Características -->
+        <div class="f-section">
+          <div class="f-subtitle">Características</div>
+          <div class="f-row3">
+            <div>
+              <label class="f-sublabel" for="rec_min">Recámaras</label>
+              <input class="f-input" id="rec_min" type="number" name="rec_min" value="{{ rec_min }}" min="0" step="1" />
+            </div>
+            <div>
+              <label class="f-sublabel" for="banos_min">Baños</label>
+              <input class="f-input" id="banos_min" type="number" name="banos_min" value="{{ banos_min }}" min="0" step="0.5" />
+            </div>
+            <div>
+              <label class="f-sublabel" for="est_min">Estac.</label>
+              <input class="f-input" id="est_min" type="number" name="est_min" value="{{ est_min }}" min="0" step="1" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Superficie -->
+        <div class="f-section">
+          <div class="f-subtitle">Superficie</div>
+          <div class="f-row2">
+            <div>
+              <label class="f-sublabel" for="m2c_min">Construcción (m²)</label>
+              <input class="f-input" id="m2c_min" type="number" name="m2c_min" value="{{ m2c_min }}" min="0" step="10" />
+            </div>
+            <div>
+              <label class="f-sublabel" for="m2t_min">Terreno (m²)</label>
+              <input class="f-input" id="m2t_min" type="number" name="m2t_min" value="{{ m2t_min }}" min="0" step="10" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Financiamiento -->
+        <div class="f-section">
+          <label class="f-label" for="finan">Financiamiento</label>
+          <select class="f-input" id="finan" name="financiamiento">
+            <option value="" {% if not financiamiento %}selected{% endif %}>Cualquiera</option>
+            <option value="contado" {% if financiamiento == "contado" %}selected{% endif %}>Contado</option>
+            <option value="credito" {% if financiamiento == "credito" %}selected{% endif %}>Crédito</option>
+            <option value="ambos" {% if financiamiento == "ambos" %}selected{% endif %}>Crédito o contado</option>
+          </select>
+        </div>
+
+        <!-- Ubicación -->
+        <div class="f-section">
+          <div class="f-subtitle">Ubicación</div>
+          <div class="f-row2">
+            <div>
+              <label class="f-sublabel" for="estado">Estado</label>
+              <input class="f-input" id="estado" type="text" name="estado" value="{{ estado }}" placeholder="Chihuahua" />
+            </div>
+            <div>
+              <label class="f-sublabel" for="ciudad">Ciudad</label>
+              <input class="f-input" id="ciudad" type="text" name="ciudad" value="{{ ciudad }}" placeholder="Juárez" />
+            </div>
+          </div>
+        </div>
+
+        <div class="f-actions">
+          <button class="btn-apply" type="submit">Aplicar filtros</button>
+          <a class="btn-clear" href="{% url 'principal:resultados_busqueda' %}">Limpiar</a>
+        </div>
+      </form>
+    </aside>
+
+    <!-- ===== Listado ===== -->
+    <main class="results">
+      <p class="resume">
+        Se encontraron <strong>{{ total }}</strong> resultados{% if q %} para “{{ q }}”{% endif %}{% if tipo_sel %} en {{ tipo_sel }}{% endif %}.
+      </p>
+
+      {% if page_obj.object_list %}
+        <div class="grid">
+          {% for pub in page_obj.object_list %}
+            <article class="card">
+              <!-- LINK de cobertura a detalle -->
+              <a class="cover-link" href="{% url 'principal:publicacion_detalle' pub.id %}"></a>
+
+              <div class="thumb">
+                {% with portada=pub.foto_portada %}
+                  {% if portada %}
+                    <img src="{{ portada.imagen.url }}" alt="{{ pub.titulo }}">
+                  {% else %}
+                    <div class="noimg">Sin foto</div>
+                  {% endif %}
+                {% endwith %}
+
+                <!-- Estatus -->
+                {% if pub.estatus %}
+                  <span class="status-badge status-{{ pub.estatus }}">{{ pub.get_estatus_display }}</span>
+                {% endif %}
+
+                <!-- Corazón + contador -->
+                <button
+                  class="like-btn {% if liked_ids and pub.id in liked_ids %}is-liked{% endif %}"
+                  type="button"
+                  data-pub="{{ pub.id }}"
+                  title="{% if liked_ids and pub.id in liked_ids %}Quitar de favoritos{% else %}Agregar a favoritos{% endif %}">
+                  <span class="like-ico">❤</span>
+                </button>
+                <span class="like-count">{{ pub.like_count|default:0 }}</span>
+              </div>
+
+              <div class="body">
+                <div class="row">
+                  <h3 class="c-title">{{ pub.titulo }}</h3>
+                  <span class="badge">{{ pub.get_tipo_operacion_display }}</span>
+                </div>
+                <div class="price">${{ pub.precio|floatformat:0|intcomma }}</div>
+                <div class="addr">{{ pub.direccion_completa }}</div>
+
+                <!-- Publicado por + contacto -->
+                <div class="seller">
+                  <div class="seller__who">
+                    Publicado por:
+                    <strong>{% firstof pub.usuario.get_full_name pub.usuario.username %}</strong>
+                  </div>
+                  <div class="seller__actions">
+                    {% with email=pub.usuario.email phone=pub.usuario.perfil.whatsapp %}
+                      {% if email %}
+                        <a class="btn-ico" href="mailto:{{ email }}?subject={{ pub.titulo|urlencode }}">✉️ Email</a>
+                      {% endif %}
+                      {% if phone %}
+                        {% if phone|length == 10 %}
+                          <a class="btn-ico" target="_blank" href="https://wa.me/52{{ phone }}?text={{ pub.titulo|urlencode }}">WhatsApp</a>
+                        {% else %}
+                          <a class="btn-ico" target="_blank" href="https://wa.me/{{ phone|cut:'+' }}?text={{ pub.titulo|urlencode }}">WhatsApp</a>
+                        {% endif %}
+                      {% endif %}
+                    {% endwith %}
+                  </div>
+                </div>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+
+        <!-- paginación -->
+        <div class="pager">
+          {% if page_obj.has_previous %}
+            <a class="p-btn" href="?page={{ page_obj.previous_page_number }}&{{ request.GET.urlencode|cut:'page='|cut:'page=' }}">« Anterior</a>
+          {% endif %}
+          <span class="p-cur">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+          {% if page_obj.has_next %}
+            <a class="p-btn" href="?page={{ page_obj.next_page_number }}&{{ request.GET.urlencode|cut:'page='|cut:'page=' }}">Siguiente »</a>
+          {% endif %}
+        </div>
+      {% else %}
+        <div class="empty">
+          <p>No encontramos resultados.</p>
+          <ul>
+            <li>Ajusta precio, recámaras o ubicación.</li>
+            <li>Usa términos como “Centro”, “Juárez”, “Chihuahua”.</li>
+          </ul>
+        </div>
+      {% endif %}
+    </main>
+  </div>
+</div>
+
+<style>
+/* —— layout general —— */
+.wrap{max-width:1240px;margin:1rem auto;padding:0 1rem;}
+.title{margin:0 0 .5rem;}
+.layout{display:grid; grid-template-columns:280px 1fr; gap:1rem; align-items:start;}
+
+/* —— botón filtros móvil —— */
+.btn-filtros{ display:none; margin:.25rem 0 .75rem; border:1px solid #e6e6e6; background:#ffffff; color:#111; padding:.5rem .85rem; border-radius:12px; cursor:pointer; box-shadow:0 6px 18px rgba(0,0,0,.06); }
+
+/* —— panel de filtros —— */
+.sidebar.pretty{ border:1px solid #ececec; border-radius:16px; background:#ffffff; padding:12px 12px 14px; position:sticky; top:12px; box-shadow: 0 10px 30px rgba(0,0,0,.04); }
+.filters.v2{display:flex; flex-direction:column; gap:14px;}
+.f-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:2px;}
+.f-title{font-weight:800; font-size:1.05rem;}
+.f-close{appearance:none;border:none;background:transparent;font-size:22px;line-height:1;cursor:pointer;border-radius:8px;padding:2px 6px;}
+.f-close:hover{background:#f4f4f4}
+.f-section{padding:12px; border:1px solid #eee; border-radius:14px; background:#fafafa;}
+.f-label{font-weight:700; margin-bottom:.4rem; display:block;}
+.f-subtitle{font-weight:700; font-size:.95rem; margin-bottom:6px;}
+.f-sublabel{font-size:.82rem; color:#666; margin:0 0 .25rem; line-height:1.2;}
+.f-input{ width:100%; height:44px; box-sizing:border-box; background:#fff; border:1px solid #dadada; border-radius:10px; padding:.55rem .75rem; outline:none; font:inherit; color:#111; transition:border-color .15s, box-shadow .15s, background .15s;}
+.f-input:focus{border-color:#7aa7ff; box-shadow:0 0 0 3px rgba(122,167,255,.22);}
+.f-input::placeholder{color:#9aa0a6;}
+input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+input[type="number"] { -moz-appearance: textfield; -webkit-appearance: textfield; appearance: textfield; }
+.f-row2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+.f-row3{display:grid; grid-template-columns:repeat(3,1fr); gap:12px;}
+.f-pair{ display:flex; align-items:stretch; gap:0; border-radius:10px; overflow:hidden; isolation:isolate; }
+.f-pair .f-input{border-radius:0; border-left:1px solid #dadada;}
+.f-pair .f-input:first-child{border-left:none; border-top-left-radius:10px; border-bottom-left-radius:10px;}
+.f-pair .f-input:last-child{border-top-right-radius:10px; border-bottom-right-radius:10px;}
+.f-actions{display:flex; gap:8px; margin-top:2px;}
+.btn-apply{ border:none; background:#333; color:#fff; padding:.55rem .9rem; border-radius:10px; cursor:pointer; font-weight:700; box-shadow:0 6px 16px rgba(0,0,0,.12); }
+.btn-apply:hover{filter:brightness(.95);}
+.btn-clear{ display:inline-flex; align-items:center; justify-content:center; gap:.35rem; border:1px solid #e1e1e1; background:#fbfbfb; color:#111; padding:.55rem .9rem; border-radius:10px; text-decoration:none; }
+.btn-clear:hover{background:#f2f2f2}
+
+/* —— resultados —— */
+.results .resume{color:#666; margin:.15rem 0 .75rem;}
+.grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1rem;}
+.card{position:relative;border:1px solid #eee; border-radius:12px; overflow:hidden; background:#fff;}
+.cover-link{position:absolute;inset:0;z-index:1;}
+.thumb{position:relative; height:180px; background:#f5f5f5; display:flex; align-items:center; justify-content:center;}
+.thumb img{width:100%; height:100%; object-fit:cover;}
+.noimg{color:#777;}
+.body{padding:.8rem; display:flex; flex-direction:column; gap:.35rem;}
+.row{display:flex; justify-content:space-between; align-items:center; gap:.5rem;}
+.c-title{margin:0; font-size:1.05rem;}
+.badge{background:#eef; padding:.15rem .4rem; border-radius:.4rem; font-size:.8rem;}
+.price{font-weight:800;}
+.addr{color:#444;}
+.seller{display:flex; justify-content:space-between; align-items:center; gap:.5rem; margin-top:.35rem;}
+.seller__who{color:#333; font-size:.92rem;}
+.seller__actions{display:flex; gap:.4rem; flex-wrap:wrap}
+.btn-ico{position:relative;z-index:2;display:inline-flex; align-items:center; gap:.35rem; padding:.28rem .6rem; border:1px solid #e5e5e5; border-radius:.5rem; text-decoration:none; color:#111; background:#fafafa}
+.btn-ico:hover{background:#f1f1f1}
+.pager{display:flex; justify-content:center; gap:.5rem; margin:1rem 0;}
+.p-btn{padding:.35rem .6rem; border:1px solid #ddd; border-radius:.4rem; text-decoration:none; color:#222;}
+.p-cur{padding:.35rem .6rem; border:1px solid #ddd; border-radius:.4rem; background:#f6f6f6;}
+.empty{background:#fff; border:1px dashed #ddd; border-radius:12px; padding:1.25rem; color:#555;}
+
+/* —— Corazón, contador y estatus —— */
+.like-btn{ position:absolute; top:10px; right:10px; z-index:2; display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:999px; border:1px solid #e8e8e8; background:rgba(255,255,255,.9); cursor:pointer; box-shadow:0 6px 16px rgba(0,0,0,.12); }
+.like-btn .like-ico{font-size:18px; line-height:1; color:#888;}
+.like-btn.is-liked{background:#ffe9ed; border-color:#ffc6d0;}
+.like-btn.is-liked .like-ico{color:#e25563;}
+.like-btn:hover{filter:brightness(.98);}
+.like-count{position:absolute; top:10px; right:52px; z-index:2; font-size:.9rem; color:#333; background:#fff; border:1px solid #eee; border-radius:999px; padding:.1rem .45rem;}
+.status-badge{ position:absolute; left:10px; top:10px; z-index:2; font-size:.78rem; color:#fff; border-radius:8px; padding:.15rem .45rem; text-transform:capitalize; box-shadow:0 8px 20px rgba(0,0,0,.12);}
+.status-disponible{ background:#16a34a; }
+.status-en_trato{ background:#f59e0b; }
+.status-cerrada{ background:#6b7280; }
+
+/* —— Responsive —— */
+@media (max-width: 980px){
+  .layout{grid-template-columns:1fr;}
+  .btn-filtros{display:inline-flex;}
+  .sidebar.pretty{ display:none; position:fixed; left:0; right:0; bottom:0; top:auto; border-radius:16px 16px 0 0; padding:14px; z-index:50; box-shadow:0 -16px 40px rgba(0,0,0,.15); }
+  .sidebar.pretty.open{display:block; animation:slideUp .18s ease-out;}
+  .grid{grid-template-columns:repeat(2,1fr);}
+}
+@media (max-width: 640px){
+  .grid{grid-template-columns:1fr;}
+  .f-row3{grid-template-columns:1fr 1fr;}
+}
+@keyframes slideUp{from{transform:translateY(12px);opacity:0} to{transform:translateY(0);opacity:1}}
+</style>
+
+<script>
+// Toggle del panel en móvil
+document.getElementById("btn-filtros")?.addEventListener("click", ()=>{
+  document.getElementById("sidebar")?.classList.toggle("open");
+});
+document.getElementById("btn-filtros-close")?.addEventListener("click", ()=>{
+  document.getElementById("sidebar")?.classList.remove("open");
+});
+
+// Favoritos (auth + fetch)
+window.AUTHENTICATED = "{{ request.user.is_authenticated|yesno:'true,false' }}" === "true";
+function getCsrf(){ const m=document.cookie.match(/csrftoken=([^;]+)/); return m?m[1]:''; }
+
+document.addEventListener("click", async (e)=>{
+  const btn = e.target.closest(".like-btn");
+  if(!btn) return;
+
+  const pubId = btn.dataset.pub;
+
+  if(!window.AUTHENTICATED){
+    const next = encodeURIComponent(window.location.pathname + window.location.search);
+    window.location.href = "{% url 'account_login' %}?next=" + next;
+    return;
+  }
+
+  try{
+    const r = await fetch("{% url 'principal:toggle_favorito' 0 %}".replace("/0/","/"+pubId+"/"), {
+      method:"POST",
+      headers:{ "X-CSRFToken": getCsrf(), "X-Requested-With":"XMLHttpRequest" }
+    });
+    const j = await r.json();
+    if(j.liked){
+      btn.classList.add("is-liked");
+      const c = btn.nextElementSibling; if(c && c.classList.contains("like-count")) c.textContent = (+c.textContent||0)+1;
+    }else{
+      btn.classList.remove("is-liked");
+      const c = btn.nextElementSibling; if(c && c.classList.contains("like-count")) c.textContent = Math.max(0,(+c.textContent||0)-1);
+    }
+  }catch(err){
+    console.error(err);
+    alert("No se pudo actualizar tu favorito. Inténtalo de nuevo.");
+  }
+});
+</script>
+{% endblock %}

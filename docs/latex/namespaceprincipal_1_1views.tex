@@ -1,0 +1,73 @@
+\doxysection{Referencia del espacio de nombres principal.\+views}
+\hypertarget{namespaceprincipal_1_1views}{}\label{namespaceprincipal_1_1views}\index{principal.views@{principal.views}}
+\doxysubsubsection*{Funciones}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespaceprincipal_1_1views_aefc786283b2aa24457fa1840eea2ed4b}{home}} (request)
+\item 
+\mbox{\hyperlink{namespaceprincipal_1_1views_a804e612deda13c8d5904ea83cca3b4f1}{resultados\+\_\+busqueda}} (request)
+\item 
+\mbox{\hyperlink{namespaceprincipal_1_1views_a153b52916ac411c52d5809cf60513b18}{detalle\+\_\+prioridad}} (request)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Descripción detallada}
+\begin{DoxyVerb}@file views.py
+@brief Vistas de la aplicación `principal`.
+@details Define la lógica de las vistas principales:
+         - Home con verificación de perfil.
+         - Resultados de búsqueda de propiedades.
+         - Página de detalle de prioridad (placeholder).
+\end{DoxyVerb}
+ 
+
+\label{doc-func-members}
+\Hypertarget{namespaceprincipal_1_1views_doc-func-members}
+\doxysubsection{Documentación de funciones}
+\Hypertarget{namespaceprincipal_1_1views_a153b52916ac411c52d5809cf60513b18}\index{principal.views@{principal.views}!detalle\_prioridad@{detalle\_prioridad}}
+\index{detalle\_prioridad@{detalle\_prioridad}!principal.views@{principal.views}}
+\doxysubsubsection{\texorpdfstring{detalle\_prioridad()}{detalle\_prioridad()}}
+{\footnotesize\ttfamily \label{namespaceprincipal_1_1views_a153b52916ac411c52d5809cf60513b18} 
+principal.\+views.\+detalle\+\_\+prioridad (\begin{DoxyParamCaption}\item[{}]{request}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Vista de detalle de prioridad (placeholder).
+@details
+ - Devuelve un HttpResponse simple de prueba.
+ - Pendiente de implementación futura para mostrar detalle real.
+
+@param request Objeto HttpRequest.
+@return HttpResponse con un mensaje de placeholder.
+\end{DoxyVerb}
+ \Hypertarget{namespaceprincipal_1_1views_aefc786283b2aa24457fa1840eea2ed4b}\index{principal.views@{principal.views}!home@{home}}
+\index{home@{home}!principal.views@{principal.views}}
+\doxysubsubsection{\texorpdfstring{home()}{home()}}
+{\footnotesize\ttfamily \label{namespaceprincipal_1_1views_aefc786283b2aa24457fa1840eea2ed4b} 
+principal.\+views.\+home (\begin{DoxyParamCaption}\item[{}]{request}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Vista de inicio de la aplicación principal.
+@details
+ - Si el usuario está autenticado pero su perfil no está completo,
+   se le redirige a la vista `cuentas:complete_profile`.
+ - En caso contrario, se carga la plantilla `principal/home.html`.
+
+@param request Objeto HttpRequest con información de la petición.
+@return HttpResponse con la página de inicio o redirección.
+\end{DoxyVerb}
+ \Hypertarget{namespaceprincipal_1_1views_a804e612deda13c8d5904ea83cca3b4f1}\index{principal.views@{principal.views}!resultados\_busqueda@{resultados\_busqueda}}
+\index{resultados\_busqueda@{resultados\_busqueda}!principal.views@{principal.views}}
+\doxysubsubsection{\texorpdfstring{resultados\_busqueda()}{resultados\_busqueda()}}
+{\footnotesize\ttfamily \label{namespaceprincipal_1_1views_a804e612deda13c8d5904ea83cca3b4f1} 
+principal.\+views.\+resultados\+\_\+busqueda (\begin{DoxyParamCaption}\item[{}]{request}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Vista de resultados de búsqueda de propiedades.
+@details
+ - Recupera el parámetro `q` desde la URL.
+ - Filtra las propiedades por título (coincidencia parcial, insensible a mayúsculas).
+ - Solo se muestran aquellas con estado "disponible".
+ - Si no hay query, retorna lista vacía.
+
+@param request Objeto HttpRequest con información de la petición.
+@return HttpResponse con la plantilla `principal/resultados_busqueda.html`
+        y el contexto que incluye propiedades y la query.
+\end{DoxyVerb}
+ 

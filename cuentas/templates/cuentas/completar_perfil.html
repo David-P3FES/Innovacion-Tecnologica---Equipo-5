@@ -1,0 +1,80 @@
+<!--!
+  @file profile.html
+  @brief Plantilla para completar el perfil del usuario en la app cuentas.
+  @details
+   - Permite a los usuarios llenar datos personales y de contacto.
+   - Incluye validación de errores por campo y generales.
+-->
+
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/base.css' %}">
+<link rel="stylesheet" href="{% static 'css/completar_perfil.css' %}?v=1">
+<div class="profile-container">
+    <h2>Completa tu perfil</h2>
+    <p>Por favor llena los siguientes datos:</p>
+
+    {% if form.non_field_errors %}
+      <div class="error-box">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <form method="post" class="profile-form">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="id_rfc">RFC:</label>
+            {{ form.rfc }}
+            {% for error in form.rfc.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_whatsapp">WhatsApp:</label>
+            {{ form.whatsapp }}
+            {% for error in form.whatsapp.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_username">Usuario:</label>
+            {{ form.username }}
+            {% for error in form.username.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_first_name">Nombre:</label>
+            {{ form.first_name }}
+            {% for error in form.first_name.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_last_name">Apellido:</label>
+            {{ form.last_name }}
+            {% for error in form.last_name.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_email">Email:</label>
+            {{ form.email }}
+            {% for error in form.email.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="btn-guardar">Guardar perfil</button>
+    </form>
+</div>
+{% endblock %}

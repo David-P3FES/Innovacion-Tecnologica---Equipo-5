@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/editar_perfil.css' %}?v=3">
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+  <div class="profile-card">
+    <div class="profile-left">
+      <div class="profile-avatar" data-initials="{{ user.first_name|first|upper }}"></div>
+    </div>
+
+    <div class="profile-right">
+      <h2>Editar Perfil</h2>
+
+      <form method="post" class="profile-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <div class="profile-actions">
+          <button type="submit" class="btn-guardar">Guardar cambios</button>
+          <a href="{% url 'cuentas:ver_perfil' %}" class="btn-secundario">Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.querySelector('.profile-form');
+
+  const rfc =
+    document.getElementById('id_rfc') ||
+    form?.querySelector('input[name="rfc"], input[name$="rfc"]');
+
+  if (rfc) {
+    const sanitizeRFC = v => v.replace(/[^a-z0-9]/gi, '').toUpperCase();
+
+    rfc.setAttribute('pattern', '[A-Z0-9]+');
+    rfc.setAttribute('autocomplete', 'off');
+
+    rfc.addEventListener('input', () => {
+      const pos = rfc.selectionStart;
+      rfc.value = sanitizeRFC(rfc.value);
+      if (pos != null) rfc.setSelectionRange(Math.min(pos, rfc.value.length), Math.min(pos, rfc.value.length));
+    });
+    rfc.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const t = (e.clipboardData || window.clipboardData).getData('text');
+      rfc.value = sanitizeRFC(t);
+    });
+    rfc.addEventListener('keydown', (e) => {
+      const allow = ['Backspace','Delete','ArrowLeft','ArrowRight','Tab','Home','End'];
+      if (allow.includes(e.key)) return;
+      if (!/^[a-z0-9]$/i.test(e.key)) e.preventDefault();
+    });
+  }
+
+  const wa =
+    document.getElementById('id_whatsapp') ||
+    form?.querySelector('input[name="whatsapp"], input[name$="whatsapp"]');
+
+  if (wa) {
+    const clean = v => v.replace(/\D+/g, '').slice(0, 10);
+
+    wa.setAttribute('inputmode', 'numeric');
+    wa.setAttribute('pattern', '\\d{10}');
+    wa.setAttribute('maxlength', '10');
+    wa.setAttribute('minlength', '10');
+    wa.placeholder ||= '10 dígitos';
+
+    wa.addEventListener('keydown', (e) => {
+      const allow = ['Backspace','Delete','ArrowLeft','ArrowRight','Tab','Home','End'];
+      if (allow.includes(e.key)) return;
+      if (!/^\d$/.test(e.key) || wa.value.length >= 10) e.preventDefault();
+    });
+
+    const validate = () => {
+      wa.value = clean(wa.value);
+      wa.setCustomValidity(wa.value.length === 10 ? '' : 'El WhatsApp debe tener exactamente 10 dígitos.');
+    };
+    wa.addEventListener('input', validate);
+    wa.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const t = (e.clipboardData || window.clipboardData).getData('text');
+      wa.value = clean(t);
+      validate();
+    });
+
+    form?.addEventListener('submit', (e) => {
+      validate();
+      if (wa.value.length !== 10) {
+        wa.reportValidity();
+        e.preventDefault();
+      }
+    });
+  }
+});
+</script>
+{% endblock %}

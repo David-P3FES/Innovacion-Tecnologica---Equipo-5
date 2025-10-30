@@ -1,0 +1,38 @@
+# ========================================
+# Configuración de finales de línea (EOL)
+# ========================================
+
+# Todos los archivos de texto: Git los normaliza a LF internamente
+* text=auto eol=lf
+
+# Forzamos LF en lenguajes y archivos comunes de Django
+*.py    text eol=lf
+*.html  text eol=lf
+*.css   text eol=lf
+*.js    text eol=lf
+*.json  text eol=lf
+*.md    text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+
+# Archivos de configuración
+*.toml  text eol=lf
+*.ini   text eol=lf
+*.cfg   text eol=lf
+
+# Archivos de requirements
+requirements*.txt text eol=lf
+
+# ========================================
+# Archivos binarios: no tocar EOL
+# ========================================
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.pdf   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.eot   binary

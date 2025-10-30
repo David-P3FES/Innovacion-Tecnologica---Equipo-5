@@ -1,0 +1,49 @@
+\doxysection{Referencia de la clase cuentas.\+apps.\+Cuentas\+Config}
+\hypertarget{classcuentas_1_1apps_1_1CuentasConfig}{}\label{classcuentas_1_1apps_1_1CuentasConfig}\index{cuentas.apps.CuentasConfig@{cuentas.apps.CuentasConfig}}
+
+
+Diagrama de herencia de cuentas.\+apps.\+Cuentas\+Config
+% FIG 0
+
+
+Diagrama de colaboración de cuentas.\+apps.\+Cuentas\+Config\+:
+% FIG 1
+\doxysubsubsection*{Atributos públicos estáticos}
+\begin{DoxyCompactItemize}
+\item 
+str \mbox{\hyperlink{classcuentas_1_1apps_1_1CuentasConfig_aefa727495566cc9079b868a82dac86e6}{default\+\_\+auto\+\_\+field}} = \textquotesingle{}django.\+db.\+models.\+Big\+Auto\+Field\textquotesingle{}
+\item 
+str \mbox{\hyperlink{classcuentas_1_1apps_1_1CuentasConfig_a799f46487639473d0bd651effcf1e901}{name}} = \textquotesingle{}cuentas\textquotesingle{}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Descripción detallada}
+\begin{DoxyVerb}@class CuentasConfig
+@brief Clase de configuración para la aplicación `cuentas`.
+@details
+ - `default_auto_field`: especifica el tipo de campo automático por defecto 
+   para las claves primarias (en este caso `BigAutoField`).
+ - `name`: nombre interno de la app que Django usará en el proyecto.
+\end{DoxyVerb}
+ 
+
+\label{doc-variable-members}
+\Hypertarget{classcuentas_1_1apps_1_1CuentasConfig_doc-variable-members}
+\doxysubsection{Documentación de datos miembro}
+\Hypertarget{classcuentas_1_1apps_1_1CuentasConfig_aefa727495566cc9079b868a82dac86e6}\index{cuentas.apps.CuentasConfig@{cuentas.apps.CuentasConfig}!default\_auto\_field@{default\_auto\_field}}
+\index{default\_auto\_field@{default\_auto\_field}!cuentas.apps.CuentasConfig@{cuentas.apps.CuentasConfig}}
+\doxysubsubsection{\texorpdfstring{default\_auto\_field}{default\_auto\_field}}
+{\footnotesize\ttfamily \label{classcuentas_1_1apps_1_1CuentasConfig_aefa727495566cc9079b868a82dac86e6} 
+str cuentas.\+apps.\+Cuentas\+Config.\+default\+\_\+auto\+\_\+field = \textquotesingle{}django.\+db.\+models.\+Big\+Auto\+Field\textquotesingle{}\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{classcuentas_1_1apps_1_1CuentasConfig_a799f46487639473d0bd651effcf1e901}\index{cuentas.apps.CuentasConfig@{cuentas.apps.CuentasConfig}!name@{name}}
+\index{name@{name}!cuentas.apps.CuentasConfig@{cuentas.apps.CuentasConfig}}
+\doxysubsubsection{\texorpdfstring{name}{name}}
+{\footnotesize\ttfamily \label{classcuentas_1_1apps_1_1CuentasConfig_a799f46487639473d0bd651effcf1e901} 
+str cuentas.\+apps.\+Cuentas\+Config.\+name = \textquotesingle{}cuentas\textquotesingle{}\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+La documentación de esta clase está generada del siguiente archivo\+:\begin{DoxyCompactItemize}
+\item 
+cuentas/\mbox{\hyperlink{cuentas_2apps_8py}{apps.\+py}}\end{DoxyCompactItemize}

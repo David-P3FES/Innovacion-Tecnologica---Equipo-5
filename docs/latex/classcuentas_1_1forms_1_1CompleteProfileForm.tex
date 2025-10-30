@@ -1,0 +1,167 @@
+\doxysection{Referencia de la clase cuentas.\+forms.\+Complete\+Profile\+Form}
+\hypertarget{classcuentas_1_1forms_1_1CompleteProfileForm}{}\label{classcuentas_1_1forms_1_1CompleteProfileForm}\index{cuentas.forms.CompleteProfileForm@{cuentas.forms.CompleteProfileForm}}
+
+
+Diagrama de herencia de cuentas.\+forms.\+Complete\+Profile\+Form
+% FIG 0
+
+
+Diagrama de colaboración de cuentas.\+forms.\+Complete\+Profile\+Form\+:
+% FIG 1
+\doxysubsubsection*{Clases}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classcuentas_1_1forms_1_1CompleteProfileForm_1_1Meta}{Meta}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Métodos públicos}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classcuentas_1_1forms_1_1CompleteProfileForm_a6d15a8c844a1cd04cd443e695e86a513}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self, \texorpdfstring{$\ast$}{*}args, \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}kwargs)
+\item 
+\mbox{\hyperlink{classcuentas_1_1forms_1_1CompleteProfileForm_a6633e24aa5e8effeb1aa1f08bb7bdb13}{clean\+\_\+username}} (self)
+\item 
+\mbox{\hyperlink{classcuentas_1_1forms_1_1CompleteProfileForm_a342cb1248103ad621f567576ba544da8}{clean\+\_\+email}} (self)
+\item 
+\mbox{\hyperlink{classcuentas_1_1forms_1_1CompleteProfileForm_a3a9acf396f5db96922fb353cbad2a535}{clean\+\_\+rfc}} (self)
+\item 
+\mbox{\hyperlink{classcuentas_1_1forms_1_1CompleteProfileForm_abba9ba502920f86f4304dc5f6b7b1d18}{clean\+\_\+whatsapp}} (self)
+\item 
+\mbox{\hyperlink{classcuentas_1_1forms_1_1CompleteProfileForm_ad8288b5405a993613445cd2fdf3cb4c5}{save}} (self, commit=True)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Atributos públicos}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classcuentas_1_1forms_1_1CompleteProfileForm_ad5a6201178383e49476bb8c53cc0d573}{user}} = kwargs.\+pop(\textquotesingle{}user\textquotesingle{})
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Atributos públicos estáticos}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classcuentas_1_1forms_1_1CompleteProfileForm_a222dd52e5ed2ede374515fe1389ff221}{username}} = forms.\+Char\+Field(max\+\_\+length=150, required=True, label=\textquotesingle{}Usuario\textquotesingle{})
+\item 
+\mbox{\hyperlink{classcuentas_1_1forms_1_1CompleteProfileForm_a01a2d7e853268421430d053527b0a085}{first\+\_\+name}} = forms.\+Char\+Field(max\+\_\+length=150, required=True, label=\textquotesingle{}Nombre\textquotesingle{})
+\item 
+\mbox{\hyperlink{classcuentas_1_1forms_1_1CompleteProfileForm_abdfd25e8eb885a94b8ea9ec0008478e0}{last\+\_\+name}} = forms.\+Char\+Field(max\+\_\+length=150, required=True, label=\textquotesingle{}Apellido\textquotesingle{})
+\item 
+\mbox{\hyperlink{classcuentas_1_1forms_1_1CompleteProfileForm_a9a54aeb07232d40252094ff0d39a6bda}{email}} = forms.\+Email\+Field(required=True, label=\textquotesingle{}Email\textquotesingle{})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Descripción detallada}
+\begin{DoxyVerb}@class CompleteProfileForm
+@brief Formulario para completar el perfil de un usuario.
+@details
+ - Extiende de `forms.ModelForm` para trabajar con el modelo `Perfil`.
+ - Incluye campos adicionales del modelo `User` (username, first_name, last_name, email).
+ - Realiza validaciones personalizadas para evitar duplicados en username y email.
+ - Actualiza datos tanto del `User` como del `Perfil` al guardar.
+\end{DoxyVerb}
+ 
+
+\label{doc-constructors}
+\Hypertarget{classcuentas_1_1forms_1_1CompleteProfileForm_doc-constructors}
+\doxysubsection{Documentación de constructores y destructores}
+\Hypertarget{classcuentas_1_1forms_1_1CompleteProfileForm_a6d15a8c844a1cd04cd443e695e86a513}\index{cuentas.forms.CompleteProfileForm@{cuentas.forms.CompleteProfileForm}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!cuentas.forms.CompleteProfileForm@{cuentas.forms.CompleteProfileForm}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily \label{classcuentas_1_1forms_1_1CompleteProfileForm_a6d15a8c844a1cd04cd443e695e86a513} 
+cuentas.\+forms.\+Complete\+Profile\+Form.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{\texorpdfstring{$\ast$}{*}}]{args}{, }\item[{\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}}]{kwargs}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Inicializa el formulario con datos precargados del usuario.
+@param args Argumentos posicionales de ModelForm.
+@param kwargs Argumentos con parámetros extra (incluye `user`).
+\end{DoxyVerb}
+ 
+
+\label{doc-func-members}
+\Hypertarget{classcuentas_1_1forms_1_1CompleteProfileForm_doc-func-members}
+\doxysubsection{Documentación de funciones miembro}
+\Hypertarget{classcuentas_1_1forms_1_1CompleteProfileForm_a342cb1248103ad621f567576ba544da8}\index{cuentas.forms.CompleteProfileForm@{cuentas.forms.CompleteProfileForm}!clean\_email@{clean\_email}}
+\index{clean\_email@{clean\_email}!cuentas.forms.CompleteProfileForm@{cuentas.forms.CompleteProfileForm}}
+\doxysubsubsection{\texorpdfstring{clean\_email()}{clean\_email()}}
+{\footnotesize\ttfamily \label{classcuentas_1_1forms_1_1CompleteProfileForm_a342cb1248103ad621f567576ba544da8} 
+cuentas.\+forms.\+Complete\+Profile\+Form.\+clean\+\_\+email (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Valida que el correo electrónico no esté duplicado.
+@return Email válido en minúsculas.
+@exception forms.ValidationError Si el email ya existe en otro usuario.
+\end{DoxyVerb}
+ \Hypertarget{classcuentas_1_1forms_1_1CompleteProfileForm_a3a9acf396f5db96922fb353cbad2a535}\index{cuentas.forms.CompleteProfileForm@{cuentas.forms.CompleteProfileForm}!clean\_rfc@{clean\_rfc}}
+\index{clean\_rfc@{clean\_rfc}!cuentas.forms.CompleteProfileForm@{cuentas.forms.CompleteProfileForm}}
+\doxysubsubsection{\texorpdfstring{clean\_rfc()}{clean\_rfc()}}
+{\footnotesize\ttfamily \label{classcuentas_1_1forms_1_1CompleteProfileForm_a3a9acf396f5db96922fb353cbad2a535} 
+cuentas.\+forms.\+Complete\+Profile\+Form.\+clean\+\_\+rfc (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Normaliza el RFC a mayúsculas.
+@return RFC en formato limpio.
+@note El validador del modelo `Perfil` se encarga de verificar el formato.
+\end{DoxyVerb}
+ \Hypertarget{classcuentas_1_1forms_1_1CompleteProfileForm_a6633e24aa5e8effeb1aa1f08bb7bdb13}\index{cuentas.forms.CompleteProfileForm@{cuentas.forms.CompleteProfileForm}!clean\_username@{clean\_username}}
+\index{clean\_username@{clean\_username}!cuentas.forms.CompleteProfileForm@{cuentas.forms.CompleteProfileForm}}
+\doxysubsubsection{\texorpdfstring{clean\_username()}{clean\_username()}}
+{\footnotesize\ttfamily \label{classcuentas_1_1forms_1_1CompleteProfileForm_a6633e24aa5e8effeb1aa1f08bb7bdb13} 
+cuentas.\+forms.\+Complete\+Profile\+Form.\+clean\+\_\+username (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Valida que el nombre de usuario no esté duplicado.
+@return Nombre de usuario válido.
+@exception forms.ValidationError Si el username ya existe en otro usuario.
+\end{DoxyVerb}
+ \Hypertarget{classcuentas_1_1forms_1_1CompleteProfileForm_abba9ba502920f86f4304dc5f6b7b1d18}\index{cuentas.forms.CompleteProfileForm@{cuentas.forms.CompleteProfileForm}!clean\_whatsapp@{clean\_whatsapp}}
+\index{clean\_whatsapp@{clean\_whatsapp}!cuentas.forms.CompleteProfileForm@{cuentas.forms.CompleteProfileForm}}
+\doxysubsubsection{\texorpdfstring{clean\_whatsapp()}{clean\_whatsapp()}}
+{\footnotesize\ttfamily \label{classcuentas_1_1forms_1_1CompleteProfileForm_abba9ba502920f86f4304dc5f6b7b1d18} 
+cuentas.\+forms.\+Complete\+Profile\+Form.\+clean\+\_\+whatsapp (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Normaliza el número de WhatsApp.
+@return Número de WhatsApp en formato limpio.
+@note El validador del modelo `Perfil` se encarga de verificar el formato.
+\end{DoxyVerb}
+ \Hypertarget{classcuentas_1_1forms_1_1CompleteProfileForm_ad8288b5405a993613445cd2fdf3cb4c5}\index{cuentas.forms.CompleteProfileForm@{cuentas.forms.CompleteProfileForm}!save@{save}}
+\index{save@{save}!cuentas.forms.CompleteProfileForm@{cuentas.forms.CompleteProfileForm}}
+\doxysubsubsection{\texorpdfstring{save()}{save()}}
+{\footnotesize\ttfamily \label{classcuentas_1_1forms_1_1CompleteProfileForm_ad8288b5405a993613445cd2fdf3cb4c5} 
+cuentas.\+forms.\+Complete\+Profile\+Form.\+save (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{commit}{ = {\ttfamily True}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Guarda los datos del perfil y actualiza también el modelo User.
+@param commit Si es True, se guardan los cambios en la base de datos.
+@return Objeto Perfil actualizado.
+\end{DoxyVerb}
+ 
+
+\label{doc-variable-members}
+\Hypertarget{classcuentas_1_1forms_1_1CompleteProfileForm_doc-variable-members}
+\doxysubsection{Documentación de datos miembro}
+\Hypertarget{classcuentas_1_1forms_1_1CompleteProfileForm_a9a54aeb07232d40252094ff0d39a6bda}\index{cuentas.forms.CompleteProfileForm@{cuentas.forms.CompleteProfileForm}!email@{email}}
+\index{email@{email}!cuentas.forms.CompleteProfileForm@{cuentas.forms.CompleteProfileForm}}
+\doxysubsubsection{\texorpdfstring{email}{email}}
+{\footnotesize\ttfamily \label{classcuentas_1_1forms_1_1CompleteProfileForm_a9a54aeb07232d40252094ff0d39a6bda} 
+cuentas.\+forms.\+Complete\+Profile\+Form.\+email = forms.\+Email\+Field(required=True, label=\textquotesingle{}Email\textquotesingle{})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{classcuentas_1_1forms_1_1CompleteProfileForm_a01a2d7e853268421430d053527b0a085}\index{cuentas.forms.CompleteProfileForm@{cuentas.forms.CompleteProfileForm}!first\_name@{first\_name}}
+\index{first\_name@{first\_name}!cuentas.forms.CompleteProfileForm@{cuentas.forms.CompleteProfileForm}}
+\doxysubsubsection{\texorpdfstring{first\_name}{first\_name}}
+{\footnotesize\ttfamily \label{classcuentas_1_1forms_1_1CompleteProfileForm_a01a2d7e853268421430d053527b0a085} 
+cuentas.\+forms.\+Complete\+Profile\+Form.\+first\+\_\+name = forms.\+Char\+Field(max\+\_\+length=150, required=True, label=\textquotesingle{}Nombre\textquotesingle{})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{classcuentas_1_1forms_1_1CompleteProfileForm_abdfd25e8eb885a94b8ea9ec0008478e0}\index{cuentas.forms.CompleteProfileForm@{cuentas.forms.CompleteProfileForm}!last\_name@{last\_name}}
+\index{last\_name@{last\_name}!cuentas.forms.CompleteProfileForm@{cuentas.forms.CompleteProfileForm}}
+\doxysubsubsection{\texorpdfstring{last\_name}{last\_name}}
+{\footnotesize\ttfamily \label{classcuentas_1_1forms_1_1CompleteProfileForm_abdfd25e8eb885a94b8ea9ec0008478e0} 
+cuentas.\+forms.\+Complete\+Profile\+Form.\+last\+\_\+name = forms.\+Char\+Field(max\+\_\+length=150, required=True, label=\textquotesingle{}Apellido\textquotesingle{})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{classcuentas_1_1forms_1_1CompleteProfileForm_ad5a6201178383e49476bb8c53cc0d573}\index{cuentas.forms.CompleteProfileForm@{cuentas.forms.CompleteProfileForm}!user@{user}}
+\index{user@{user}!cuentas.forms.CompleteProfileForm@{cuentas.forms.CompleteProfileForm}}
+\doxysubsubsection{\texorpdfstring{user}{user}}
+{\footnotesize\ttfamily \label{classcuentas_1_1forms_1_1CompleteProfileForm_ad5a6201178383e49476bb8c53cc0d573} 
+cuentas.\+forms.\+Complete\+Profile\+Form.\+user = kwargs.\+pop(\textquotesingle{}user\textquotesingle{})}
+
+\Hypertarget{classcuentas_1_1forms_1_1CompleteProfileForm_a222dd52e5ed2ede374515fe1389ff221}\index{cuentas.forms.CompleteProfileForm@{cuentas.forms.CompleteProfileForm}!username@{username}}
+\index{username@{username}!cuentas.forms.CompleteProfileForm@{cuentas.forms.CompleteProfileForm}}
+\doxysubsubsection{\texorpdfstring{username}{username}}
+{\footnotesize\ttfamily \label{classcuentas_1_1forms_1_1CompleteProfileForm_a222dd52e5ed2ede374515fe1389ff221} 
+cuentas.\+forms.\+Complete\+Profile\+Form.\+username = forms.\+Char\+Field(max\+\_\+length=150, required=True, label=\textquotesingle{}Usuario\textquotesingle{})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+La documentación de esta clase está generada del siguiente archivo\+:\begin{DoxyCompactItemize}
+\item 
+cuentas/\mbox{\hyperlink{forms_8py}{forms.\+py}}\end{DoxyCompactItemize}

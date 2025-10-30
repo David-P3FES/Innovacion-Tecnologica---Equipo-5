@@ -1,0 +1,67 @@
+\doxysection{Referencia del espacio de nombres cuentas.\+urls}
+\hypertarget{namespacecuentas_1_1urls}{}\label{namespacecuentas_1_1urls}\index{cuentas.urls@{cuentas.urls}}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+str \mbox{\hyperlink{namespacecuentas_1_1urls_a9fb5f2644d26f75917282279cdd832fe}{app\+\_\+name}} = \textquotesingle{}cuentas\textquotesingle{}
+\item 
+list \mbox{\hyperlink{namespacecuentas_1_1urls_a66bda82a3a170b904cea26c4dda79947}{urlpatterns}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Descripción detallada}
+\begin{DoxyVerb}@file urls.py
+@brief Definición de las rutas de la aplicación `cuentas`.
+@details
+ Contiene las URL relacionadas con la gestión de perfiles de usuario:
+  - Redirección post login
+  - Completar perfil
+  - Ver perfil
+  - Editar perfil
+\end{DoxyVerb}
+ 
+
+\label{doc-var-members}
+\Hypertarget{namespacecuentas_1_1urls_doc-var-members}
+\doxysubsection{Documentación de variables}
+\Hypertarget{namespacecuentas_1_1urls_a9fb5f2644d26f75917282279cdd832fe}\index{cuentas.urls@{cuentas.urls}!app\_name@{app\_name}}
+\index{app\_name@{app\_name}!cuentas.urls@{cuentas.urls}}
+\doxysubsubsection{\texorpdfstring{app\_name}{app\_name}}
+{\footnotesize\ttfamily \label{namespacecuentas_1_1urls_a9fb5f2644d26f75917282279cdd832fe} 
+str cuentas.\+urls.\+app\+\_\+name = \textquotesingle{}cuentas\textquotesingle{}}
+
+\Hypertarget{namespacecuentas_1_1urls_a66bda82a3a170b904cea26c4dda79947}\index{cuentas.urls@{cuentas.urls}!urlpatterns@{urlpatterns}}
+\index{urlpatterns@{urlpatterns}!cuentas.urls@{cuentas.urls}}
+\doxysubsubsection{\texorpdfstring{urlpatterns}{urlpatterns}}
+{\footnotesize\ttfamily \label{namespacecuentas_1_1urls_a66bda82a3a170b904cea26c4dda79947} 
+list cuentas.\+urls.\+urlpatterns}
+
+{\bfseries Valor inicial\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ =\ \ [}
+\DoxyCodeLine{00002\ \ \ \ \ path(}
+\DoxyCodeLine{00003\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{'post-\/login/'},}
+\DoxyCodeLine{00004\ \ \ \ \ \ \ \ \ views.post\_login,}
+\DoxyCodeLine{00005\ \ \ \ \ \ \ \ \ name=\textcolor{stringliteral}{'post\_login'}}
+\DoxyCodeLine{00006\ \ \ \ \ ),\ \ \textcolor{comment}{\#:\ Vista\ para\ manejar\ la\ redirección\ después\ de\ iniciar\ sesión}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \ \ \ \ path(}
+\DoxyCodeLine{00009\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{'completar-\/perfil/'},}
+\DoxyCodeLine{00010\ \ \ \ \ \ \ \ \ views.complete\_profile,}
+\DoxyCodeLine{00011\ \ \ \ \ \ \ \ \ name=\textcolor{stringliteral}{'complete\_profile'}}
+\DoxyCodeLine{00012\ \ \ \ \ ),\ \ \textcolor{comment}{\#:\ Vista\ para\ completar\ el\ perfil\ del\ usuario}}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \ \ \ \ path(}
+\DoxyCodeLine{00015\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}perfil/"{}},}
+\DoxyCodeLine{00016\ \ \ \ \ \ \ \ \ views.ver\_perfil,}
+\DoxyCodeLine{00017\ \ \ \ \ \ \ \ \ name=\textcolor{stringliteral}{"{}ver\_perfil"{}}}
+\DoxyCodeLine{00018\ \ \ \ \ ),\ \ \textcolor{comment}{\#:\ Vista\ para\ mostrar\ el\ perfil\ del\ usuario}}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \ \ \ \ path(}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}perfil/editar/"{}},}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \ \ views.editar\_perfil,}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ name=\textcolor{stringliteral}{"{}editar\_perfil"{}}}
+\DoxyCodeLine{00024\ \ \ \ \ ),\ \ \textcolor{comment}{\#:\ Vista\ para\ editar\ los\ datos\ del\ perfil}}
+\DoxyCodeLine{00025\ ]}
+
+\end{DoxyCode}

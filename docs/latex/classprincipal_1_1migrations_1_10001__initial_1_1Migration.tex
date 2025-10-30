@@ -1,0 +1,71 @@
+\doxysection{Referencia de la clase principal.\+migrations.0001\+\_\+initial.\+Migration}
+\hypertarget{classprincipal_1_1migrations_1_10001__initial_1_1Migration}{}\label{classprincipal_1_1migrations_1_10001__initial_1_1Migration}\index{principal.migrations.0001\_initial.Migration@{principal.migrations.0001\_initial.Migration}}
+
+
+Diagrama de herencia de principal.\+migrations.0001\+\_\+initial.\+Migration
+% FIG 0
+
+
+Diagrama de colaboración de principal.\+migrations.0001\+\_\+initial.\+Migration\+:
+% FIG 1
+\doxysubsubsection*{Atributos públicos estáticos}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{classprincipal_1_1migrations_1_10001__initial_1_1Migration_a891d564a205346b43d78accd3c8f510c}{initial}} = True
+\item 
+list \mbox{\hyperlink{classprincipal_1_1migrations_1_10001__initial_1_1Migration_a099dca747b5bd0388d963409078f1cf0}{dependencies}}
+\item 
+list \mbox{\hyperlink{classprincipal_1_1migrations_1_10001__initial_1_1Migration_a7bf19ac705fcff59a0cc14ff8d6f6266}{operations}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-variable-members}
+\Hypertarget{classprincipal_1_1migrations_1_10001__initial_1_1Migration_doc-variable-members}
+\doxysubsection{Documentación de datos miembro}
+\Hypertarget{classprincipal_1_1migrations_1_10001__initial_1_1Migration_a099dca747b5bd0388d963409078f1cf0}\index{principal.migrations.0001\_initial.Migration@{principal.migrations.0001\_initial.Migration}!dependencies@{dependencies}}
+\index{dependencies@{dependencies}!principal.migrations.0001\_initial.Migration@{principal.migrations.0001\_initial.Migration}}
+\doxysubsubsection{\texorpdfstring{dependencies}{dependencies}}
+{\footnotesize\ttfamily \label{classprincipal_1_1migrations_1_10001__initial_1_1Migration_a099dca747b5bd0388d963409078f1cf0} 
+list principal.\+migrations.\+0001\+\_\+initial.\+Migration.\+dependencies\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Valor inicial\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{=\ \ [}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ migrations.swappable\_dependency(settings.AUTH\_USER\_MODEL),}
+\DoxyCodeLine{\ \ \ \ ]}
+
+\end{DoxyCode}
+\Hypertarget{classprincipal_1_1migrations_1_10001__initial_1_1Migration_a891d564a205346b43d78accd3c8f510c}\index{principal.migrations.0001\_initial.Migration@{principal.migrations.0001\_initial.Migration}!initial@{initial}}
+\index{initial@{initial}!principal.migrations.0001\_initial.Migration@{principal.migrations.0001\_initial.Migration}}
+\doxysubsubsection{\texorpdfstring{initial}{initial}}
+{\footnotesize\ttfamily \label{classprincipal_1_1migrations_1_10001__initial_1_1Migration_a891d564a205346b43d78accd3c8f510c} 
+bool principal.\+migrations.\+0001\+\_\+initial.\+Migration.\+initial = True\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{classprincipal_1_1migrations_1_10001__initial_1_1Migration_a7bf19ac705fcff59a0cc14ff8d6f6266}\index{principal.migrations.0001\_initial.Migration@{principal.migrations.0001\_initial.Migration}!operations@{operations}}
+\index{operations@{operations}!principal.migrations.0001\_initial.Migration@{principal.migrations.0001\_initial.Migration}}
+\doxysubsubsection{\texorpdfstring{operations}{operations}}
+{\footnotesize\ttfamily \label{classprincipal_1_1migrations_1_10001__initial_1_1Migration_a7bf19ac705fcff59a0cc14ff8d6f6266} 
+list principal.\+migrations.\+0001\+\_\+initial.\+Migration.\+operations\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Valor inicial\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{=\ \ [}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ migrations.CreateModel(}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ name=\textcolor{stringliteral}{'Propiedad'},}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ fields=[}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{stringliteral}{'id'},\ models.BigAutoField(auto\_created=\textcolor{keyword}{True},\ primary\_key=\textcolor{keyword}{True},\ serialize=\textcolor{keyword}{False},\ verbose\_name=\textcolor{stringliteral}{'ID'})),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{stringliteral}{'titulo'},\ models.CharField(max\_length=255)),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{stringliteral}{'direccion'},\ models.CharField(max\_length=255)),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{stringliteral}{'tipo\_operacion'},\ models.CharField(max\_length=50)),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{stringliteral}{'estado'},\ models.CharField(default=\textcolor{stringliteral}{'disponible'},\ max\_length=50)),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{stringliteral}{'vendedor'},\ models.ForeignKey(on\_delete=django.db.models.deletion.CASCADE,\ to=settings.AUTH\_USER\_MODEL)),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ ],}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ ),}
+\DoxyCodeLine{\ \ \ \ ]}
+
+\end{DoxyCode}
+
+
+La documentación de esta clase está generada del siguiente archivo\+:\begin{DoxyCompactItemize}
+\item 
+principal/migrations/\mbox{\hyperlink{principal_2migrations_20001__initial_8py}{0001\+\_\+initial.\+py}}\end{DoxyCompactItemize}

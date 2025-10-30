@@ -1,0 +1,17 @@
+# Entornos virtuales
+venv/
+venv/
+*.pyc
+
+# Archivos de base de datos
+db.sqlite3
+
+# Vscode
+.vscode/
+
+# Archivos de entorno
+.env
+.env.*
+__pycache__/
+*.py[cod]
+*$py.class

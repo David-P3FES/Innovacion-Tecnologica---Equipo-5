@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}?v=15">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<section class="home-hero-full">
+  <div class="home-hero-carousel">
+    {% if recientes %}
+      {% for pub in recientes %}
+        {% with portada=pub.foto_portada %}
+          {% if portada %}
+            <div class="home-hero-carousel__slide" style="background-image:url('{{ portada.imagen.url }}');"></div>
+          {% endif %}
+        {% endwith %}
+      {% endfor %}
+    {% endif %}
+    <div class="home-hero-carousel__slide home-hero-carousel__fallback {% if not recientes %}active{% endif %}"></div>
+  </div>
+
+  <div class="home-hero-veil"></div>
+
+  <div class="home-hero-full__content">
+    <div class="home-hero-full__icon" aria-hidden="true">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+    </div>
+    <h1 class="home-hero-full__title">¡Encuentra tu nueva casa o renta Ya!</h1>
+    <p class="home-hero-full__subtitle">Conecta con los mejores vendedores o inmobiliarias de México</p>
+
+    <form method="get" action="{% url 'principal:resultados_busqueda' %}" class="home-search-full">
+      <div class="home-search-full__field home-search-full__field--select">
+        <svg class="home-search-full__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        </svg>
+        
+        <div class="custom-select-wrapper">
+          <input type="hidden" name="tipo_operacion" id="tipo_operacion_input" value="">
+          <button type="button" class="custom-select-trigger" id="select-trigger">
+            <span class="custom-select-value">Tipo</span>
+            <svg class="custom-select-arrow" width="14" height="9" viewBox="0 0 14 9" fill="none">
+              <path d="M1 1.5L7 7.5L13 1.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="custom-select-dropdown" id="select-dropdown">
+            <div class="custom-select-option" data-value="venta">Venta</div>
+            <div class="custom-select-option" data-value="renta">Renta</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="home-search-full__field home-search-full__field--input">
+        <svg class="home-search-full__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <input type="text" name="direccion" class="home-search-full__input" placeholder="Buscar por dirección, ciudad o colonia" aria-label="Dirección, ciudad o colonia">
+      </div>
+
+      <button type="submit" class="home-search-full__btn">
+        <span>Buscar</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </button>
+    </form>
+  </div>
+
+  <div class="home-hero-indicators" id="carousel-indicators"></div>
+</section>
+
+<section class="home-recientes">
+  <div class="home-recientes__header1">
+    <div>
+      <h2 class="home-recientes__title">Recientemente publicadas</h2>
+      <p class="home-recientes__subtitle">Las propiedades más nuevas disponibles</p>
+    </div>
+    <div class="home-recientes__line"></div>
+  </div>
+
+  {% if recientes %}
+    <div class="home-grid">
+      {% for pub in recientes %}
+        <article class="home-card">
+          <a class="home-card__link" href="{% url 'principal:publicacion_detalle' pub.id %}" aria-label="Ver detalles de {{ pub.titulo }}"></a>
+
+          <div class="home-card__image">
+            {% with portada=pub.foto_portada %}
+              {% if portada %}
+                <img src="{{ portada.imagen.url }}" alt="{{ pub.titulo }}" loading="lazy">
+              {% else %}
+                <div class="home-card__noimage" aria-hidden="true">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                  </svg>
+                  <span>Sin foto</span>
+                </div>
+              {% endif %}
+            {% endwith %}
+
+            {% if pub.estatus %}
+              <span class="home-badge home-badge--{{ pub.estatus }}">{{ pub.get_estatus_display }}</span>
+            {% endif %}
+
+            <button class="home-like {% if liked_ids and pub.id in liked_ids %}home-like--active{% endif %}" type="button" data-pub="{{ pub.id }}" aria-label="{% if liked_ids and pub.id in liked_ids %}Quitar de favoritos{% else %}Agregar a favoritos{% endif %}">
+              <svg class="home-like__icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </button>
+            <span class="home-like-count">{{ pub.like_count|default:0 }}</span>
+          </div>
+
+          <div class="home-card__body">
+            <div class="home-card__header1">
+              <h3 class="home-card__title">{{ pub.titulo }}</h3>
+              <span class="home-card__type home-card__type--{{ pub.tipo_operacion }}">{{ pub.get_tipo_operacion_display }}</span>
+            </div>
+            <div class="home-card__price">${{ pub.precio|floatformat:0|intcomma }}</div>
+            <div class="home-card__location">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span>{{ pub.direccion_completa }}</span>
+            </div>
+            <div class="home-card__meta">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>Hace {{ pub.fecha_creacion|timesince }}</span>
+            </div>
+            <div class="home-card__seller">
+              <div class="home-card__seller-info">
+                <span class="home-card__seller-label">Publicado por:</span>
+                <strong class="home-card__seller-name">{% firstof pub.usuario.get_full_name pub.usuario.username %}</strong>
+              </div>
+              <div class="home-card__actions">
+                {% with email=pub.usuario.email phone=pub.usuario.perfil.whatsapp %}
+                  {% if email %}
+                    <a class="home-card__action" href="mailto:{{ email }}?subject={{ pub.titulo|urlencode }}" title="Enviar email">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                      </svg>
+                    </a>
+                  {% endif %}
+                  {% if phone %}
+                    {% if phone|length == 10 %}
+                      <a class="home-card__action home-card__action--whatsapp" target="_blank" href="https://wa.me/52{{ phone }}?text={{ pub.titulo|urlencode }}" title="WhatsApp">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.890-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                        </svg>
+                      </a>
+                    {% else %}
+                      <a class="home-card__action home-card__action--whatsapp" target="_blank" href="https://wa.me/{{ phone|cut:'+' }}?text={{ pub.titulo|urlencode }}" title="WhatsApp">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.890-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                        </svg>
+                      </a>
+                    {% endif %}
+                  {% endif %}
+                {% endwith %}
+              </div>
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="home-empty">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+      <p>Aún no hay publicaciones recientes</p>
+    </div>
+  {% endif %}
+</section>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.home-hero-carousel__slide');
+  const indicatorsContainer = document.getElementById('carousel-indicators');
+  if(!slides.length || !indicatorsContainer) return;
+
+  let currentIndex = 0;
+  const INTERVAL = 5000;
+
+  if (slides.length) { slides[0].classList.add('active'); }
+
+  slides.forEach((_, index) => {
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'home-hero-indicator' + (index === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', 'Ir a imagen ' + (index + 1));
+    dot.addEventListener('click', () => goTo(index));
+    indicatorsContainer.appendChild(dot);
+  });
+
+  const indicators = indicatorsContainer.querySelectorAll('.home-hero-indicator');
+
+  function goTo(index){
+    slides[currentIndex].classList.remove('active');
+    indicators[currentIndex].classList.remove('active');
+    currentIndex = index;
+    slides[currentIndex].classList.add('active');
+    indicators[currentIndex].classList.add('active');
+  }
+
+  setInterval(()=>goTo((currentIndex + 1) % slides.length), INTERVAL);
+})();
+
+(function fixHeaderOverlap(){
+  const header = document.querySelector('.header');
+  const setHH = () => {
+    if(!header) return;
+    const h = header.getBoundingClientRect().height || 64;
+    document.documentElement.style.setProperty('--header-height', `${Math.round(h)}px`);
+  };
+  setHH();
+  window.addEventListener('resize', setHH);
+})();
+
+(function customSelect(){
+  const trigger = document.getElementById('select-trigger');
+  const dropdown = document.getElementById('select-dropdown');
+  const hiddenInput = document.getElementById('tipo_operacion_input');
+  const valueDisplay = trigger.querySelector('.custom-select-value');
+  const options = dropdown.querySelectorAll('.custom-select-option');
+
+  trigger.addEventListener('click', function(e){
+    e.stopPropagation();
+    dropdown.classList.toggle('active');
+    trigger.classList.toggle('active');
+  });
+
+  options.forEach(option => {
+    option.addEventListener('click', function(){
+      const value = this.getAttribute('data-value');
+      const text = this.textContent;
+      
+      hiddenInput.value = value;
+      valueDisplay.textContent = text;
+      
+      options.forEach(opt => opt.classList.remove('selected'));
+      this.classList.add('selected');
+      
+      dropdown.classList.remove('active');
+      trigger.classList.remove('active');
+    });
+  });
+
+  document.addEventListener('click', function(){
+    dropdown.classList.remove('active');
+    trigger.classList.remove('active');
+  });
+})();
+</script>
+{% endblock %}
