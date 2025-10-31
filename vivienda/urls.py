@@ -15,34 +15,33 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path
 
-#: Lista de patrones de URL principales del proyecto
 urlpatterns = [
     path(
         'admin/',
         admin.site.urls
-    ),  #: Panel de administración de Django
+    ),
 
-    # Rutas principales (home, resultados)
     path(
         '',
         include('principal.urls')
-    ),  #: Incluye las rutas de la app principal
+    ),
 
-    # Rutas propias de perfil/usuario
     path(
         'cuenta/',
         include('cuentas.urls')
-    ),  #: Incluye las rutas personalizadas de la app cuentas
-
-    # Allauth en español
+    ),
+    
     path(
         'cuenta/',
         include('allauth.urls')
-    ),  #: Incluye las rutas de autenticación de Django Allauth
+    ),
 
     path("publicaciones/", include("publicaciones.urls")),
 
-    path("billing/", include("billing.urls")),  # <---- AGREGA ESTO
+    path("billing/", include("billing.urls")),
+
+    path('cuentas/', include('cuentas.urls', namespace='cuentas')),
+
 
 ]
 
