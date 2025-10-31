@@ -296,3 +296,28 @@ body {
   background:#e6e7e8; border-radius:8px; color:#466557;
 }
 .user-menu.open .user-dropdown{ display:block; }
+
+:root { --avatar-scale: 1.02; }
+
+.navbar-actions .trigger-wrap {
+  gap: 0 !important;
+}
+
+.avatar-circle {
+  transform: scale(var(--avatar-scale));
+  transform-origin: center;
+  margin-right: -4px !important;
+}
+
+.avatar-circle::after {
+  font-size: 18px !important;
+  font-stretch: 110%;
+  transform: scale(calc(1 / var(--avatar-scale))) scaleY(1.15) translateY(2px);
+  transform-origin: center;
+  letter-spacing: 0.3px;
+}
+
+.caret-btn {
+  margin-left: 0 !important;
+  transform: translateX(-1px);
+}

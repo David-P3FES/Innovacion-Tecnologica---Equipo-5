@@ -14,8 +14,6 @@ from cuentas.models import perfil_incompleto
 
 
 def _normalizar_portada(publicacion):
-    if perfil_incompleto(request.user):
-        return redirect('cuentas:complete_profile')
     fotos = list(publicacion.fotos.order_by("orden", "id"))
     if not fotos:
         return
@@ -49,8 +47,7 @@ def crear_publicacion(request):
             formset.save()
             _normalizar_portada(publicacion)
             messages.success(request, "¡Publicación creada correctamente!")
-            # Antes: return redirect("publicaciones:editar", pk=publicacion.pk)
-            return redirect("publicaciones:panel")  # ⬅️ redirige al panel
+            return redirect("publicaciones:panel")
     else:
         form = PublicacionForm()
         formset = FotoPublicacionFormSet()
