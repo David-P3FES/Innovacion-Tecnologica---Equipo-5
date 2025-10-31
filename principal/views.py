@@ -4,6 +4,7 @@ from django.db.models import Q, Count, Prefetch
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
 import unicodedata
+from cuentas.models import perfil_incompleto
 
 
 from publicaciones.models import Publicacion, Favorito, FotoPublicacion
@@ -46,6 +47,7 @@ def _quitar_acentos(texto):
     texto = ''.join(char for char in texto if unicodedata.category(char) != 'Mn')
     return texto.lower()
 
+@login_required
 def home(request):
     """
     @brief Vista principal con hero, buscador y publicaciones recientes

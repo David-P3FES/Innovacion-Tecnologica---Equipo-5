@@ -15,6 +15,9 @@
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # ==============================
 # Rutas base
@@ -24,15 +27,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ==============================
 # Seguridad
 # ==============================
-SECRET_KEY = 'django-insecure-=#+e_+@am2c6-+&44b1cauo1ux@d0u*s&39@q-*xqa1c@6+w^7'  #: Clave secreta del proyecto
-DEBUG = True  #: Modo debug (True en desarrollo, False en producción)
-ALLOWED_HOSTS = []  #: Hosts permitidos
+SECRET_KEY = 'django-insecure-=#+e_+@am2c6-+&44b1cauo1ux@d0u*s&39@q-*xqa1c@6+w^7'
+DEBUG = True
+ALLOWED_HOSTS = []
 
 # ==============================
 # Aplicaciones instaladas
 # ==============================
 INSTALLED_APPS = [
-    # Django
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -41,25 +43,21 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'django_extensions',
-
-    # Apps personalizadas
     'principal',
-    'cuentas.apps.CuentasConfig',   # registra señales
+    'cuentas.apps.CuentasConfig',
     'publicaciones',
-    # Utilidades
     'widget_tweaks',
-
-    # Autenticación (Allauth)
     'django.contrib.sites',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
 
+    "billing",
     
 ]
 
-SITE_ID = 3  #: ID del sitio para django.contrib.sites
+SITE_ID = 3
 
 # ==============================
 # Autenticación
@@ -69,22 +67,19 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-LOGIN_REDIRECT_URL = 'cuentas:post_login'  #: Redirección tras login
-LOGOUT_REDIRECT_URL = 'principal:home'     #: Redirección tras logout
+LOGIN_REDIRECT_URL = 'cuentas:post_login'
+LOGOUT_REDIRECT_URL = 'principal:home'
 
-# Configuración de Allauth
-ACCOUNT_AUTHENTICATION_METHOD = "email"   #: Login solo con email
-ACCOUNT_USERNAME_REQUIRED = False         #: Username no requerido
-ACCOUNT_EMAIL_REQUIRED = True             #: Email obligatorio
-ACCOUNT_UNIQUE_EMAIL = True               #: Emails únicos
-ACCOUNT_EMAIL_VERIFICATION = "none"       #: Sin verificación en desarrollo
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_USERNAME_GENERATOR = 'allauth.account.utils.generate_unique_username'
 
-# Flujo social
 SOCIALACCOUNT_LOGIN_ON_GET = True
 ACCOUNT_LOGOUT_ON_GET = True
-SOCIALACCOUNT_AUTO_SIGNUP = True   #: Crea usuario local sin pedir datos extra
-
+SOCIALACCOUNT_AUTO_SIGNUP = True
 # ==============================
 # Middleware
 # ==============================
@@ -97,6 +92,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'cuentas.middleware.RequireCompleteProfileMiddleware',
 ]
 
 # ==============================
@@ -116,7 +112,7 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
-                'django.template.context_processors.request',   # necesario para allauth
+                'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
@@ -147,8 +143,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # ==============================
 # Internacionalización
 # ==============================
-LANGUAGE_CODE = 'es-mx'         #: Idioma principal
-TIME_ZONE = 'America/Chihuahua' #: Zona horaria local
+LANGUAGE_CODE = 'es-mx'
+TIME_ZONE = 'America/Chihuahua'
 USE_I18N = True
 USE_TZ = True
 
@@ -160,7 +156,6 @@ STATICFILES_DIRS = [
     BASE_DIR / "cuentas" / "static",
 ]
 
-# Archivos de usuario (fotos)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -169,3 +164,23 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Configuración por defecto de campos
 # ==============================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
+STRIPE_PRICE_ID_WEEKLY  = os.getenv("STRIPE_PRICE_ID_WEEKLY")
+STRIPE_PRICE_ID_MONTHLY = os.getenv("STRIPE_PRICE_ID_MONTHLY")
+STRIPE_PRICE_ID_YEARLY  = os.getenv("STRIPE_PRICE_ID_YEARLY")
+DOMAIN = os.getenv("DOMAIN")
+STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
+
+LOGIN_URL = '/cuentas/login/'
+LOGIN_REDIRECT_URL = '/publicaciones/panel/'
+LOGOUT_REDIRECT_URL = '/'
+
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:8000", "http://localhost:8000"]
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE    = False
+

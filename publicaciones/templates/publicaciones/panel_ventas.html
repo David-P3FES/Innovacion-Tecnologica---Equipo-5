@@ -1,18 +1,33 @@
 {% extends "base.html" %}
 {% load static %}
 {% load humanize %}
+from django.views.decorators.csrf import ensure_csrf_cookie
+
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'panel.css' %}?v=6">
+{% endblock %}
 
 {% block content %}
-<div class="panel-wrap" style="max-width:1200px;margin:1.5rem auto;">
-  <div class="panel-head" style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;">
+<div class="panel-wrap">
+  <div class="panel-head">
     <h1>Mis publicaciones</h1>
-    <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-      <a href="#" class="btn btn-plan">💳 Actualiza tu plan</a>
-      <a href="{% url 'publicaciones:crear' %}" class="btn">+ Nueva publicación</a>
+
+    <div class="actions-inline">
+      <a href="{% url 'publicaciones:crear' %}"
+         class="btn btn-primary"
+         id="btn-create"
+         data-is-subscribed="{% if user.perfil.is_subscribed %}1{% else %}0{% endif %}"
+         data-trial-ended="{% if user.perfil.trial_ended %}1{% else %}0{% endif %}">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        Nueva publicación
+      </a>
     </div>
   </div>
 
-  {# ======= Resumen de conteos ======= #}
+  {# ===================== ESTADÍSTICAS ===================== #}
   <div class="stats">
     <div class="stat">
       <div class="stat-value">{{ stats.total|default:0 }}</div>
@@ -32,8 +47,8 @@
     </div>
   </div>
 
-  {# Filtros rápidos #}
-  <form method="get" class="filters" style="display:flex;gap:.5rem;align-items:center;margin:.75rem 0 1rem;">
+  {# ===================== FILTROS ===================== #}
+  <form method="get" class="filters">
     <select name="operacion" class="input-select">
       <option value="">Operación (todas)</option>
       <option value="venta" {% if operacion_sel == 'venta' %}selected{% endif %}>Venta</option>
@@ -45,217 +60,320 @@
       <option value="en_trato" {% if estatus_sel == 'en_trato' %}selected{% endif %}>En trato</option>
       <option value="cerrada" {% if estatus_sel == 'cerrada' %}selected{% endif %}>Vendida/Rentada</option>
     </select>
-    <button type="submit" class="btn">Filtrar</button>
+    <button type="submit" class="btn btn-filter">Filtrar</button>
     <a href="{% url 'publicaciones:panel' %}" class="btn btn-light">Limpiar</a>
   </form>
 
+  {# ===================== LISTA DE PUBLICACIONES ===================== #}
   {% if page_obj.object_list %}
-    <div class="grid-3">
+    <div class="publications-grid">
       {% for pub in page_obj.object_list %}
-        <div class="card">
-          <div class="thumb">
-            {% with portada=pub.foto_portada %}
-              {% if portada %}
-                <img src="{{ portada.imagen.url }}" alt="Portada {{ pub.titulo }}">
-              {% else %}
-                <div class="noimg">Sin foto</div>
-              {% endif %}
-            {% endwith %}
+      <article class="pub-card">
+        <div class="pub-image">
+          {% with portada=pub.foto_portada %}
+            {% if portada %}
+              <img src="{{ portada.imagen.url }}" alt="{{ pub.titulo }}">
+            {% else %}
+              <div class="no-image">Sin foto</div>
+            {% endif %}
+          {% endwith %}
+
+          {# Badge de estatus superior izquierdo #}
+          <span class="badge badge-status badge-{{ pub.estatus }}">
+            {{ pub.get_estatus_display }}
+          </span>
+
+          {# Ícono de favorito superior derecho #}
+          <button class="fav-icon" aria-label="Favorito">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="pub-body">
+          <h3 class="pub-title">{{ pub.titulo }}</h3>
+
+          <div class="pub-price">${{ pub.precio|floatformat:0|intcomma }}</div>
+
+          <div class="pub-location">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/>
+            </svg>
+            {{ pub.direccion_completa }}
           </div>
 
-          <div class="body">
-            <div class="title-row">
-              <h3 class="title">{{ pub.titulo }}</h3>
-              <span class="badge badge-{{ pub.tipo_operacion }}">{{ pub.get_tipo_operacion_display }}</span>
-            </div>
-
-            <div class="price">${{ pub.precio|floatformat:0|intcomma }}</div>
-            <div class="meta">
-              <span>{{ pub.recamaras }} rec</span> ·
-              <span>{{ pub.banos|floatformat:"-1" }} baños</span> ·
-              <span>{{ pub.estacionamientos }} estac</span>
-            </div>
-            <div class="addr">{{ pub.direccion_completa }}</div>
-
-            <div class="status-row">
-              <span class="chip chip-{{ pub.estatus }}">
-                {% if pub.estatus == 'disponible' %}Disponible{% elif pub.estatus == 'en_trato' %}En trato{% else %}Vendida/Rentada{% endif %}
-              </span>
-              <small class="date">Creada: {{ pub.fecha_creacion|date:"d/m/Y H:i" }}</small>
-            </div>
+          <div class="pub-time">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/>
+            </svg>
+            Hace {{ pub.fecha_creacion|timesince }}
           </div>
 
-          <div class="actions">
-            <a href="{% url 'publicaciones:editar' pub.pk %}" class="btn btn-sm">Editar</a>
-
-            <div class="dropdown js-dd">
-              <button class="btn btn-sm btn-light js-dd-btn" type="button" aria-haspopup="true" aria-expanded="false">
-                Estatus ▾
-              </button>
-              <div class="menu js-dd-menu" role="menu" aria-hidden="true">
-                <form action="{% url 'publicaciones:cambiar_estatus' pub.pk %}" method="post" role="none">{% csrf_token %}
-                  <input type="hidden" name="estatus" value="disponible">
-                  <button type="submit" class="menu-item" role="menuitem">Disponible</button>
-                </form>
-                <form action="{% url 'publicaciones:cambiar_estatus' pub.pk %}" method="post" role="none">{% csrf_token %}
-                  <input type="hidden" name="estatus" value="en_trato">
-                  <button type="submit" class="menu-item" role="menuitem">En trato</button>
-                </form>
-                <form action="{% url 'publicaciones:cambiar_estatus' pub.pk %}" method="post" role="none">{% csrf_token %}
-                  <input type="hidden" name="estatus" value="cerrada">
-                  <button type="submit" class="menu-item" role="menuitem">Vendida/Rentada</button>
-                </form>
-              </div>
-            </div>
-
-            <form action="{% url 'publicaciones:eliminar' pub.pk %}" method="post"
-                  onsubmit="return confirm('¿Eliminar «{{ pub.titulo|escapejs }}»? Esta acción no se puede deshacer.');">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
-            </form>
+          <div class="pub-author">
+            Publicado por: <strong>{{ pub.usuario.get_full_name|default:pub.usuario.username }}</strong>
           </div>
         </div>
+
+        <div class="pub-actions">
+          {# Selector de estatus #}
+          <form class="status-form" action="{% url 'publicaciones:cambiar_estatus' pub.pk %}" method="post"
+                {% if not user.perfil.is_subscribed %}onsubmit="return showSubscriptionModal(event)"{% endif %}>
+            {% csrf_token %}
+            <select name="estatus" class="status-select" 
+                    onchange="this.form.submit()"
+                    {% if not user.perfil.is_subscribed %}disabled{% endif %}>
+              <option value="disponible" {% if pub.estatus == 'disponible' %}selected{% endif %}>Disponible</option>
+              <option value="en_trato" {% if pub.estatus == 'en_trato' %}selected{% endif %}>En trato</option>
+              <option value="cerrada" {% if pub.estatus == 'cerrada' %}selected{% endif %}>Vendida/Rentada</option>
+            </select>
+          </form>
+
+          <div class="action-buttons">
+            <button class="btn-icon btn-contact" aria-label="Contactar">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+              </svg>
+            </button>
+
+            <button class="btn-icon btn-whatsapp" aria-label="WhatsApp">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+              </svg>
+            </button>
+
+            {% if user.perfil.is_subscribed %}
+            <a href="{% url 'publicaciones:editar' pub.pk %}" class="btn-icon btn-edit" aria-label="Editar">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </a>
+
+            <form action="{% url 'publicaciones:eliminar' pub.pk %}" method="post" style="display:inline;" onsubmit="return confirm('¿Eliminar «{{ pub.titulo|escapejs }}»?');">
+              {% csrf_token %}
+              <button type="submit" class="btn-icon btn-delete" aria-label="Eliminar">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                </svg>
+              </button>
+            </form>
+            {% else %}
+            <button class="btn-icon btn-edit btn-locked" onclick="showSubscriptionModal(event)" aria-label="Editar (requiere suscripción)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0110 0v4"/>
+              </svg>
+            </button>
+            {% endif %}
+          </div>
+        </div>
+      </article>
       {% endfor %}
     </div>
 
     <div class="pagination">
       {% if page_obj.has_previous %}
-        <a class="page" href="?page={{ page_obj.previous_page_number }}{% if estatus_sel %}&estatus={{ estatus_sel }}{% endif %}{% if operacion_sel %}&operacion={{ operacion_sel }}{% endif %}">&laquo; Anterior</a>
+        <a class="page-btn" href="?page={{ page_obj.previous_page_number }}{% if estatus_sel %}&estatus={{ estatus_sel }}{% endif %}{% if operacion_sel %}&operacion={{ operacion_sel }}{% endif %}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+          Anterior
+        </a>
       {% endif %}
-      <span class="page current">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+      <span class="page-current">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
       {% if page_obj.has_next %}
-        <a class="page" href="?page={{ page_obj.next_page_number }}{% if estatus_sel %}&estatus={{ estatus_sel }}{% endif %}{% if operacion_sel %}&operacion={{ operacion_sel }}{% endif %}">Siguiente &raquo;</a>
+        <a class="page-btn" href="?page={{ page_obj.next_page_number }}{% if estatus_sel %}&estatus={{ estatus_sel }}{% endif %}{% if operacion_sel %}&operacion={{ operacion_sel }}{% endif %}">
+          Siguiente
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </a>
       {% endif %}
     </div>
-
   {% else %}
-    <div class="empty">
-      <p>No tienes publicaciones todavía.</p>
-      <a href="{% url 'publicaciones:crear' %}" class="btn">Crear mi primera publicación</a>
+    <div class="empty-state">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+        <line x1="9" y1="9" x2="15" y2="9"/>
+        <line x1="9" y1="15" x2="15" y2="15"/>
+      </svg>
+      <h3>No tienes publicaciones todavía</h3>
+      <p>Comienza creando tu primera publicación</p>
     </div>
   {% endif %}
 </div>
 
-<style>
-.panel-head h1 { margin: 0; }
+{# ===================== MODAL DE PLANES ===================== #}
+<div id="plans-overlay" class="plans-overlay" aria-hidden="true">
+  <div class="plans-dialog" role="dialog" aria-modal="true" aria-labelledby="plans-title">
+    <button type="button" class="plans-close" id="plans-close" aria-label="Cerrar">&times;</button>
 
-/* ===== Stats bar ===== */
-.stats{
-  display:grid; grid-template-columns:repeat(4,1fr); gap:.75rem;
-  margin: .75rem 0 1rem;
-}
-.stat{
-  background:#fff; border:1px solid #e9e9e9; border-radius:12px; padding:.75rem .9rem;
-  display:flex; flex-direction:column; gap:.2rem;
-}
-.stat-value{ font-size:1.35rem; font-weight:800; line-height:1; }
-.stat-label{ color:#666; font-weight:600; }
-.stat-ok   { border-color:#cfe9d8; background:#f5fbf7; }
-.stat-warn { border-color:#ffe6b5; background:#fffaf0; }
-.stat-bad  { border-color:#ffc5c5; background:#fff6f6; }
+    <header class="plans-header">
+      <div class="plans-icon">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <div>
+        <h2 id="plans-title" class="plans-title">Tu prueba terminó</h2>
+        <p class="plans-subtitle">Activa o renueva tu plan para crear y editar publicaciones.</p>
+      </div>
+    </header>
 
-.grid-3 { display:grid; grid-template-columns:repeat(3, 1fr); gap:1rem; }
-.card {
-  border:1px solid #e5e5e5;
-  border-radius:12px;
-  overflow:visible;   /* para que no corte el menú */
-  background:#fff;
-  display:flex;
-  flex-direction:column;
-}
-.thumb { height:180px; background:#f3f3f3; display:flex; align-items:center; justify-content:center; }
-.thumb img { width:100%; height:100%; object-fit:cover; }
-.thumb .noimg { color:#777; font-size:.95rem; }
-.body { padding: .85rem; display:flex; flex-direction:column; gap:.4rem; }
-.title-row { display:flex; justify-content:space-between; align-items:center; gap:.5rem; }
-.title { margin:0; font-size:1.05rem; font-weight:600; }
-.price { font-weight:700; }
-.meta { color:#555; font-size:.95rem; }
-.addr { color:#444; font-size:.95rem; }
-.status-row { display:flex; justify-content:space-between; align-items:center; }
-.chip { padding:.2rem .5rem; border-radius:.6rem; font-size:.8rem; }
-.chip-disponible { background:#e7f8ee; color:#0b6d2e; }
-.chip-en_trato { background:#fff4e5; color:#8a5300; }
-.chip-cerrada { background:#ffe8e8; color:#a40000; }
+    <div class="plans-grid">
+      <article class="plan-card basic">
+        <div class="plan-header">
+          <h3>Semanal</h3>
+          <div class="plan-badge">Básico</div>
+        </div>
+        <div class="price">$49<span>MXN</span></div>
+        <p class="plan-desc">Perfecto para empezar</p>
+        <ul>
+          <li>✓ Publicaciones ilimitadas</li>
+          <li>✓ Visibilidad estándar</li>
+          <li>✓ Soporte básico</li>
+        </ul>
+        <button class="btn-plan-choose" data-plan="weekly">Elegir semanal</button>
+      </article>
 
-.badge { padding:.15rem .4rem; border-radius:.4rem; font-size:.8rem; color:#fff; }
-.badge-venta { background:#2d6cdf; }
-.badge-renta { background:#7c3aed; }
+      <article class="plan-card pro">
+        <div class="plan-popular">Más popular</div>
+        <div class="plan-header">
+          <h3>Mensual</h3>
+          <div class="plan-badge">Profesional</div>
+        </div>
+        <div class="price">$199<span>MXN</span></div>
+        <p class="plan-desc">La mejor opción calidad-precio</p>
+        <ul>
+          <li>✓ Publicaciones ilimitadas</li>
+          <li>✓ Destacar propiedades</li>
+          <li>✓ Soporte prioritario</li>
+          <li>✓ Estadísticas avanzadas</li>
+        </ul>
+        <button class="btn-plan-choose" data-plan="monthly">Elegir mensual</button>
+      </article>
 
-.actions {
-  display:flex;
-  gap:.5rem;
-  align-items:center;
-  padding:.75rem;
-  border-top:1px solid #eee;
-  position:relative;   /* dropdown relativo a actions */
-  overflow:visible;
-}
-.btn { padding:.5rem .8rem; border:none; border-radius:.5rem; background:#333; color:#fff; cursor:pointer; text-decoration:none; display:inline-block; }
-.btn:hover { background:#555; }
-.btn-light { background:#f1f1f1; color:#222; border:1px solid #ddd; }
-.btn-light:hover { background:#e5e5e5; }
-.btn-sm { padding:.35rem .6rem; font-size:.9rem; }
-.btn-danger { background:#cc2936; }
-.btn-danger:hover { background:#a61f2a; }
+      <article class="plan-card premium">
+        <div class="plan-header">
+          <h3>Anual</h3>
+          <div class="plan-badge">Premium</div>
+        </div>
+        <div class="price">$1,799<span>MXN</span></div>
+        <p class="plan-desc">Máximo ahorro y beneficios</p>
+        <ul>
+          <li>✓ Publicaciones ilimitadas</li>
+          <li>✓ Prioridad máxima</li>
+          <li>✓ Reportes de rendimiento</li>
+          <li>✓ Soporte VIP 24/7</li>
+          <li>✓ Ahorra 2 meses</li>
+        </ul>
+        <button class="btn-plan-choose" data-plan="yearly">Elegir anual</button>
+      </article>
+    </div>
 
-/* Botón plan destacado */
-.btn-plan { background:#0b6d2e; }
-.btn-plan:hover { background:#0e8b39; }
+    <footer class="plans-footer">
+      <small>Los precios incluyen IVA. Puedes cancelar cuando quieras sin compromiso.</small>
+    </footer>
+  </div>
+</div>
 
-.dropdown { position:relative; }
-.dropdown .menu {
-  display:none;
-  position:absolute;
-  top:110%;
-  left:0;
-  background:#fff;
-  border:1px solid #e5e5e5;
-  border-radius:.5rem;
-  min-width:180px;
-  box-shadow:0 6px 18px rgba(0,0,0,.12);
-  z-index:9999;
-}
-.dropdown .menu.open { display:block; }
-.menu form { margin:0; }
-.menu .menu-item { width:100%; text-align:left; background:none; border:none; padding:.55rem .7rem; cursor:pointer; }
-.menu .menu-item:hover { background:#f7f7f7; }
-
-.pagination { display:flex; gap:.5rem; align-items:center; justify-content:center; margin:1rem 0; }
-.page { padding:.3rem .6rem; border:1px solid #ddd; border-radius:.4rem; text-decoration:none; color:#222; }
-.page.current { background:#f1f1f1; border-color:#ccc; }
-
-.input-select { padding:.45rem .55rem; border:1px solid #ddd; border-radius:.4rem; background:#fff; }
-.btn.btn-light { border:1px solid #ddd; }
-
-.empty { text-align:center; padding:2rem; border:1px dashed #ddd; border-radius:12px; background:#fff; }
-
-/* Responsive */
-@media (max-width: 900px) {
-  .grid-3 { grid-template-columns:1fr 1fr; }
-  .stats { grid-template-columns:repeat(2,1fr); }
-}
-@media (max-width: 640px) {
-  .grid-3 { grid-template-columns:1fr; }
-  .stats { grid-template-columns:1fr; }
-}
-</style>
-
+{% block extra_js %}
 <script>
-/* Dropdown de Estatus: abre/cierra con click y cierra al hacer click fuera */
-document.addEventListener("click", (e)=>{
-  if(!e.target.closest(".js-dd")){
-    document.querySelectorAll(".js-dd-menu.open").forEach(m=>m.classList.remove("open"));
-    document.querySelectorAll(".js-dd-btn[aria-expanded='true']").forEach(b=>b.setAttribute("aria-expanded","false"));
-    return;
+/* ===== Modal de planes + Checkout ===== */
+(function(){
+  const btnCreate = document.getElementById('btn-create');
+  const overlay   = document.getElementById('plans-overlay');
+  const closeBtn  = document.getElementById('plans-close');
+
+  // CSRF desde <meta>
+  const csrfMeta  = document.querySelector('meta[name="csrf-token"]');
+  const csrftoken = csrfMeta ? csrfMeta.getAttribute('content') : '';
+
+  function openPlans(){
+    overlay.classList.add('is-open');
+    overlay.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
   }
-  const dd = e.target.closest(".js-dd");
-  const btn = dd.querySelector(".js-dd-btn");
-  const menu = dd.querySelector(".js-dd-menu");
-  if(e.target === btn || btn.contains(e.target)){
-    const isOpen = menu.classList.toggle("open");
-    btn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  function closePlans(){
+    overlay.classList.remove('is-open');
+    overlay.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
   }
+
+  window.showSubscriptionModal = function(e){
+    e.preventDefault();
+    openPlans();
+    return false;
+  };
+
+  if(btnCreate){
+    btnCreate.addEventListener('click', function(e){
+      const isSubscribed = this.dataset.isSubscribed === '1';
+      if(!isSubscribed){
+        e.preventDefault();
+        const trialEnded = this.dataset.trialEnded === '1';
+        const title = document.getElementById('plans-title');
+        const subtitle = overlay.querySelector('.plans-subtitle');
+        if(trialEnded){
+          title.textContent = 'Tu prueba terminó';
+          subtitle.textContent = 'Renueva para seguir publicando propiedades.';
+        }else{
+          title.textContent = 'Activa tu plan';
+          subtitle.textContent = 'Obtén acceso completo para crear y destacar anuncios.';
+        }
+        openPlans();
+      }
+    });
+  }
+
+  closeBtn?.addEventListener('click', closePlans);
+  overlay?.addEventListener('click', (e)=>{ if(e.target === overlay) closePlans(); });
+
+  document.querySelectorAll('.btn-plan-choose').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const plan = btn.dataset.plan;
+      try{
+        const res = await fetch("{% url 'billing:stripe_create_session' %}", {
+          method: "POST",
+          credentials: "same-origin", // envía cookies de sesión/CSRF
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": csrftoken,
+            "X-Requested-With": "XMLHttpRequest"
+          },
+          body: new URLSearchParams({ plan })
+        });
+        const data = await res.json();
+        if(data.url) window.location = data.url;
+        else alert(data.error || "Error al crear sesión de pago.");
+      }catch(err){
+        alert("No se pudo iniciar el pago.");
+      }
+    });
+  });
+})();
+</script>
+<script>
+// Lee la cookie csrftoken
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+const csrftoken = getCookie('csrftoken');
+
+// ... dentro del addEventListener de los botones de plan:
+const res = await fetch("{% url 'billing:stripe_create_session' %}", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/x-www-form-urlencoded",
+    "X-CSRFToken": csrftoken,                 // <-- clave
+    "X-Requested-With": "XMLHttpRequest"
+  },
+  body: new URLSearchParams({ plan })
 });
 </script>
+
+{% endblock %}
 {% endblock %}

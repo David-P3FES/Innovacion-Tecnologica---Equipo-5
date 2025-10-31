@@ -7,9 +7,10 @@
   - Completar perfil
   - Ver perfil
   - Editar perfil
+  - Rutas de autenticación (login, logout, registro) mediante django-allauth
 """
 
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 #: Nombre de la aplicación para namespacing de URLs
@@ -40,4 +41,7 @@ urlpatterns = [
         views.editar_perfil,
         name="editar_perfil"
     ),  #: Vista para editar los datos del perfil
+
+    # ✅ Aquí agregas las rutas de django-allauth
+    path("", include("allauth.urls")),
 ]
