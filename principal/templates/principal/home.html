@@ -190,6 +190,39 @@
 </section>
 
 <script>
+  window.AUTHENTICATED = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
+  function getCsrf(){ const m=document.cookie.match(/csrftoken=([^;]+)/); return m?m[1]:''; }
+
+  document.addEventListener("click", async (e)=>{
+    const btn = e.target.closest(".like-btn");
+    if(!btn) return;
+
+    const pubId = btn.dataset.pub;
+
+    if(!window.AUTHENTICATED){
+      const next = encodeURIComponent(window.location.pathname + window.location.search);
+      window.location.href = "{% url 'account_login' %}?next=" + next;
+      return;
+    }
+
+    try{
+      const r = await fetch("{% url 'principal:toggle_favorito' 0 %}".replace("/0/","/"+pubId+"/"), {
+        method:"POST",
+        headers:{ "X-CSRFToken": getCsrf(), "X-Requested-With":"XMLHttpRequest" }
+      });
+      const j = await r.json();
+      if(j.liked){
+        btn.classList.add("is-liked");
+        const c = btn.nextElementSibling; if(c && c.classList.contains("like-count")) c.textContent = (+c.textContent||0)+1;
+      }else{
+        btn.classList.remove("is-liked");
+        const c = btn.nextElementSibling; if(c && c.classList.contains("like-count")) c.textContent = Math.max(0,(+c.textContent||0)-1);
+      }
+    }catch(err){
+      console.error(err);
+      alert("No se pudo actualizar tu favorito. Inténtalo de nuevo.");
+    }
+  });
 (function(){
   const slides = document.querySelectorAll('.home-hero-carousel__slide');
   const indicatorsContainer = document.getElementById('carousel-indicators');
@@ -267,5 +300,58 @@
     trigger.classList.remove('active');
   });
 })();
+
+  window.AUTHENTICATED = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
+  function getCsrf(){
+    const m = document.cookie.match(/csrftoken=([^;]+)/);
+    return m ? m[1] : "";
+  }
+
+  document.addEventListener("click", async (e) => {
+    const btn = e.target.closest(".home-like");
+    if (!btn) return;
+
+    e.stopPropagation();
+    e.preventDefault();
+
+    const pubId = btn.dataset.pub;
+
+    if (!window.AUTHENTICATED) {
+      const next = encodeURIComponent(window.location.pathname + window.location.search);
+      window.location.href = "{% url 'account_login' %}?next=" + next;
+      return;
+    }
+
+    try {
+      const r = await fetch(
+        "{% url 'principal:toggle_favorito' 0 %}".replace("/0/", "/" + pubId + "/"),
+        {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": getCsrf(),
+            "X-Requested-With": "XMLHttpRequest"
+          }
+        }
+      );
+      const j = await r.json();
+
+      if (j.liked) {
+        btn.classList.add("home-like--active");
+        btn.setAttribute("aria-label", "Quitar de favoritos");
+      } else {
+        btn.classList.remove("home-like--active");
+        btn.setAttribute("aria-label", "Agregar a favoritos");
+      }
+      const countEl = btn.nextElementSibling;
+      if (countEl && countEl.classList.contains("home-like-count")) {
+        const current = parseInt(countEl.textContent || "0", 10) || 0;
+        countEl.textContent = j.liked ? current + 1 : Math.max(0, current - 1);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("No se pudo actualizar tu favorito. Inténtalo de nuevo.");
+    }
+  });
 </script>
+
 {% endblock %}
