@@ -1,0 +1,20 @@
+# No subir el entorno virtual
+venv/
+
+# No subir la base para no pisar la que se genere en el servidor
+db.sqlite3
+
+# No subir media en cada deploy (las imágenes que se generen en producción se quedan allá)
+media/
+
+# Archivos de Python que sobran
+__pycache__/
+*.py[cod]
+
+# Git y docs locales
+.git
+.gitignore
+*.md
+docs/
+diagrams/
+Doxyfile
