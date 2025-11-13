@@ -29,7 +29,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ==============================
 SECRET_KEY = 'django-insecure-=#+e_+@am2c6-+&44b1cauo1ux@d0u*s&39@q-*xqa1c@6+w^7'
 DEBUG = True
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "vivienda-env.eba-89uxkyz3.us-west-2.elasticbeanstalk.com",
+]
 
 # ==============================
 # Aplicaciones instaladas
