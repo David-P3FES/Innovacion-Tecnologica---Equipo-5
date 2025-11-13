@@ -179,7 +179,6 @@ LOGIN_URL = '/cuentas/login/'
 LOGIN_REDIRECT_URL = '/publicaciones/panel/'
 LOGOUT_REDIRECT_URL = '/'
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 SESSION_COOKIE_SAMESITE = "Lax"
 CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:8000", "http://localhost:8000"]
