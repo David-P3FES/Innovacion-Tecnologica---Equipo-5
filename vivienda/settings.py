@@ -57,7 +57,7 @@ INSTALLED_APPS = [
     
 ]
 
-SITE_ID = 3
+SITE_ID = 1
 
 # ==============================
 # Autenticación
